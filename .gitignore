@@ -1,2 +1,5 @@
 .workbuddy/automations/
 dist/
+
+# Python 缓存
+__pycache__/
