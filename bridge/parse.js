@@ -91,7 +91,7 @@ function parseTasks(text) {
     for (const h of used) {
       let v = (cells[h.i] || '').trim();
       if (h.key === 'progress') v = parseInt(v) || 0;
-      if (h.key === 'deadline') v = normDate(v);
+      if (h.key === 'deadline' || h.key === 'start') v = normDate(v);
       rec[h.key] = v;
     }
     if (!rec.name) continue;

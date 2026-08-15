@@ -1,3 +1,12 @@
+## v1.6.3 · 2026-08-15
+**WPS 任务表也接入「连接器真自动」同步（与腾讯同款）**
+- 用户在本会话连上 WPS 连接器（金山文档 / kdocs）。实测经 mcp__kdocs__sheet.get_range_data 直读私有表《行政部驾驶舱模板_v1.1.0.xlsx》「任务总表」成功——无需 Cookie、无需 OpenAPI token。
+- 新增 bridge/wps_flatten.py：把 kdocs 返回的稀疏单元格 JSON（data.detail.rangeData，含 rowFrom/colFrom/originalCellValue）拍平为标准 CSV，供桥接端 parseTasks 复用。
+- 新增自动化 `automation-1786808634457`（HOURLY，ACTIVE）：每小时读该 WPS 表 → 写 drop/wps/wps_task.csv → 桥接服务（每 60s 重读）自动刷新驾驶舱。
+- 注意：当前这张表是**空模板**（仅表头 + 第 11 列逾期公式，无任务行）。自动化已打通管道，待用户往里填任务即自动显示。
+- 顺手：parseTasks 对「开始日期」也做日期归一化（与截止日期一致）；UI 内嵌解析逻辑同步修正。
+- 已提交 + 打 tag v1.6.3 + 推送 GitHub。
+
 ## v1.6.2 · 2026-08-15
 **修复：腾讯表真实数据「双语表头含换行」导致解析失败（0 条）**
 - 根因：腾讯表表头单元格为「预约日期\nDATE」这类双语写法，API 返回的 csv_data 在引号内带真实换行；原 parseCSV 把引号内换行也当行分隔，导致表头行被拆散、findHeaderLine 找不到 ≥2 个识别列 → 会议室解析为空。
