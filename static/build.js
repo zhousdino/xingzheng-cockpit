@@ -1,6 +1,6 @@
 // build.js —— 生成「免服务器」静态驾驶舱
 // 读取 bridge/drop 下的三个 CSV（任务/会议室/签证），复用 bridge/parse.js 解析，
-// 把数据内嵌进 行政部驾驶舱_UI_v1.9.0.html 模板，输出 行政部驾驶舱_静态版.html。
+// 把数据内嵌进 行政部驾驶舱_UI_v1.10.0.html 模板，输出 行政部驾驶舱_静态版.html。
 // 静态版自带数据，无需桥接服务 / 无需后端，可直接部署到任意静态托管（CloudStudio / 资料库 / 本地双击）。
 //
 // 用法：node static/build.js
@@ -8,11 +8,11 @@
 
 const fs = require('fs');
 const path = require('path');
-const { parseTasks, parseRooms, parseVisas } = require('../bridge/parse.js');
+const { parseTasks, parseRooms, parseVisas, parseVehicles, parseVehicleSched } = require('../bridge/parse.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const DROP = path.join(ROOT, 'bridge', 'drop');
-const TEMPLATE = path.join(ROOT, '行政部驾驶舱_UI_v1.9.0.html');
+const TEMPLATE = path.join(ROOT, '行政部驾驶舱_UI_v1.10.0.html');
 const OUT = path.join(ROOT, 'static', '行政部驾驶舱_静态版.html');
 
 // 读取某 drop 目录下最新的一份 CSV/TSV 并解析
@@ -31,14 +31,18 @@ function readDrop(name, parseFn) {
 const tasks = readDrop('wps', parseTasks);
 const rooms = readDrop('tencent', parseRooms);
 const visas = readDrop('visa', parseVisas);
+const vehicles = readDrop('vehicle', parseVehicles);
+const vehiclesched = readDrop('vehiclesched', parseVehicleSched);
 
 const updatedAt = new Date().toISOString();
 const sources = {
   tasks:   { mode: tasks.length ? 'drop-file' : 'wps-none',    updatedAt, error: null },
   rooms:   { mode: rooms.length ? 'drop-file' : 'tencent-none',updatedAt, error: null },
-  visas:   { mode: visas.length ? 'drop-file' : 'visa-none',   updatedAt, error: null }
+  visas:   { mode: visas.length ? 'drop-file' : 'visa-none',   updatedAt, error: null },
+  vehicles:{ mode: vehicles.length ? 'drop-file' : 'vehicle-none', updatedAt, error: null },
+  vehiclesched: { mode: vehiclesched.length ? 'drop-file' : 'vehiclesched-none', updatedAt, error: null }
 };
-const data = { tasks, rooms, visas, updatedAt, sources };
+const data = { tasks, rooms, visas, vehicles, vehiclesched, updatedAt, sources };
 
 const tpl = fs.readFileSync(TEMPLATE, 'utf8');
 // 把内嵌数据注入到 `let DATA=[];` 之前（该全局在 loadData 调用前已就绪）
@@ -62,5 +66,5 @@ fs.writeFileSync(DIST, injected, 'utf8');
 console.log('BUILT ' + OUT);
 console.log('INDEX ' + INDEX);
 console.log('DIST  ' + DIST);
-console.log('  tasks=' + tasks.length + ' rooms=' + rooms.length + ' visas=' + visas.length);
+console.log('  tasks=' + tasks.length + ' rooms=' + rooms.length + ' visas=' + visas.length + ' vehicles=' + vehicles.length + ' vehiclesched=' + vehiclesched.length);
 console.log('  updatedAt=' + updatedAt);

@@ -194,6 +194,35 @@ tr.vrow.warn td{background:rgba(224,169,0,.12)!important}
 tr.vrow.warn td:first-child{border-left:3px solid var(--warn)}
 tr.vrow.alert td{background:rgba(194,39,45,.10)!important}
 tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
+
+/* 车辆情况 KPI + 卡片 */
+.vehkpi{display:flex;gap:18px;align-items:center;flex-wrap:wrap;font-size:14px;margin-bottom:14px}
+.vehkpi .item{display:flex;flex-direction:column;align-items:center;min-width:58px}
+.vehkpi .item .n{font-size:22px;font-weight:700;font-family:var(--numfont);color:var(--primary-d)}
+.vehkpi .item.red .n{color:var(--alert)} .vehkpi .item.warn .n{color:var(--warn)} .vehkpi .item.green .n{color:var(--good)}
+.vehkpi .item .l{font-size:12px;color:var(--text-2)}
+.vcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.vcard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg)}
+.vhead{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.vplate{font-weight:700;color:var(--primary-d);font-size:16px;font-family:var(--numfont)}
+.vstatus{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;color:#fff}
+.vstatus.normal{background:var(--good)} .vstatus.maint{background:var(--warn);color:#222} .vstatus.repair{background:var(--alert)}
+.vown{font-size:12px;font-weight:600;padding:2px 10px;border-radius:20px;background:var(--track);color:var(--text-2)}
+.vinfo{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:12.5px;margin:6px 0}
+.vinfo .it{display:flex;gap:6px;align-items:baseline}
+.vinfo .it .k{color:var(--text-2);min-width:40px}
+.vinfo .it .vv{color:var(--text);font-weight:500;word-break:break-all}
+.vinfo .it .vv.exp{color:var(--alert);font-weight:700}
+.vinfo .it .vv.warn{color:var(--warn);font-weight:700}
+.vsched{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px}
+.vsched .st{font-size:12px;color:var(--text-2);margin-bottom:4px}
+.vsched ul{list-style:none;margin:0;padding:0;font-size:12.5px}
+.vsched li{padding:3px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.vsched li .t{font-variant-numeric:tabular-nums;color:var(--text-2)}
+.vsched li .r{color:var(--text);font-weight:500}
+.vloc{margin-top:8px;font-size:12.5px;background:rgba(66,133,244,.08);border-left:3px solid var(--primary);padding:6px 10px;border-radius:6px}
+.vloc .lab{color:var(--text-2)}
+.vloc .val{color:var(--primary-d);font-weight:600}
 </style>
 </head>
 <body data-theme="dark">
@@ -274,6 +303,22 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
         <span class="msg" id="visaMsg"></span>
       </div>
       <textarea id="pasteVisa" placeholder="在此粘贴从 WPS「签证」sheet 复制的数据（含表头：姓名/国家/签证类型/状态/提交日期/预计出签/有效期至/备注）…"></textarea>
+
+      <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+
+      <p><b>车辆情况（WPS 在线表格 · 车辆信息 / 车辆排期 两个 sheet）：</b>在 WPS 表对应 sheet 全选 → 复制 → 粘贴到下方文本框 → 点「上传到本地服务」，驾驶舱自动刷新。也可上传 CSV 文件。</p>
+      <div class="row" style="margin-bottom:8px">
+        <button id="btnUploadVehicle" class="primary">上传「车辆信息」</button>
+        <label class="file">上传 CSV<input type="file" id="fileVehicleCsv" accept=".csv"></label>
+        <span class="msg" id="vehMsg"></span>
+      </div>
+      <textarea id="pasteVehicle" placeholder="在此粘贴「车辆信息」sheet（含表头：车牌/车型/保险/保险到期/驾驶员/通行证/通行证到期/状态/所有情况/备注）…"></textarea>
+      <div class="row" style="margin-bottom:8px;margin-top:8px">
+        <button id="btnUploadVehSched" class="primary">上传「车辆排期」</button>
+        <label class="file">上传 CSV<input type="file" id="fileVehSchedCsv" accept=".csv"></label>
+        <span class="msg" id="vehSchedMsg"></span>
+      </div>
+      <textarea id="pasteVehSched" placeholder="在此粘贴「车辆排期」sheet（含表头：日期/车牌/任务/驾驶人/出发地/目的地/开始时间/结束时间/备注）…"></textarea>
     </div>
   </details>
 
@@ -282,7 +327,7 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
   <div class="sec-sub">数据来源：腾讯在线表格（会议室预约）。实时状态基于当前时间自动判定，每 60 秒刷新一次。当前时间：<b id="clock">—</b></div>
   <div class="card">
     <div class="roomkpi" id="roomKpi">
-      <div class="item"><span class="n" id="rkTotal">—</span><span class="l">会议室总数</span></div>
+      <div class="item"><span class="n" id="rkTotal">—</span><span class="l">今日有会</span></div>
       <div class="item red"><span class="n" id="rkUsing">—</span><span class="l">使用中</span></div>
       <div class="item green"><span class="n" id="rkIdle">—</span><span class="l">空闲</span></div>
       <div class="item warn"><span class="n" id="rkSoon">—</span><span class="l">即将开始</span></div>
@@ -358,7 +403,15 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
     </table>
   </div>
 
-  <footer>行政部驾驶舱 · 布局优先级版 v1.9.0 · 顺序：① 会议室 ② 签证情况 ③ 部门任务 · 任务/签证：WPS（金山文档连接器直读）；会议室：腾讯（腾讯文档连接器直读） · 数据不出本机 · 内置 5 套皮肤可切换</footer>
+  <!-- ============ ④ 车辆情况（车辆台账 + 当日安排 + 当前位置） ============ -->
+  <div class="sec-title">④ 车辆情况（车辆台账 · 当日安排 · 当前位置）</div>
+  <div class="sec-sub">数据来源：WPS 在线表格「车辆信息」「车辆排期」两个 sheet（经金山文档连接器每小时自动同步）。保险 / 通行证 临期·过期自动标红；当前位置默认取今日排期目的地（计划位置），若表内填了「当前位置 + 上报时间」则优先显示真实上报位置。</div>
+  <div class="card">
+    <div class="vehkpi" id="vehKpi"></div>
+    <div id="vehBoard"></div>
+  </div>
+
+  <footer>行政部驾驶舱 · 布局优先级版 v1.10.0 · 顺序：① 会议室 ② 签证情况 ③ 部门任务 ④ 车辆情况 · 任务/签证/车辆：WPS（金山文档连接器直读）；会议室：腾讯（腾讯文档连接器直读） · 数据不出本机 · 内置 5 套皮肤可切换</footer>
 </div>
 
 <script>
@@ -406,6 +459,19 @@ const SAMPLE_ROOM = [
   ['第二会议室','2026-08-15','14:30','16:00','陈静','合同评审','已确认'],
   ['第三会议室','2026-08-15','13:30','14:30','杨帆','招聘面试','已确认'],
   ['大会议室','2026-08-15','15:00','17:30','周婷','季度总结会','已确认']
+];
+
+/* 车辆示例（无真实数据时演示用，日期自动取今天） */
+const SAMPLE_VEHICLES=[
+  {plate:'新A·12345', model:'别克 GL8', insurance:'人保 PICC-8821', insExp:'2026-09-30', driver:'李娜', permit:'通-034', permitExp:'2026-12-31', status:'正常', ownership:'自购', curLoc:'', locTime:'', note:'主要用于接待'},
+  {plate:'新B·67890', model:'江铃全顺', insurance:'平安 PA-5543', insExp:'2026-08-10', driver:'王强', permit:'通-017', permitExp:'2026-10-15', status:'保养', ownership:'租赁', curLoc:'', locTime:'', note:'下周年检'},
+  {plate:'新C·11223', model:'丰田陆地巡洋舰', insurance:'人寿财 LR-9012', insExp:'2027-03-20', driver:'赵磊', permit:'通-052', permitExp:'2026-07-31', status:'维修', ownership:'自购', curLoc:'', locTime:'', note:'空调检修中'}
+];
+const SAMPLE_VEH_SCHED=[
+  {date:'2026-08-15', plate:'新A·12345', task:'机场接站', driver:'李娜', from:'项目部', to:'T3航站楼', start:'09:00', end:'11:30', note:''},
+  {date:'2026-08-15', plate:'新A·12345', task:'送标书', driver:'李娜', from:'T3', to:'业主办公室', start:'14:00', end:'15:00', note:''},
+  {date:'2026-08-15', plate:'新B·67890', task:'物资拉运', driver:'王强', from:'仓库', to:'施工现场', start:'08:30', end:'12:00', note:''},
+  {date:'2026-08-15', plate:'新C·11223', task:'维修', driver:'赵磊', from:'修理厂', to:'修理厂', start:'', end:'', note:'检修中'}
 ];
 
 /* ============ 状态工具 ============ */
@@ -506,7 +572,7 @@ function mapRoomHeader(h){
     [/日期|预约日期/,'date'],
     [/开始时间|开始/,'start'],
     [/结束时间|结束|止/,'end'],
-    [/预约人|预订人|申请人|预定人|部门/,'booker'],
+    [/预约人|预订人|申请人|预定人/,'booker'],
     [/联系电话|电话|手机/,'phone'],
     [/参会人数|人数/,'attendees'],
     [/用途|会议主题|事项|内容|主题/,'purpose'],
@@ -627,6 +693,8 @@ function setData(rows,srcLabel){
 
 let ROOM_DATA=[];
 let VISA_DATA=[];
+let VEHICLE_DATA=[];
+let VEHICLE_SCHED=[];
 function setRoomData(rows,label){
   ROOM_DATA=rows;
   document.getElementById('roomMsg').textContent='✓ 已导入会议室 '+rows.length+' 条（'+label+'）';
@@ -775,7 +843,84 @@ function renderVisas(){
   wrap.innerHTML=`<table><thead><tr><th>姓名</th><th>国家/目的国</th><th>签证类型</th><th>状态</th><th>提交日期</th><th>预计出签</th><th>有效期至</th><th>备注</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
+/* ============ 车辆情况渲染 ============ */
+function vehExpClass(date){
+  if(!date) return '';
+  const today=todayStr();
+  if(date<today) return 'exp';
+  const d=toDate(date), t=toDate(today);
+  if(d&&t){ const days=(d-t)/86400000; if(days>=0&&days<=30) return 'warn'; }
+  return '';
+}
+function vehStatusClass(s){ return s==='保养'?'maint':(s==='维修'?'repair':'normal'); }
+function vehCards(list,sched,today){
+  return '<div class="vcards">'+list.map(v=>{
+    const sc=vehStatusClass(v.status);
+    const insCls=vehExpClass(v.insExp), permCls=vehExpClass(v.permitExp);
+    const insFlag=v.insExp?(v.insExp<today?'（已过期）':(insCls==='warn'?'（临期≤30天）':'')):'';
+    const permFlag=v.permitExp?(v.permitExp<today?'（已过期）':(permCls==='warn'?'（临期≤30天）':'')):'';
+    const todays=sched.filter(s=>s.plate===v.plate && s.date===today);
+    const schedHtml = todays.length ? '<ul>'+todays.map(s=>{
+      const t=(s.start||'')+(s.end?('–'+s.end):'');
+      return '<li><span class="t">'+(t||'—')+'</span><span class="r">'+(s.task||'—')+'</span>'+(s.from?(' · '+s.from+'→'+(s.to||'?')):((s.to)?(' · →'+s.to):''))+(s.driver?(' · '+s.driver):'')+'</li>';
+    }).join('')+'</ul>' : '<div class="st">今日无排期</div>';
+    let locHtml;
+    if(v.curLoc){ locHtml='<span class="lab">上报位置：</span><span class="val">'+v.curLoc+'</span>'+(v.locTime?(' <span class="lab">（'+v.locTime+' 上报）</span>'):''); }
+    else { const plan = todays.find(s=>s.to) || todays[0]; locHtml='<span class="lab">计划位置（今日排期）：</span><span class="val">'+(plan&&plan.to?plan.to:'今日无排期')+'</span>'; }
+    return `<div class="vcard">
+      <div class="vhead"><span class="vplate">${v.plate}</span><span class="vstatus ${sc}">${v.status}</span><span class="vown">${v.ownership||'—'}</span></div>
+      <div class="vinfo">
+        <div class="it"><span class="k">车型</span><span class="vv">${v.model||'—'}</span></div>
+        <div class="it"><span class="k">驾驶员</span><span class="vv">${v.driver||'—'}</span></div>
+        <div class="it"><span class="k">保险</span><span class="vv ${insCls}">${v.insurance||'—'}${v.insExp?(v.insExp+insFlag):''}</span></div>
+        <div class="it"><span class="k">通行证</span><span class="vv ${permCls}">${v.permit||'—'}${v.permitExp?(v.permitExp+permFlag):''}</span></div>
+        <div class="it" style="grid-column:1/3"><span class="k">备注</span><span class="vv">${v.note||'—'}</span></div>
+      </div>
+      <div class="vsched"><div class="st">当日安排（${today}）</div>${schedHtml}</div>
+      <div class="vloc">${locHtml}</div>
+    </div>`;
+  }).join('')+'</div>';
+}
+function renderVehicles(){
+  const wrap=document.getElementById('vehBoard');
+  const vk=document.getElementById('vehKpi');
+  const today=todayStr();
+  let list=VEHICLE_DATA, sched=VEHICLE_SCHED, demo=false;
+  if(!list || !list.length){
+    demo=true;
+    list=SAMPLE_VEHICLES;
+    sched=SAMPLE_VEH_SCHED.map(r=>({...r, date: today}));
+  }
+  const total=list.length;
+  const normal=list.filter(r=>r.status==='正常').length;
+  const maint=list.filter(r=>r.status==='保养').length;
+  const repair=list.filter(r=>r.status==='维修').length;
+  const ownBuy=list.filter(r=>r.ownership==='自购').length;
+  const ownRent=list.filter(r=>r.ownership==='租赁').length;
+  if(vk) vk.innerHTML=`
+    <div class="item"><span class="n">${total}</span><span class="l">车辆总数</span></div>
+    <div class="item green"><span class="n">${normal}</span><span class="l">正常</span></div>
+    <div class="item warn"><span class="n">${maint}</span><span class="l">保养</span></div>
+    <div class="item red"><span class="n">${repair}</span><span class="l">维修</span></div>
+    <div class="item"><span class="n">${ownBuy}</span><span class="l">自购</span></div>
+    <div class="item"><span class="n">${ownRent}</span><span class="l">租赁</span></div>`;
+  if(!wrap) return;
+  if(demo){
+    wrap.innerHTML='<div class="empty">以下为<b>示例预览</b>。请在 WPS 表的「车辆信息」「车辆排期」两个 sheet 中填写（建议列见下方「手动同步入口」），保存后经金山文档连接器每小时自动同步到此处，示例将自动替换为真实数据。</div>'+vehCards(list,sched,today);
+    return;
+  }
+  if(!total){ wrap.innerHTML='<div class="empty">暂无车辆信息。请在 WPS 表的「车辆信息」sheet 中填写（建议列：车牌/车型/保险/保险到期/驾驶员/通行证/通行证到期/状态/所有情况/备注），并在「车辆排期」sheet 填写每日安排，保存后自动同步。</div>'; return; }
+  wrap.innerHTML=vehCards(list,sched,today);
+}
+
 /* ============ 会议室渲染 ============ */
+function isRoomPast(r){
+  /* 已开过 = 过去日期，或 今天且结束时间已过的会议 */
+  const today=todayStr();
+  if(r.date && r.date<today) return true;
+  if(r.date===today){ const e=timeToMin(r.end), now=nowMin(); if(e!=null && e<=now) return true; }
+  return false;
+}
 function roomDateStatus(r){
   /* 基于日期(及结束时间) vs 本地"今天/当前分钟"判断：已开过 / 今天 / 预定
      纯数字比较（todayStr / nowMin / timeToMin 均为本地），不构造 Date，彻底规避时区偏差 */
@@ -829,7 +974,7 @@ function renderRooms(){
     return;
   }
   const today=todayStr();
-  const todayRooms=ROOM_DATA.filter(r=> !r.date || r.date===today);
+  const todayRooms=ROOM_DATA.filter(r=> (!r.date || r.date===today) && !isRoomPast(r));
   let cards='';
   if(todayRooms.length){
     const groups={};
@@ -838,7 +983,7 @@ function renderRooms(){
     const now=nowMin();
     let using=0,soon=0,idle=0;
     rooms.forEach(room=>{
-      const list=groups[room].sort((a,b)=>timeToMin(a.start)-timeToMin(b.start));
+      const list=groups[room].filter(r=>!isRoomPast(r)).sort((a,b)=>timeToMin(a.start)-timeToMin(b.start));
       const st=roomLiveStatus(list,now);
       if(st.key==='using') using++; else if(st.key==='soon') soon++; else idle++;
       const segs=list.map(r=>{
@@ -861,16 +1006,16 @@ function renderRooms(){
     });
     updateRoomKpi(rooms.length,using,idle,soon);
   } else {
-    cards='<div class="empty">今日（'+today+'）暂无会议室预约记录。</div>';
+    cards='<div class="empty">今日（'+today+'）暂无进行中或待开始的会议（已结束的不显示）。</div>';
     updateRoomKpi(0,0,0,0);
   }
   // 全部预约一览：按日期+时间排序，逐条标注【已开过 / 今天 / 预定】
-  const all=[...ROOM_DATA].sort((a,b)=>{
+  const all=[...ROOM_DATA].filter(r=>!isRoomPast(r)).sort((a,b)=>{
     const da=(a.date||'0000-00-00'), db=(b.date||'0000-00-00');
     if(da!==db) return da<db?-1:1;
     return (timeToMin(a.start)||0)-(timeToMin(b.start)||0);
   });
-  let allHtml='<div class="allrooms"><h4>全部预约（按日期 · 已开过 / 今天 / 预定）</h4><ul class="arlist">';
+  let allHtml='<div class="allrooms"><h4>实时预约一览（进行中 · 今日待开 · 预定，已结束自动隐藏）</h4><ul class="arlist">';
   all.forEach(r=>{
     const st=roomDateStatus(r);
     allHtml+=`<li class="ar ${st.key}"><span class="ar-date">${r.date||'—'}</span><span class="badge ${st.key}">${st.label}</span><b class="ar-time">${r.start||'--:--'}–${r.end||'--:--'}</b><span class="ar-pur">${r.purpose||'—'}</span><span class="ar-by">${r.booker||'—'}</span>${r.attendees?('<span class="ar-at">'+r.attendees+'人</span>'):''}</li>`;
@@ -919,6 +1064,7 @@ function applyTheme(t){
   try{ localStorage.setItem('xz-cockpit-theme',t); }catch(e){}
   if(DATA.length) render();
   if(ROOM_DATA.length) renderRooms();
+  renderVehicles();
 }
 document.querySelectorAll('.tbtn').forEach(b=>b.onclick=()=>applyTheme(b.dataset.set));
 
@@ -1021,6 +1167,10 @@ document.getElementById('fileVisaCsv').onchange=(e)=>{
   rd.onload=()=>{ uploadToService(rd.result,'visas','visaMsg'); };
   rd.readAsText(f,'UTF-8');
 };
+document.getElementById('btnUploadVehicle').onclick=()=>uploadToService(document.getElementById('pasteVehicle').value,'vehicles','vehMsg');
+document.getElementById('fileVehicleCsv').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ uploadToService(rd.result,'vehicles','vehMsg'); }; rd.readAsText(f,'UTF-8'); };
+document.getElementById('btnUploadVehSched').onclick=()=>uploadToService(document.getElementById('pasteVehSched').value,'vehiclesched','vehSchedMsg');
+document.getElementById('fileVehSchedCsv').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ uploadToService(rd.result,'vehiclesched','vehSchedMsg'); }; rd.readAsText(f,'UTF-8'); };
 
 /* ============ 自动轮询本地服务 ============ */
 function fmtTime(iso){
@@ -1042,7 +1192,10 @@ async function loadData(){
     if(st.tasks && st.tasks.length){ DATA=st.tasks; document.getElementById('updTime').textContent=fmtTime(st.updatedAt)+'（数据内嵌·每小时更新）'; render(); }
     if(st.rooms && st.rooms.length){ ROOM_DATA=st.rooms; renderRooms(); }
     if(st.visas && st.visas.length){ VISA_DATA=st.visas; }
+    if(st.vehicles && st.vehicles.length){ VEHICLE_DATA=st.vehicles; }
+    if(st.vehiclesched && st.vehiclesched.length){ VEHICLE_SCHED=st.vehiclesched; }
     renderVisas();
+    renderVehicles();
     setSync('','数据已内嵌','更新时间 '+fmtTime(st.updatedAt)+' · 每小时自动重建（免服务器）');
     return;
   }
@@ -1059,15 +1212,20 @@ async function loadData(){
   if(st.tasks && st.tasks.length){ DATA=st.tasks; document.getElementById('updTime').textContent=fmtTime(st.updatedAt)+'（本地服务同步）'; render(); }
   if(st.rooms && st.rooms.length){ ROOM_DATA=st.rooms; renderRooms(); }
   if(st.visas && st.visas.length){ VISA_DATA=st.visas; }
+  if(st.vehicles && st.vehicles.length){ VEHICLE_DATA=st.vehicles; }
+  if(st.vehiclesched && st.vehiclesched.length){ VEHICLE_SCHED=st.vehiclesched; }
   renderVisas();
+  renderVehicles();
   function srcLabel(mode){
     return ({'wps-openapi':'WPS官方API','wps-cookie':'WPS(Cookie)','wps-public':'WPS公开链接','drop-file':'本地文件','browser-upload':'手动上传','tencent-cookie':'腾讯(Cookie)','tencent-public':'腾讯公开链接'})[mode]||mode||'未配置';
   }
-  const t=st.sources&&st.sources.tasks, r2=st.sources&&st.sources.rooms, v3=st.sources&&st.sources.visas;
+  const t=st.sources&&st.sources.tasks, r2=st.sources&&st.sources.rooms, v3=st.sources&&st.sources.visas, v4=st.sources&&st.sources.vehicles, v5=st.sources&&st.sources.vehiclesched;
   let detail='已连接本地桥接服务';
   if(t) detail+=' · 任务：'+srcLabel(t.mode);
   if(r2) detail+=' · 会议室：'+srcLabel(r2.mode);
   if(v3) detail+=' · 签证：'+srcLabel(v3.mode);
+  if(v4) detail+=' · 车辆信息：'+srcLabel(v4.mode);
+  if(v5) detail+=' · 车辆排期：'+srcLabel(v5.mode);
   if((t&&t.mode==='wps-none')||(r2&&r2.mode==='tencent-none')) detail+=' · 提示：展开下方手动入口可粘贴数据';
   setSync('', '自动同步正常', detail);
 }

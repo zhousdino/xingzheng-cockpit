@@ -6,14 +6,14 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { fetchWPS, fetchTencent } = require('./fetchers');
-const { parseTasks, parseRooms, parseVisas } = require('./parse');
+const { parseTasks, parseRooms, parseVisas, parseVehicles, parseVehicleSched } = require('./parse');
 
 const ROOT = __dirname;
 const DATA_DIR = path.join(ROOT, 'data');
 const DROP_DIR = path.join(ROOT, 'drop');
 const DATA_FILE = path.join(DATA_DIR, 'data.json');
 const CONFIG_FILE = path.join(ROOT, 'config.json');
-const UI_FILE = path.join(ROOT, '..', '行政部驾驶舱_UI_v1.9.0.html');
+const UI_FILE = path.join(ROOT, '..', '行政部驾驶舱_UI_v1.10.0.html');
 const PORT = process.env.PORT || 8787;
 
 /* ---------- 配置（敏感：勿提交到 git） ---------- */
@@ -26,14 +26,24 @@ let STATE = {
   tasks: [],
   rooms: [],
   visas: [],
+  vehicles: [],
+  vehiclesched: [],
   sources: {
     tasks: { mode: 'init', updatedAt: null, error: null },
     rooms: { mode: 'init', updatedAt: null, error: null },
-    visas: { mode: 'init', updatedAt: null, error: null }
+    visas: { mode: 'init', updatedAt: null, error: null },
+    vehicles: { mode: 'init', updatedAt: null, error: null },
+    vehiclesched: { mode: 'init', updatedAt: null, error: null }
   }
 };
 function loadState() {
-  try { STATE = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8')); } catch (e) { /* 空状态 */ }
+  try {
+    const loaded = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+    // 合并保留当前 STATE 完整结构（含新增字段如 vehicles/vehiclesched），用旧值覆盖已有键，避免回退丢字段
+    const sources = Object.assign({}, STATE.sources, loaded.sources || {});
+    STATE = Object.assign({}, STATE, loaded);
+    STATE.sources = sources;
+  } catch (e) { /* 空状态，保留默认 STATE */ }
 }
 function saveState() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -95,6 +105,16 @@ async function doSync() {
   if (!STATE.sources.visas) STATE.sources.visas = { mode: 'init', updatedAt: null, error: null };
   if (visas) { STATE.sources.visas = { mode: 'drop-file', updatedAt: now, error: null }; }
 
+  // 4) 车辆：读取 drop/vehicle 与 drop/vehiclesched（由「车辆信息」「车辆排期」sheet 自动化写入）
+  const vehicles = readDrop('vehicle', parseVehicles);
+  STATE.vehicles = vehicles || [];
+  if (!STATE.sources.vehicles) STATE.sources.vehicles = { mode: 'init', updatedAt: null, error: null };
+  if (vehicles) { STATE.sources.vehicles = { mode: 'drop-file', updatedAt: now, error: null }; }
+  const vehiclesched = readDrop('vehiclesched', parseVehicleSched);
+  STATE.vehiclesched = vehiclesched || [];
+  if (!STATE.sources.vehiclesched) STATE.sources.vehiclesched = { mode: 'init', updatedAt: null, error: null };
+  if (vehiclesched) { STATE.sources.vehiclesched = { mode: 'drop-file', updatedAt: now, error: null }; }
+
   STATE.updatedAt = now;
   saveState();
   return STATE;
@@ -154,24 +174,27 @@ const server = http.createServer(async (req, res) => {
       if (override.wpsLink) CONFIG.wps.publicLink = override.wpsLink;
       if (override.tencentLink) CONFIG.tencent.publicLink = override.tencentLink;
       const st = await doSync();
-      sendJSON(res, 200, { ok: true, updatedAt: st.updatedAt, tasks: st.tasks.length, rooms: st.rooms.length, sources: st.sources });
+      sendJSON(res, 200, { ok: true, updatedAt: st.updatedAt, tasks: st.tasks.length, rooms: st.rooms.length, visas: st.visas.length, vehicles: st.vehicles.length, vehiclesched: st.vehiclesched.length, sources: st.sources });
       return;
     }
 
     if (p === '/api/upload' && req.method === 'POST') {
       const body = await readBody(req);
       let payload; try { payload = JSON.parse(body); } catch (e) { return sendJSON(res, 400, { ok: false, error: '请求体不是合法 JSON' }); }
-      const type = payload.type === 'visas' ? 'visas' : (payload.type === 'rooms' ? 'rooms' : 'tasks');
+      const type = payload.type === 'vehiclesched' ? 'vehiclesched' : (payload.type === 'vehicles' ? 'vehicles' : (payload.type === 'visas' ? 'visas' : (payload.type === 'rooms' ? 'rooms' : 'tasks')));
       const text = payload.text || '';
       if (!text.trim()) return sendJSON(res, 400, { ok: false, error: 'text 为空' });
-      const rows = type === 'rooms' ? parseRooms(text) : (type === 'visas' ? parseVisas(text) : parseTasks(text));
+      const rows = type === 'rooms' ? parseRooms(text)
+        : (type === 'visas' ? parseVisas(text)
+          : (type === 'vehicles' ? parseVehicles(text)
+            : (type === 'vehiclesched' ? parseVehicleSched(text) : parseTasks(text))));
       if (!rows.length) return sendJSON(res, 400, { ok: false, error: '未解析到数据，请确认含表头' });
       STATE[type] = rows;
       STATE.sources[type] = { mode: 'browser-upload', updatedAt: new Date().toISOString(), error: null };
       STATE.updatedAt = new Date().toISOString();
       saveState();
       // 同时写入 drop，便于重启后仍在
-      const dir = path.join(DROP_DIR, type === 'rooms' ? 'tencent' : (type === 'visas' ? 'visa' : 'wps'));
+      const dir = path.join(DROP_DIR, type === 'rooms' ? 'tencent' : (type === 'visas' ? 'visa' : (type === 'vehicles' ? 'vehicle' : (type === 'vehiclesched' ? 'vehiclesched' : 'wps'))));
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       fs.writeFileSync(path.join(dir, 'uploaded_' + Date.now() + '.csv'), text, 'utf-8');
       return sendJSON(res, 200, { ok: true, type, count: rows.length });

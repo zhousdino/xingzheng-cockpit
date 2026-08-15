@@ -1,3 +1,16 @@
+## v1.10.0 · 2026-08-15
+**会议室隐藏已开过的会议；新增车辆情况模块（④）；方案B 静态版同步车辆数据**
+- 会议室（①）：首页不再显示已开过的会议——过滤掉「过去日期 + 今日已结束」的场次，仅保留**使用中**与**预约（待开始/未来）**；同步修掉表头"部门"列被误映射到预约人的既有解析 bug。
+- 车辆情况（④，用户要求回归）：首页新增「车辆情况」入口/板块，点入为车辆详情视图。每车一张卡片，承载：车牌 / 保险（含到期，临期·过期高亮）/ 驾驶员 / 通行证 / 车辆状态（正常·保养·维修）/ 车辆所有情况（自购·租赁）+ 当日排期 + 当前位置。
+  - 数据来自金山(WPS)表格**新建的两个 sheet**：「车辆信息」（静态台账）与「车辆排期」（当日安排）。两 sheet 由用户手动在《行政部驾驶舱模板_v1.1.0.xlsx》中新建（当前尚不存在 → 显示示例数据预览 + 空态引导）。
+  - 「当前位置」采用 **A 方案（计划位置）**：取该车当日排期的「目的地」作为当前/预计位置，零额外录入；代码同时**兼容 B 方案**——若「车辆信息」sheet 增加了"当前位置+上报时间"两列，页面自动优先显示真实上报位置，无需改代码（C 二维码签到为后续可选升级）。
+  - 新建示例车牌（新A·12345 / 新B·67890 / 新C·11223）用于未建 sheet 时的预览。
+- bridge/parse.js：新增 parseVehicles（车辆信息）+ parseVehicleSched（车辆排期），表头名正则模糊识别，均加入 module.exports。
+- bridge/server.js：STATE 增加 vehicles / vehiclesched 与 sources 对应项；doSync 读取 drop/vehicle、drop/vehiclesched；/api/upload 支持 type='vehicles'/'vehiclesched'；**修复 loadState 整体覆盖导致新增字段丢失**（改为合并保留，避免回退丢 vehicles）；UI_FILE 指向 v1.10.0。
+- static/build.js：读取车辆两表并内嵌到 `window.__COCKPIT_DATA__.vehicles/vehiclesched`；模板 loadData 内嵌分支同步处理，向后兼容桥接。
+- 自动化「行政部驾驶舱_静态版每小时生成与部署」(automation-1786823878843) 更新：新增步骤 2.5 读取「车辆信息」sheet → drop/vehicle/vehicle_info.csv、2.6 读取「车辆排期」sheet → drop/vehicle_sched/vehicle_sched.csv（找不到即跳过，只读不改原表）。
+- 文件重命名：`行政部驾驶舱_UI_v1.9.0.html` → `行政部驾驶舱_UI_v1.10.0.html`（git mv 保留历史）；build.js、server.js 的 UI_FILE/TEMPLATE 同步更新。
+
 ## v1.9.0 · 2026-08-15
 **按"会议室 → 签证 → 部门任务"重排 UI，新增签证情况模块；移除车辆安排模块**
 - 用户要求：第一直观看会议室，第二看签证情况，第三看部门整体任务。"车辆先不管了"。据此重排：

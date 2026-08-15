@@ -109,7 +109,7 @@ function mapRoomHeader(h) {
     [/日期|预约日期/, 'date'],
     [/开始时间|开始/, 'start'],
     [/结束时间|结束|止/, 'end'],
-    [/预约人|预订人|申请人|预定人|部门/, 'booker'],
+    [/预约人|预订人|申请人|预定人/, 'booker'],
     [/联系电话|电话|手机/, 'phone'],
     [/参会人数|人数/, 'attendees'],
     [/用途|会议主题|事项|内容|主题/, 'purpose'],
@@ -187,4 +187,88 @@ function parseVisas(text) {
   return rows;
 }
 
-module.exports = { parseTasks, parseRooms, parseVisas, parseCSV, toTSV, normDate, normTime, findHeaderLine };
+/* ============ 车辆信息（来源：WPS 在线表格「车辆信息」sheet） ============ */
+function mapVehicleHeader(h) {
+  h = String(h).trim();
+  const rules = [
+    [/车牌|车号|号牌/, 'plate'],
+    [/车型|车辆型号|品牌|厂牌/, 'model'],
+    [/保险.*到期|保单到期|保险到期/, 'insExp'],
+    [/保险|保单|车险/, 'insurance'],
+    [/驾驶员|司机|负责司机|主驾/, 'driver'],
+    [/通行证.*到期|通行证到期/, 'permitExp'],
+    [/通行证|通行许可/, 'permit'],
+    [/状态|车况|运行情况/, 'status'],
+    [/所有.*情况|性质|归属|来源/, 'ownership'],
+    [/当前位置|实时位置|位置/, 'curLoc'],
+    [/上报时间|位置更新|更新时间/, 'locTime'],
+    [/备注|说明|备注说明/, 'note']
+  ];
+  for (const [re, key] of rules) { if (re.test(h)) return key; }
+  return null;
+}
+function parseVehicles(text) {
+  const lines = toTSV(text).replace(/\r/g, '').split('\n').filter(l => l.trim() !== '');
+  if (lines.length < 2) return [];
+  const hi = findHeaderLine(lines, mapVehicleHeader);
+  const head = lines[hi].split('\t').map((h, i) => ({ key: mapVehicleHeader(h), i }));
+  const used = head.filter(h => h.key);
+  if (!used.length) return [];
+  const rows = [];
+  for (let r = hi + 1; r < lines.length; r++) {
+    const cells = lines[r].split('\t');
+    const rec = { plate: '', model: '', insurance: '', insExp: '', driver: '', permit: '', permitExp: '', status: '正常', ownership: '', curLoc: '', locTime: '', note: '' };
+    for (const h of used) {
+      let v = (cells[h.i] || '').trim();
+      if (h.key === 'insExp' || h.key === 'permitExp') v = normDate(v);
+      else if (h.key === 'status') { if (/保养/.test(v)) v = '保养'; else if (/维修/.test(v)) v = '维修'; else v = '正常'; }
+      else if (h.key === 'ownership') { if (/租/.test(v)) v = '租赁'; else if (/购|自/.test(v)) v = '自购'; }
+      rec[h.key] = v;
+    }
+    if (!rec.plate) continue;
+    rows.push(rec);
+  }
+  return rows;
+}
+
+/* ============ 车辆排期（来源：WPS 在线表格「车辆排期」sheet） ============ */
+function mapVehSchedHeader(h) {
+  h = String(h).trim();
+  const rules = [
+    [/日期|排期日期|用车日期/, 'date'],
+    [/车牌|车号/, 'plate'],
+    [/任务|用途|事项|内容/, 'task'],
+    [/驾驶人|司机|驾驶员/, 'driver'],
+    [/出发|起点/, 'from'],
+    [/目的地|到达|去往/, 'to'],
+    [/开始|发车/, 'start'],
+    [/结束|收车|止/, 'end'],
+    [/备注/, 'note']
+  ];
+  for (const [re, key] of rules) { if (re.test(h)) return key; }
+  return null;
+}
+function parseVehicleSched(text) {
+  const lines = toTSV(text).replace(/\r/g, '').split('\n').filter(l => l.trim() !== '');
+  if (lines.length < 2) return [];
+  const hi = findHeaderLine(lines, mapVehSchedHeader);
+  const head = lines[hi].split('\t').map((h, i) => ({ key: mapVehSchedHeader(h), i }));
+  const used = head.filter(h => h.key);
+  if (!used.length) return [];
+  const rows = [];
+  for (let r = hi + 1; r < lines.length; r++) {
+    const cells = lines[r].split('\t');
+    const rec = { date: '', plate: '', task: '', driver: '', from: '', to: '', start: '', end: '', note: '' };
+    for (const h of used) {
+      let v = (cells[h.i] || '').trim();
+      if (h.key === 'date') v = normDate(v);
+      else if (h.key === 'start' || h.key === 'end') v = normTime(v);
+      rec[h.key] = v;
+    }
+    if (!rec.plate && !rec.task) continue;
+    rows.push(rec);
+  }
+  return rows;
+}
+
+module.exports = { parseTasks, parseRooms, parseVisas, parseVehicles, parseVehicleSched, parseCSV, toTSV, normDate, normTime, findHeaderLine };
