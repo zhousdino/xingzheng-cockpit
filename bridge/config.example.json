@@ -1,11 +1,16 @@
 {
+  "_说明": "本文件含敏感凭据（Cookie/Token），已被 .gitignore 屏蔽，不会上传 GitHub。复制为 config.json 后按需填写。",
   "wps": {
+    "_方案A_OpenAPI": "最稳、长期有效。在 developer.kdocs.cn 建个人应用 → 授权你的文档 → 拿到 accessToken；fileToken 取链接 kdocs.cn/l/<token> 里的那串。",
+    "accessToken": "",
     "fileToken": "",
-    "apiToken": "",
-    "publicLink": ""
+    "_方案B_Cookie": "最简单、非技术也能做。浏览器登录 kdocs.cn 后按 F12 → Network/Application 复制 Cookie 字符串填到 cookie。Cookie 会过期需重填。二选一即可。",
+    "cookie": ""
   },
   "tencent": {
+    "_说明": "腾讯私有表只能走 Cookie。浏览器登录 docs.qq.com 后按 F12 复制 Cookie；publicLink 填你的会议室表链接（用于提取 docId）。",
     "publicLink": "https://docs.qq.com/sheet/DUFNXTnBsV1pGYmZ4?tab=BB08J2",
-    "cookies": ""
+    "docId": "",
+    "cookie": ""
   }
 }

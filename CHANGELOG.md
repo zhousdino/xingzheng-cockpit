@@ -1,3 +1,15 @@
+
+## v1.6.0 · 2026-08-15
+**本地桥接服务升级为「全自动同步」**
+- bridge/xlsx-read.js：新增零依赖 xlsx 解析（仅用 Node 内置 zlib，无需 npm install），可直接解析 WPS/腾讯导出的 xlsx。
+- bridge/fetchers.js 重写：
+  - WPS 支持两条全自动路：① 官方 OpenAPI（accessToken+fileToken，最稳长期）；② 浏览器 Cookie 走内部下载接口。
+  - 腾讯支持：浏览器 Cookie 调内部 export_office 导出 → 轮询进度 → 下载 xlsx → 解析（私有表唯一真自动路）。
+- 驾驶舱 UI 升 v1.6.0：顶部状态条分别显示「任务(WPS)」与「会议室(腾讯)」各自用了什么同步方式及失败原因，未配置凭据时给出引导。
+- README 重写：把「全自动」从可选进阶提升为核心能力，写明 WPS OpenAPI/Cookie 与腾讯 Cookie 的获取步骤。
+- 仍保留「浏览器上传」「丢 CSV」作为稳当兜底。
+- 已提交 + 打 tag v1.6.0 + 推送 GitHub。
+
 # CHANGELOG · 行政部驾驶舱
 
 ## v1.5.0 · 2026-08-15
