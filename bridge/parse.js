@@ -8,6 +8,7 @@ function parseCSV(text) {
     const c = text[i];
     if (inq) {
       if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else inq = false; }
+      else if (c === '\n' || c === '\r') field += ' ';   // 引号内换行（双语表头）→ 空格，避免拆行
       else field += c;
     } else {
       if (c === '"') inq = true;
