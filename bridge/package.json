@@ -1,0 +1,9 @@
+{
+  "name": "xingzheng-cockpit-bridge",
+  "version": "1.5.0",
+  "private": true,
+  "description": "行政部驾驶舱本地桥接服务：托管网页 + 自动同步 WPS/腾讯表格数据",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
