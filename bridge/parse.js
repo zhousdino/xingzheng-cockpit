@@ -149,4 +149,42 @@ function parseRooms(text) {
   return rows;
 }
 
-module.exports = { parseTasks, parseRooms, parseCSV, toTSV, normDate, normTime, findHeaderLine };
+/* ---------- 签证（来源：WPS 在线表格「签证」sheet） ---------- */
+function mapVisaHeader(h) {
+  h = String(h).trim();
+  const rules = [
+    [/姓名|名字|人员|申请人|持证人|办理人/, 'name'],
+    [/国家|目的国|国别|前往|country/i, 'country'],
+    [/签证类型|签种|类型|visa类型/, 'vtype'],
+    [/状态|办理状态|进度状态/, 'status'],
+    [/提交|申请日期|送签|递签|受理/, 'submit'],
+    [/预计出签|出签|签发|预计签发/, 'issue'],
+    [/有效期|到期|过期|届满|有效期至/, 'expiry'],
+    [/备注|说明|备注说明/, 'note']
+  ];
+  for (const [re, key] of rules) { if (re.test(h)) return key; }
+  return null;
+}
+function parseVisas(text) {
+  const lines = toTSV(text).replace(/\r/g, '').split('\n').filter(l => l.trim() !== '');
+  if (lines.length < 2) return [];
+  const hi = findHeaderLine(lines, mapVisaHeader);
+  const head = lines[hi].split('\t').map((h, i) => ({ key: mapVisaHeader(h), i }));
+  const used = head.filter(h => h.key);
+  if (!used.length) return [];
+  const rows = [];
+  for (let r = hi + 1; r < lines.length; r++) {
+    const cells = lines[r].split('\t');
+    const rec = { name: '', country: '', vtype: '', status: '未开始', submit: '', issue: '', expiry: '', note: '' };
+    for (const h of used) {
+      let v = (cells[h.i] || '').trim();
+      if (h.key === 'submit' || h.key === 'issue' || h.key === 'expiry') v = normDate(v);
+      rec[h.key] = v;
+    }
+    if (!rec.name && !rec.country && !rec.vtype) continue;
+    rows.push(rec);
+  }
+  return rows;
+}
+
+module.exports = { parseTasks, parseRooms, parseVisas, parseCSV, toTSV, normDate, normTime, findHeaderLine };

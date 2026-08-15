@@ -6,14 +6,14 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { fetchWPS, fetchTencent } = require('./fetchers');
-const { parseTasks, parseRooms } = require('./parse');
+const { parseTasks, parseRooms, parseVisas } = require('./parse');
 
 const ROOT = __dirname;
 const DATA_DIR = path.join(ROOT, 'data');
 const DROP_DIR = path.join(ROOT, 'drop');
 const DATA_FILE = path.join(DATA_DIR, 'data.json');
 const CONFIG_FILE = path.join(ROOT, 'config.json');
-const UI_FILE = path.join(ROOT, '..', '行政部驾驶舱_UI_v1.8.0.html');
+const UI_FILE = path.join(ROOT, '..', '行政部驾驶舱_UI_v1.9.0.html');
 const PORT = process.env.PORT || 8787;
 
 /* ---------- 配置（敏感：勿提交到 git） ---------- */
@@ -25,9 +25,11 @@ let STATE = {
   updatedAt: null,
   tasks: [],
   rooms: [],
+  visas: [],
   sources: {
     tasks: { mode: 'init', updatedAt: null, error: null },
-    rooms: { mode: 'init', updatedAt: null, error: null }
+    rooms: { mode: 'init', updatedAt: null, error: null },
+    visas: { mode: 'init', updatedAt: null, error: null }
   }
 };
 function loadState() {
@@ -86,6 +88,12 @@ async function doSync() {
     if (d) { rooms = d; STATE.sources.rooms = { mode: 'drop-file', updatedAt: now, error: STATE.sources.rooms.error }; }
   }
   if (rooms) { STATE.rooms = rooms; }
+
+  // 3) 签证：读取 drop/visa（由 WPS「签证」sheet 自动化写入）
+  const visas = readDrop('visa', parseVisas);
+  STATE.visas = visas || [];
+  if (!STATE.sources.visas) STATE.sources.visas = { mode: 'init', updatedAt: null, error: null };
+  if (visas) { STATE.sources.visas = { mode: 'drop-file', updatedAt: now, error: null }; }
 
   STATE.updatedAt = now;
   saveState();
@@ -153,17 +161,17 @@ const server = http.createServer(async (req, res) => {
     if (p === '/api/upload' && req.method === 'POST') {
       const body = await readBody(req);
       let payload; try { payload = JSON.parse(body); } catch (e) { return sendJSON(res, 400, { ok: false, error: '请求体不是合法 JSON' }); }
-      const type = payload.type === 'rooms' ? 'rooms' : 'tasks';
+      const type = payload.type === 'visas' ? 'visas' : (payload.type === 'rooms' ? 'rooms' : 'tasks');
       const text = payload.text || '';
       if (!text.trim()) return sendJSON(res, 400, { ok: false, error: 'text 为空' });
-      const rows = type === 'rooms' ? parseRooms(text) : parseTasks(text);
+      const rows = type === 'rooms' ? parseRooms(text) : (type === 'visas' ? parseVisas(text) : parseTasks(text));
       if (!rows.length) return sendJSON(res, 400, { ok: false, error: '未解析到数据，请确认含表头' });
       STATE[type] = rows;
       STATE.sources[type] = { mode: 'browser-upload', updatedAt: new Date().toISOString(), error: null };
       STATE.updatedAt = new Date().toISOString();
       saveState();
       // 同时写入 drop，便于重启后仍在
-      const dir = path.join(DROP_DIR, type === 'rooms' ? 'tencent' : 'wps');
+      const dir = path.join(DROP_DIR, type === 'rooms' ? 'tencent' : (type === 'visas' ? 'visa' : 'wps'));
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       fs.writeFileSync(path.join(dir, 'uploaded_' + Date.now() + '.csv'), text, 'utf-8');
       return sendJSON(res, 200, { ok: true, type, count: rows.length });
