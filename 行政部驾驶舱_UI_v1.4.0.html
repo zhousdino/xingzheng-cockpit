@@ -207,18 +207,19 @@ footer{margin-top:30px;text-align:center;font-size:12px;color:var(--text-2)}
   <!-- 会议室数据（腾讯表格） -->
   <div class="databar" style="margin-top:12px">
     <span class="t">会议室数据</span>
-    <span class="hint">从腾讯在线表格复制会议室预约（含表头）→ 点「生成会议室」；或上传 CSV；或将表设为"获得链接的人可阅读"后填公开链接「同步读取」。</span>
+    <span class="hint">来源：腾讯在线表格《会议室预约登记表》。推荐做法：在腾讯表选中预约区（含表头）→ 复制 → 粘下方 → 点「生成会议室」（或上传 CSV）。最稳、零门槛。</span>
   </div>
 
   <details class="import">
     <summary>展开会议室数据粘贴框 / 上传 CSV / 填公开链接同步（来源：腾讯在线表格）</summary>
     <div class="impbox">
-      <p>① 在腾讯表格里选中会议室预约区域（含表头）→ 复制。② 粘贴到下方。③ 点「生成会议室」。也可「上传 CSV」。若腾讯表已设为"获得链接的人可阅读"，可在下方填公开链接 →「同步读取」（受跨域限制，拉不到时请改用粘贴/上传）。</p>
+      <p><b>方式一（推荐·最稳）：</b>在腾讯表格「会议室预约登记表」里选中预约区域（含表头）→ 复制 → 粘到下面 → 点「生成会议室」。也可「上传 CSV」。<br>
+      <b>方式二（自动同步，有条件）：</b>把腾讯表分享设为<b>「获得链接的人可阅读（公开）」</b>，链接已预填在下方 → 点「同步读取」自动拉取。注意：若表仍是私有 / 登录可见，浏览器会因跨域(CORS) 拦掉请求，此时会提示改用方式一。</p>
       <textarea id="pasteRoom" placeholder="在此粘贴从腾讯表格复制的会议室预约数据（含表头，如：会议室/日期/开始时间/结束时间/预约人/用途/状态）…"></textarea>
       <div class="row">
         <button id="btnGenRoom">生成会议室</button>
         <label class="file">上传 CSV<input type="file" id="fileRoomCsv" accept=".csv"></label>
-        <input id="roomLink" type="text" placeholder="腾讯表格公开链接（可选，自动同步）">
+        <input id="roomLink" type="text" value="https://docs.qq.com/sheet/DUFNXTnBsV1pGYmZ4?tab=BB08J2">
         <button id="btnSyncRoom">同步读取</button>
         <button class="ghost" id="btnResetRoom">恢复示例</button>
         <span class="msg" id="roomMsg"></span>
@@ -763,17 +764,21 @@ document.getElementById('btnSyncRoom').onclick=()=>{
   const link=document.getElementById('roomLink').value.trim();
   if(!link){ document.getElementById('roomMsg').textContent='请先填写腾讯表格公开链接'; document.getElementById('roomMsg').style.color='#C2272D'; return; }
   document.getElementById('roomMsg').textContent='正在同步…'; document.getElementById('roomMsg').style.color='#2E8B57';
-  fetch(link).then(r=>r.text()).then(t=>{
+  fetch(link,{mode:'cors'}).then(r=>{
+    if(!r.ok) throw new Error('http '+r.status);
+    return r.text();
+  }).then(t=>{
     let tsv=t;
     if(t.indexOf('<')>=0){
       const m=t.match(/<table[\s\S]*?<\/table>/i);
-      if(m){ tsv=m[0].replace(/<tr[\s\S]*?>/gi,'\n').replace(/<t[dh][\s\S]*?>/gi,'\t').replace(/<\/t[dh]>/gi,'').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' '); }
+      if(m){ tsv=m[0].replace(/<tr[\s\S]*?>/gi,'\n').replace(/<t[dh][\s\S]*?>/gi,'\t').replace(/<\/t[dh]>/gi,'').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&'); }
     }
     const rows=parseRoom(tsv);
-    if(!rows||!rows.length){ document.getElementById('roomMsg').textContent='自动解析失败，请改用粘贴/上传'; document.getElementById('roomMsg').style.color='#C2272D'; return; }
+    if(!rows||!rows.length){ document.getElementById('roomMsg').textContent='该页未内嵌可直接解析的表格数据（腾讯表格数据由脚本动态加载），请改用「复制粘贴 / 上传 CSV」方式一。'; document.getElementById('roomMsg').style.color='#C2272D'; return; }
     setRoomData(rows,'腾讯同步');
   }).catch(err=>{
-    document.getElementById('roomMsg').textContent='同步失败（跨域受限或链接无效），请改用粘贴/上传'; document.getElementById('roomMsg').style.color='#C2272D';
+    document.getElementById('roomMsg').textContent='同步失败：浏览器被跨域(CORS)拦截，或该表仍为「登录可见」私有表（无法免登读取）。请改用方式一「复制粘贴 / 上传 CSV」。';
+    document.getElementById('roomMsg').style.color='#C2272D';
   });
 };
 
