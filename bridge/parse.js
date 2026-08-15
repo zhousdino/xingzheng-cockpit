@@ -110,6 +110,7 @@ function mapRoomHeader(h) {
     [/开始时间|开始/, 'start'],
     [/结束时间|结束|止/, 'end'],
     [/预约人|预订人|申请人|预定人/, 'booker'],
+    [/部门|所属部门|Department/i, 'dept'],
     [/联系电话|电话|手机/, 'phone'],
     [/参会人数|人数/, 'attendees'],
     [/用途|会议主题|事项|内容|主题/, 'purpose'],
@@ -129,7 +130,7 @@ function parseRooms(text) {
   const rows = [];
   for (let r = hi + 1; r < lines.length; r++) {
     const cells = lines[r].split('\t');
-    const rec = { room: '', date: '', start: '', end: '', booker: '', purpose: '', status: '', attendees: '', phone: '' };
+    const rec = { room: '', date: '', start: '', end: '', booker: '', dept: '', purpose: '', status: '', attendees: '', phone: '' };
     for (const h of used) {
       let v = (cells[h.i] || '').trim();
       if (h.key === 'date') v = normDate(v);
