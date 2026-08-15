@@ -13,7 +13,7 @@ const DATA_DIR = path.join(ROOT, 'data');
 const DROP_DIR = path.join(ROOT, 'drop');
 const DATA_FILE = path.join(DATA_DIR, 'data.json');
 const CONFIG_FILE = path.join(ROOT, 'config.json');
-const UI_FILE = path.join(ROOT, '..', '行政部驾驶舱_UI_v1.6.0.html');
+const UI_FILE = path.join(ROOT, '..', '行政部驾驶舱_UI_v1.6.1.html');
 const PORT = process.env.PORT || 8787;
 
 /* ---------- 配置（敏感：勿提交到 git） ---------- */
