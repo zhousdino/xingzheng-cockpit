@@ -336,16 +336,24 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
     <div id="roomCards" class="roomcards"></div>
   </div>
 
-  <!-- ============ ② 签证情况（签证办理进度） ============ -->
-  <div class="sec-title">② 签证情况（签证办理进度）</div>
+  <!-- ============ ② 车辆情况（车辆台账 · 当日安排 · 当前位置） ============ -->
+  <div class="sec-title">② 车辆情况（车辆台账 · 当日安排 · 当前位置）</div>
+  <div class="sec-sub">数据来源：WPS 在线表格「车辆信息」「车辆排期」两个 sheet（经金山文档连接器每小时自动同步）。保险 / 通行证 临期·过期自动标红；当前位置默认取今日排期目的地（计划位置），若表内填了「当前位置 + 上报时间」则优先显示真实上报位置。</div>
+  <div class="card">
+    <div class="vehkpi" id="vehKpi"></div>
+    <div id="vehBoard"></div>
+  </div>
+
+  <!-- ============ ③ 签证情况（签证办理进度） ============ -->
+  <div class="sec-title">③ 签证情况（签证办理进度）</div>
   <div class="sec-sub">数据来源：WPS 在线表格「签证」sheet（经金山文档连接器每小时自动同步）。集中查看部门人员签证办理状态，临期 / 过期自动标红。</div>
   <div class="card">
     <div class="visakpi" id="visaKpi"></div>
     <div id="visaBoard"></div>
   </div>
 
-  <!-- ============ ③ 部门整体任务（总体情况） ============ -->
-  <div class="sec-title">③ 部门整体任务（总体情况）</div>
+  <!-- ============ ④ 部门整体任务（总体情况） ============ -->
+  <div class="sec-title">④ 部门整体任务（总体情况）</div>
   <div class="sec-sub">数据来源：WPS 在线表格（任务总表）。以下为本部门全部工作的总体进展。</div>
 
   <!-- KPI -->
@@ -403,15 +411,7 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
     </table>
   </div>
 
-  <!-- ============ ④ 车辆情况（车辆台账 + 当日安排 + 当前位置） ============ -->
-  <div class="sec-title">④ 车辆情况（车辆台账 · 当日安排 · 当前位置）</div>
-  <div class="sec-sub">数据来源：WPS 在线表格「车辆信息」「车辆排期」两个 sheet（经金山文档连接器每小时自动同步）。保险 / 通行证 临期·过期自动标红；当前位置默认取今日排期目的地（计划位置），若表内填了「当前位置 + 上报时间」则优先显示真实上报位置。</div>
-  <div class="card">
-    <div class="vehkpi" id="vehKpi"></div>
-    <div id="vehBoard"></div>
-  </div>
-
-  <footer>行政部驾驶舱 · 布局优先级版 v1.10.0 · 顺序：① 会议室 ② 签证情况 ③ 部门任务 ④ 车辆情况 · 任务/签证/车辆：WPS（金山文档连接器直读）；会议室：腾讯（腾讯文档连接器直读） · 数据不出本机 · 内置 5 套皮肤可切换</footer>
+  <footer>行政部驾驶舱 · 布局优先级版 v1.10.0 · 顺序：① 会议室 ② 车辆情况 ③ 签证情况 ④ 部门任务 · 任务/签证/车辆：WPS（金山文档连接器直读）；会议室：腾讯（腾讯文档连接器直读） · 数据不出本机 · 内置 5 套皮肤可切换</footer>
 </div>
 
 <script>

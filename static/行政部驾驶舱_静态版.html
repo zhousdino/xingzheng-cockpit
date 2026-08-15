@@ -336,16 +336,24 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
     <div id="roomCards" class="roomcards"></div>
   </div>
 
-  <!-- ============ ② 签证情况（签证办理进度） ============ -->
-  <div class="sec-title">② 签证情况（签证办理进度）</div>
+  <!-- ============ ② 车辆情况（车辆台账 · 当日安排 · 当前位置） ============ -->
+  <div class="sec-title">② 车辆情况（车辆台账 · 当日安排 · 当前位置）</div>
+  <div class="sec-sub">数据来源：WPS 在线表格「车辆信息」「车辆排期」两个 sheet（经金山文档连接器每小时自动同步）。保险 / 通行证 临期·过期自动标红；当前位置默认取今日排期目的地（计划位置），若表内填了「当前位置 + 上报时间」则优先显示真实上报位置。</div>
+  <div class="card">
+    <div class="vehkpi" id="vehKpi"></div>
+    <div id="vehBoard"></div>
+  </div>
+
+  <!-- ============ ③ 签证情况（签证办理进度） ============ -->
+  <div class="sec-title">③ 签证情况（签证办理进度）</div>
   <div class="sec-sub">数据来源：WPS 在线表格「签证」sheet（经金山文档连接器每小时自动同步）。集中查看部门人员签证办理状态，临期 / 过期自动标红。</div>
   <div class="card">
     <div class="visakpi" id="visaKpi"></div>
     <div id="visaBoard"></div>
   </div>
 
-  <!-- ============ ③ 部门整体任务（总体情况） ============ -->
-  <div class="sec-title">③ 部门整体任务（总体情况）</div>
+  <!-- ============ ④ 部门整体任务（总体情况） ============ -->
+  <div class="sec-title">④ 部门整体任务（总体情况）</div>
   <div class="sec-sub">数据来源：WPS 在线表格（任务总表）。以下为本部门全部工作的总体进展。</div>
 
   <!-- KPI -->
@@ -403,15 +411,7 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
     </table>
   </div>
 
-  <!-- ============ ④ 车辆情况（车辆台账 + 当日安排 + 当前位置） ============ -->
-  <div class="sec-title">④ 车辆情况（车辆台账 · 当日安排 · 当前位置）</div>
-  <div class="sec-sub">数据来源：WPS 在线表格「车辆信息」「车辆排期」两个 sheet（经金山文档连接器每小时自动同步）。保险 / 通行证 临期·过期自动标红；当前位置默认取今日排期目的地（计划位置），若表内填了「当前位置 + 上报时间」则优先显示真实上报位置。</div>
-  <div class="card">
-    <div class="vehkpi" id="vehKpi"></div>
-    <div id="vehBoard"></div>
-  </div>
-
-  <footer>行政部驾驶舱 · 布局优先级版 v1.10.0 · 顺序：① 会议室 ② 签证情况 ③ 部门任务 ④ 车辆情况 · 任务/签证/车辆：WPS（金山文档连接器直读）；会议室：腾讯（腾讯文档连接器直读） · 数据不出本机 · 内置 5 套皮肤可切换</footer>
+  <footer>行政部驾驶舱 · 布局优先级版 v1.10.0 · 顺序：① 会议室 ② 车辆情况 ③ 签证情况 ④ 部门任务 · 任务/签证/车辆：WPS（金山文档连接器直读）；会议室：腾讯（腾讯文档连接器直读） · 数据不出本机 · 内置 5 套皮肤可切换</footer>
 </div>
 
 <script>
@@ -684,7 +684,7 @@ function parseVisas(text){
 }
 
 /* ============ 渲染 ============ */
-window.__COCKPIT_DATA__ = {"tasks":[],"rooms":[{"room":"","date":"2026-08-12","start":"16:00","end":"17:00","booker":"杨明","purpose":"安全部门例会","status":"","attendees":"18","phone":"598952971","span":"16:00-17:00"},{"room":"","date":"2026-08-13","start":"15:00","end":"15:30","booker":"Intakhabun Nasir","purpose":"Commercial Department Variation Proposal discussion with Consultant and Cost Consultant","status":"","attendees":"10","phone":"539549202","span":"15:00-15:30"},{"room":"","date":"2026-08-15","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"25","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-15","start":"12:00","end":"13:30","booker":"余成","purpose":"项目策划查漏补缺会","status":"","attendees":"15","phone":"564754303","span":"12：00-13：30"},{"room":"","date":"2026-08-15","start":"20:00","end":"21:00","booker":"杨凤利","purpose":"项目管道施工进度专题研讨会","status":"","attendees":"10","phone":"570611985","span":"20：00-21：00"},{"room":"","date":"2026-08-16","start":"16:00","end":"17:00","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"20","phone":"570611985","span":"16:00-17:00"},{"room":"","date":"2026-08-17","start":"15:00","end":"16:00","booker":"靳程","purpose":"与业主的设计周例会","status":"","attendees":"10","phone":"569108260","span":"15:00-16:00"},{"room":"","date":"2026-08-17","start":"11:00","end":"12:30","booker":"杨凤利","purpose":"External Weekly Project Meeting项目外部内部周例会","status":"","attendees":"25","phone":"570611985","span":"11:00-12:30"},{"room":"会议室（1）","date":"2026-08-15","start":"23:00","end":"23:30","booker":"周舟","purpose":"","status":"","attendees":"50","phone":"","span":"23:00-23:30"}],"visas":[],"vehicles":[],"vehiclesched":[],"updatedAt":"2026-08-15T20:35:20.444Z","sources":{"tasks":{"mode":"wps-none","updatedAt":"2026-08-15T20:35:20.444Z","error":null},"rooms":{"mode":"drop-file","updatedAt":"2026-08-15T20:35:20.444Z","error":null},"visas":{"mode":"visa-none","updatedAt":"2026-08-15T20:35:20.444Z","error":null},"vehicles":{"mode":"vehicle-none","updatedAt":"2026-08-15T20:35:20.444Z","error":null},"vehiclesched":{"mode":"vehiclesched-none","updatedAt":"2026-08-15T20:35:20.444Z","error":null}}};
+window.__COCKPIT_DATA__ = {"tasks":[],"rooms":[{"room":"","date":"2026-08-12","start":"16:00","end":"17:00","booker":"杨明","purpose":"安全部门例会","status":"","attendees":"18","phone":"598952971","span":"16:00-17:00"},{"room":"","date":"2026-08-13","start":"15:00","end":"15:30","booker":"Intakhabun Nasir","purpose":"Commercial Department Variation Proposal discussion with Consultant and Cost Consultant","status":"","attendees":"10","phone":"539549202","span":"15:00-15:30"},{"room":"","date":"2026-08-15","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"25","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-15","start":"12:00","end":"13:30","booker":"余成","purpose":"项目策划查漏补缺会","status":"","attendees":"15","phone":"564754303","span":"12：00-13：30"},{"room":"","date":"2026-08-15","start":"20:00","end":"21:00","booker":"杨凤利","purpose":"项目管道施工进度专题研讨会","status":"","attendees":"10","phone":"570611985","span":"20：00-21：00"},{"room":"","date":"2026-08-16","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"12","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-16","start":"16:00","end":"17:00","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"20","phone":"570611985","span":"16:00-17:00"},{"room":"","date":"2026-08-17","start":"15:00","end":"16:00","booker":"靳程","purpose":"与业主的设计周例会","status":"","attendees":"10","phone":"569108260","span":"15:00-16:00"},{"room":"","date":"2026-08-17","start":"11:00","end":"12:30","booker":"杨凤利","purpose":"External Weekly Project Meeting项目外部内部周例会","status":"","attendees":"25","phone":"570611985","span":"11:00-12:30"}],"visas":[],"vehicles":[],"vehiclesched":[],"updatedAt":"2026-08-15T22:21:57.620Z","sources":{"tasks":{"mode":"wps-none","updatedAt":"2026-08-15T22:21:57.620Z","error":null},"rooms":{"mode":"drop-file","updatedAt":"2026-08-15T22:21:57.620Z","error":null},"visas":{"mode":"visa-none","updatedAt":"2026-08-15T22:21:57.620Z","error":null},"vehicles":{"mode":"vehicle-none","updatedAt":"2026-08-15T22:21:57.620Z","error":null},"vehiclesched":{"mode":"vehiclesched-none","updatedAt":"2026-08-15T22:21:57.620Z","error":null}}};
 let DATA=[];
 function setData(rows,srcLabel){
   DATA=rows;
