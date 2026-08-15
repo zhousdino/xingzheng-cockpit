@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行政部驾驶舱 搭建蓝图与操作手册 v1.0.0</title>
+<!-- 本工作台通过 WorkBuddy 资料库能力（library skill）搭建、存储和部署 -->
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#ffffff; --ink:#1f2329; --sub:#6b7280;
+    --line:#e5e7eb; --accent:#2563eb; --red:#dc2626; --green:#16a34a;
+    --amber:#d97706;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.65;}
+  .wrap{max-width:900px;margin:0 auto;padding:28px 20px 60px;}
+  h1{font-size:24px;margin:0 0 4px;}
+  .ver{color:var(--sub);font-size:13px;margin-bottom:8px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:18px 20px;margin:14px 0;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+  h2{font-size:18px;margin:4px 0 12px;padding-left:10px;border-left:4px solid var(--accent);}
+  h3{font-size:15px;margin:16px 0 8px;}
+  p,li{font-size:14px;color:#374151;}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0;}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;}
+  th{background:#f3f4f6;font-weight:600;}
+  code{background:#f3f4f6;padding:1px 6px;border-radius:4px;font-size:12px;}
+  .step{background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:8px 0;}
+  .step b{color:var(--accent);}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:13px;color:#92400e;margin:10px 0;}
+  .ask{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 14px;font-size:13px;color:#1e40af;margin:10px 0;}
+  .mock{display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
+  .stat{flex:1;min-width:110px;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;}
+  .stat .n{font-size:24px;font-weight:700;} .stat .l{font-size:12px;color:var(--sub);}
+  .foot{font-size:12px;color:var(--sub);margin-top:24px;border-top:1px solid var(--line);padding-top:14px;}
+  ol li,ul li{margin:4px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>行政部驾驶舱 · 搭建蓝图与操作手册</h1>
+  <div class="ver">版本 v1.0.0 · 定稿 2026-08-15 · 平台：飞书多维表格 · 状态：已定稿，可照做</div>
+
+  <div class="card">
+    <p><b>一句话</b>：用一张飞书多维表格当"后台数据库"，部门共用；看清<b>每个人手里的活干到哪</b>，再加一个<b>驾驶舱总览</b>把各类信息一眼看全。工资、身份证、处分等敏感信息<b>不进表</b>。</p>
+  </div>
+
+  <div class="card">
+    <h2>一、整体结构</h2>
+    <ul>
+      <li><b>一张主表「任务总表」</b>：每任务一行，谁负责、啥状态、进度多少全在这。</li>
+      <li><b>多种视图</b>：看板（按人 / 按状态）、日历、领导视图——同一份数据换角度看。</li>
+      <li><b>仪表盘（驾驶舱）</b>：自动算总数、完成率、逾期数、每人负载，画成图。</li>
+    </ul>
+    <p style="font-size:13px;color:#6b7280;">所有人改同一张表 → 进度天然共享、实时可见。</p>
+  </div>
+
+  <div class="card">
+    <h2>二、主表字段（任务总表）</h2>
+    <table>
+      <tr><th>字段</th><th>飞书类型</th><th>说明</th></tr>
+      <tr><td>任务名称</td><td>文本</td><td>这件活叫啥</td></tr>
+      <tr><td>所属大类</td><td>单选</td><td>会务接待/车辆管理/后勤管理/物资采购/行政办公/人力资源/<b>其他（手动加）</b></td></tr>
+      <tr><td>子项 / 备注</td><td>文本</td><td>具体细活、注意点；后期可升级成子表</td></tr>
+      <tr><td>负责人</td><td>人员</td><td>部门成员之一；名单后期在表成员里增减</td></tr>
+      <tr><td>协同人</td><td>人员（可多选）</td><td>配合的人，可选</td></tr>
+      <tr><td>状态</td><td>单选</td><td>未开始/进行中/已完成/已逾期/已暂停</td></tr>
+      <tr><td>进度 %</td><td>数字 0–100</td><td>详细进展，直接填百分比</td></tr>
+      <tr><td>开始日期</td><td>日期</td><td>启动日</td></tr>
+      <tr><td>截止日期</td><td>日期</td><td>交付日</td></tr>
+      <tr><td>优先级</td><td>单选</td><td>高/中/低（或 P0/P1/P2）</td></tr>
+      <tr><td>更新时间</td><td>公式/自动</td><td>改动自动记时间</td></tr>
+      <tr><td>堵点 / 说明</td><td>文本</td><td>卡在哪、要谁协调</td></tr>
+      <tr><td>是否逾期</td><td>公式</td><td>截止日过且未完 → "逾期"，否则"正常"</td></tr>
+    </table>
+    <div class="note">公式「是否逾期」逻辑：<code>IF(AND(状态 ≠ "已完成", TODAY() > 截止日期), "逾期", "正常")</code>。飞书公式写法略有差异，照搬逻辑即可，写不对告诉我。</div>
+  </div>
+
+  <div class="card">
+    <h2>三、视图（同一份数据，换角度看）</h2>
+    <h3>看板 · 按负责人</h3>
+    <p>每列一个人，卡片是 TA 的任务，带<b>进度条</b>。一眼看清谁压了几件事、各干到百分之多少。</p>
+    <div class="mock">
+      <svg width="220" height="150" viewBox="0 0 220 150">
+        <rect x="6" y="6" width="200" height="138" rx="8" fill="#fff" stroke="#e5e7eb"/>
+        <text x="14" y="24" font-size="12" fill="#1f2329">张三（3）</text>
+        <rect x="14" y="32" width="184" height="30" rx="6" fill="#f8fafc" stroke="#e5e7eb"/>
+        <text x="20" y="48" font-size="11" fill="#374151">物资采购·询价</text>
+        <rect x="20" y="52" width="80" height="6" rx="3" fill="#e5e7eb"/><rect x="20" y="52" width="48" height="6" rx="3" fill="#2563eb"/>
+        <rect x="14" y="68" width="184" height="30" rx="6" fill="#f8fafc" stroke="#e5e7eb"/>
+        <text x="20" y="84" font-size="11" fill="#374151">车辆管理·派车</text>
+        <rect x="20" y="88" width="80" height="6" rx="3" fill="#e5e7eb"/><rect x="20" y="88" width="20" height="6" rx="3" fill="#2563eb"/>
+        <rect x="14" y="104" width="184" height="30" rx="6" fill="#fef2f2" stroke="#fecaca"/>
+        <text x="20" y="120" font-size="11" fill="#dc2626">后勤·逾期!</text>
+        <rect x="20" y="124" width="80" height="6" rx="3" fill="#fecaca"/><rect x="20" y="124" width="64" height="6" rx="3" fill="#dc2626"/>
+      </svg>
+      <svg width="220" height="150" viewBox="0 0 220 150">
+        <rect x="6" y="6" width="200" height="138" rx="8" fill="#fff" stroke="#e5e7eb"/>
+        <text x="14" y="24" font-size="12" fill="#1f2329">李四（2）</text>
+        <rect x="14" y="32" width="184" height="30" rx="6" fill="#f8fafc" stroke="#e5e7eb"/>
+        <text x="20" y="48" font-size="11" fill="#374151">会务接待·布置</text>
+        <rect x="20" y="52" width="80" height="6" rx="3" fill="#e5e7eb"/><rect x="20" y="52" width="72" height="6" rx="3" fill="#16a34a"/>
+        <rect x="14" y="68" width="184" height="30" rx="6" fill="#f8fafc" stroke="#e5e7eb"/>
+        <text x="20" y="84" font-size="11" fill="#374151">人力·招聘</text>
+        <rect x="20" y="88" width="80" height="6" rx="3" fill="#e5e7eb"/><rect x="20" y="88" width="40" height="6" rx="3" fill="#2563eb"/>
+      </svg>
+    </div>
+    <h3>看板 · 按状态</h3><p>列变"未开始/进行中/已完成/已逾期"，任务从一格拖到下一格。</p>
+    <h3>日历视图</h3><p>按截止日排，逾期红、临近黄。</p>
+    <h3>领导视图</h3><p>复制表格视图 → 筛选"状态≠已完成" → 隐藏细节列。领导只看全局。</p>
+  </div>
+
+  <div class="card">
+    <h2>四、驾驶舱仪表盘</h2>
+    <div class="mock" style="margin-bottom:14px;">
+      <div class="stat"><div class="n">86</div><div class="l">总任务</div></div>
+      <div class="stat"><div class="n" style="color:#2563eb">32</div><div class="l">进行中</div></div>
+      <div class="stat"><div class="n" style="color:#16a34a">41</div><div class="l">已完成</div></div>
+      <div class="stat"><div class="n" style="color:#dc2626">13</div><div class="l">逾期</div></div>
+    </div>
+    <div class="mock">
+      <svg width="200" height="160" viewBox="0 0 200 160">
+        <circle cx="100" cy="80" r="56" fill="none" stroke="#e5e7eb" stroke-width="16"/>
+        <circle cx="100" cy="80" r="56" fill="none" stroke="#16a34a" stroke-width="16"
+          stroke-dasharray="351.8" stroke-dashoffset="183" transform="rotate(-90 100 80)"/>
+        <text x="100" y="76" text-anchor="middle" font-size="26" font-weight="700" fill="#16a34a">48%</text>
+        <text x="100" y="98" text-anchor="middle" font-size="12" fill="#6b7280">整体完成率</text>
+      </svg>
+      <svg width="320" height="160" viewBox="0 0 320 160">
+        <text x="10" y="16" font-size="12" fill="#374151">各大类任务数</text>
+        <rect x="10" y="40" width="40" height="100" fill="#2563eb"/><text x="22" y="150" font-size="10" fill="#6b7280">会务</text>
+        <rect x="60" y="70" width="40" height="70" fill="#2563eb"/><text x="72" y="150" font-size="10" fill="#6b7280">车辆</text>
+        <rect x="110" y="30" width="40" height="110" fill="#2563eb"/><text x="120" y="150" font-size="10" fill="#6b7280">后勤</text>
+        <rect x="160" y="55" width="40" height="85" fill="#2563eb"/><text x="170" y="150" font-size="10" fill="#6b7280">物资</text>
+        <rect x="210" y="62" width="40" height="78" fill="#2563eb"/><text x="220" y="150" font-size="10" fill="#6b7280">行政</text>
+        <rect x="260" y="92" width="40" height="48" fill="#2563eb"/><text x="270" y="150" font-size="10" fill="#6b7280">人力</text>
+      </svg>
+    </div>
+    <p style="font-size:13px;color:#6b7280;">真实数据接上后，数字和图自动跟着变。</p>
+  </div>
+
+  <div class="card">
+    <h2>五、角色与权限（飞书做法）</h2>
+    <ul>
+      <li><b>成员</b>：可看全部，但只能通过"记录规则"只改<b>自己负责</b>的任务行。</li>
+      <li><b>管理员/领导</b>：看全部 + 仪表盘 + 可改任何行、加选项。</li>
+    </ul>
+    <p style="font-size:13px;color:#6b7280;">设置路径：分享 → 添加部门成员 → 高级权限 → 勾选"成员仅可编辑与自己相关的记录"（条件：负责人 = 当前用户）。</p>
+  </div>
+
+  <div class="card">
+    <h2>六、自动化（省手工）</h2>
+    <ul>
+      <li>截止日过且未完 → 状态自动"已逾期"并标红，可顺手提醒负责人。</li>
+      <li>进度填 100 → 状态自动"已完成"。</li>
+    </ul>
+    <p style="font-size:13px;color:#6b7280;">路径：表顶部「自动化」→ 新建规则 → 选触发条件与动作。</p>
+  </div>
+
+  <div class="card">
+    <h2>七、扩展性（你要的"未来可增减"都留了口子）</h2>
+    <ul>
+      <li><b>加大类</b>：在"所属大类"单选里直接加选项，<b>不改结构</b>。</li>
+      <li><b>加子项</b>：先用"子项/备注"文本；真需要时升级为"子任务表"关联，不动老数据。</li>
+      <li><b>人员增减 / 改分工</b>：在表成员里加删人；改某人的分工 = 把对应任务的"负责人"改掉即可，无需动表。</li>
+      <li><b>加字段/视图/模块</b>：直接加，按下面版本规则升小版本号并存档。</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>八、在飞书多维表格里一步步搭（操作手册）</h2>
+
+    <div class="step"><b>第 1 步 · 建表</b><br>飞书首页 → 左上「新建」→ 多维表格 → 选"空白"模板。表名改「行政部驾驶舱」。</div>
+
+    <div class="step"><b>第 2 步 · 建字段</b><br>默认第一列改名「任务名称」（文本）。点表右侧「+」依次加：所属大类（单选）、子项/备注（文本）、负责人（人员）、协同人（人员·允许多选）、状态（单选）、进度%（数字）、开始日期（日期）、截止日期（日期）、优先级（单选）、堵点/说明（文本）。</div>
+
+    <div class="step"><b>第 3 步 · 填单选选项</b><br>点"所属大类"列头 → 编辑选项，填入：会务接待、车辆管理、后勤管理、物资采购、行政办公、人力资源、其他。"状态"填：未开始、进行中、已完成、已逾期、已暂停。"优先级"填：高、中、低。</div>
+
+    <div class="step"><b>第 4 步 · 加公式字段</b><br>加「是否逾期」（公式）：逻辑 <code>IF(AND(状态≠"已完成", TODAY()>截止日期),"逾期","正常")</code>。加「更新时间」（公式/自动，取记录最后修改时间）。</div>
+
+    <div class="step"><b>第 5 步 · 条件格式标红</b><br>「是否逾期」=逾期 → 整行或该单元格标红；进度%&lt;30 可设黄色预警。路径：工具栏「格式」→ 条件格式。</div>
+
+    <div class="step"><b>第 6 步 · 建视图</b><br>顶部「视图」→ 新建：①看板，分组依据=负责人，卡片显示=进度%+状态；②看板，分组依据=状态；③日历，日期字段=截止日期；④复制表格视图改名"领导视图"，筛选状态≠已完成，隐藏细节列。</div>
+
+    <div class="step"><b>第 7 步 · 建仪表盘</b><br>表左侧「仪表盘」→ 新建。添加图表：统计卡（按状态计数 → 总/进行中/已完成/逾期）、进度环（完成率=已完成÷总数）、条形图（按大类计数 / 按负责人计数）。</div>
+
+    <div class="step"><b>第 8 步 · 自动化</b><br>顶部「自动化」→ 新建：规则A 触发"记录满足 截止日期&lt;今天 且 状态≠已完成" → 动作"改状态=已逾期"；规则B 触发"进度%=100" → 动作"改状态=已完成"。</div>
+
+    <div class="step"><b>第 9 步 · 配权限</b><br>右上「分享」→ 添加行政部成员 → 高级权限 → 开启"成员仅可编辑与自己相关的记录"（负责人=当前用户）。把领导/你设成"可管理"。</div>
+
+    <div class="step"><b>第 10 步 · 投用</b><br>把表链接发部门群，让大家从"负责人"视图填自己进度。驾驶舱仪表盘发给领导看总览。</div>
+
+    <div class="note">以上按钮位置以飞书当前版本为准，若某步名字对不上，截个图发我，我指给你精确位置。</div>
+  </div>
+
+  <div class="card">
+    <h2>九、版本编号与 GitHub 备份</h2>
+    <p>命名：<code>行政驾驶舱 v主版本.次版本.修订_日期</code></p>
+    <ul>
+      <li><b>v1.0.0</b>：首个可用版（本文件）。</li>
+      <li>未来<b>加大类</b>（仅加选项）= 数据变动，<b>不升版</b>；<b>加字段/视图/模块</b> = 升次版本（v1.1.0）；<b>大改架构</b> = 升主版本（v2.0.0）；修显示问题 = 修订（v1.0.1）。</li>
+      <li>每个版本打 git tag（如 <code>v1.0.0</code>），连同本文件 + <code>CHANGELOG.md</code> 传 GitHub，可回退任一版本。</li>
+      <li>实际业务数据在飞书表里（不进 GitHub）；进 GitHub 的是"设计蓝图 + 操作手册 + 变更记录"。</li>
+    </ul>
+    <h3>GitHub 仓库与 Token（你问的怎么获取）</h3>
+    <ol>
+      <li>打开 github.com → 右上头像 → <b>Settings</b> → 左侧最下 <b>Developer settings</b> → <b>Personal access tokens</b> → <b>Tokens (classic)</b> → <b>Generate new token (classic)</b>。</li>
+      <li>Note 填"xingzheng-cockpit"，<b>Expiration</b> 选长一点（如 90 天或 No expiration 按需），<b>Select scopes</b> 勾选 <code>repo</code>（整项）。</li>
+      <li>点 Generate → <b>复制那串 token</b>（只显示一次，存好）。</li>
+      <li>另开一个页新建仓库：右上 ＋ → <b>New repository</b> → 名 <code>xingzheng-cockpit</code> → 公开/私有自选 → Create。</li>
+      <li>把<b>仓库地址</b>（形如 https://github.com/你的名/xingzheng-cockpit.git）和<b>token</b> 发我。我这边已 <code>git init</code> + 提交 + 打 tag <code>v1.0.0</code>，拿到后直接推上去；若我这环境连不通 GitHub，我把本地仓库包给你，你用 GitHub Desktop 或两条命令自己推（我给命令）。</li>
+    </ol>
+    <div class="ask">⚠️ token 等同于你 GitHub 的钥匙，别发在公开群。直接发我这条对话即可（仅你和我可见）。如担心，选"自己推"那条路，我给精确命令。</div>
+  </div>
+
+  <div class="foot">v1.0.0 已定稿 · 后续改动按第九节规则升版并存档。</div>
+
+</div>
+</body>
+</html>
