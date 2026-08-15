@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行政部驾驶舱 · WPS在线表格搭建清单 v1.1.0</title>
+<style>
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:920px;margin:24px auto;padding:0 18px;color:#1f2329;line-height:1.7;background:#f7f8fa;}
+  h1{font-size:24px;border-left:5px solid #2b67ff;padding-left:12px;margin:8px 0 4px;}
+  h2{font-size:19px;margin:26px 0 8px;color:#2b67ff;}
+  .sub{color:#8f959e;font-size:13px;margin-bottom:18px;}
+  .card{background:#fff;border:1px solid #e5e6eb;border-radius:10px;padding:16px 20px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0;}
+  th,td{border:1px solid #e5e6eb;padding:8px 10px;text-align:left;vertical-align:top;}
+  th{background:#f2f3f5;font-weight:600;}
+  .tag{display:inline-block;background:#e8f0ff;color:#2b67ff;border-radius:6px;padding:1px 8px;font-size:12px;margin:2px 0;}
+  .warn{background:#fff3e0;border-left:4px solid #ff8800;padding:10px 14px;border-radius:6px;margin:14px 0;font-size:14px;}
+  .ok{background:#e8fff0;border-left:4px solid #34c759;padding:10px 14px;border-radius:6px;margin:14px 0;}
+  ol li{margin:7px 0;}
+  code{background:#f2f3f5;padding:1px 6px;border-radius:4px;font-size:13px;}
+  .step{font-weight:600;color:#2b67ff;}
+  .note{color:#8f959e;font-size:13px;}
+</style>
+</head>
+<body>
+<h1>行政部驾驶舱 · WPS 在线表格搭建清单 v1.1.0</h1>
+<div class="sub">后台：WPS 在线表格（在线 Excel 型）｜ 版本：v1.1.0（从 v1.0.0 飞书方案迁移）｜ 约 12 人共用</div>
+
+<div class="warn">⚠️ 与飞书的不同：WPS 在线表格是"在线 Excel"，<b>没有看板视图、没有人员字段</b>。所以做法改为：下拉选大类/状态、数据条显示进度、筛选看每人、插入图表做总览。功能一样齐全，只是界面没飞书炫。</div>
+
+<h2>一、建表与共享</h2>
+<div class="card">
+<ol>
+<li>打开 <b>WPS 网页版（kdocs.cn）</b> → 新建 → <b>在线表格</b> → 命名为 <b>「行政部驾驶舱」</b>。</li>
+<li>右上角 <b>「分享」</b> → 生成链接 → 权限选 <b>「可编辑」</b> → 复制链接发给部门 12 位同事。大家都能填、能看。</li>
+</ol>
+<div class="note">权限说明：WPS 在线表只能整表"可看/可编辑"，做不到飞书那种"领导只看总览、成员只看自己"。这点先接受，靠大家自觉填自己那行即可。</div>
+</div>
+
+<h2>二、列（字段）清单——第 1 行写表头，照着填</h2>
+<table>
+<thead><tr><th>列</th><th>表头名</th><th>怎么填</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>A</td><td>任务名称</td><td>直接打字</td><td>—</td></tr>
+<tr><td>B</td><td>所属大类</td><td>下拉选</td><td>见下方"下拉设置"</td></tr>
+<tr><td>C</td><td>子项备注</td><td>打字</td><td>具体子任务</td></tr>
+<tr><td>D</td><td>负责人</td><td>打字写人名</td><td>WPS 无"人员"字段，直接写名字</td></tr>
+<tr><td>E</td><td>协同人</td><td>打字，多人用、隔开</td><td>如"张三、李四"</td></tr>
+<tr><td>F</td><td>状态</td><td>下拉选</td><td>未开始/进行中/已完成/已暂停/已逾期</td></tr>
+<tr><td>G</td><td>进度%</td><td>填数字 0–100</td><td>配合数据条显示进度</td></tr>
+<tr><td>H</td><td>开始日期</td><td>日期</td><td>—</td></tr>
+<tr><td>I</td><td>截止日期</td><td>日期</td><td>逾期判定 + 排序靠它</td></tr>
+<tr><td>J</td><td>优先级</td><td>下拉选</td><td>高/中/低</td></tr>
+<tr><td>K</td><td>堵点说明</td><td>打字</td><td>卡在哪、需谁协调</td></tr>
+<tr><td>L</td><td>是否逾期</td><td>公式</td><td>见下方"公式"</td></tr>
+<tr><td>M</td><td>更新日期</td><td>打字 / 公式</td><td>填最后修改日，便于看新鲜度</td></tr>
+</tbody>
+</table>
+
+<h2>三、下拉设置（让大类/状态/优先级只能选，不乱填）</h2>
+<div class="card">
+<ol>
+<li>选中要设置的列（如 B 列整列，或 B2:B1000）。</li>
+<li>顶部菜单 <b>「数据」</b> → <b>「数据验证」</b>（有的版本叫"有效性"）。</li>
+<li>允许 → 选 <b>「序列」</b>。</li>
+<li>来源里输入选项，用<b>英文逗号</b>隔开，例如所属大类：<br>
+<code>会务接待,车辆管理,后勤管理,物资采购,行政办公,人力资源,其他</code></li>
+<li>确定。以后这列点一下就出下拉，不会填错。</li>
+<li>状态列同理：<code>未开始,进行中,已完成,已暂停,已逾期</code>；优先级：<code>高,中,低</code>。</li>
+</ol>
+</div>
+
+<h2>四、进度条 + 逾期标红（条件格式）</h2>
+<div class="card">
+<ol>
+<li><span class="step">进度数据条</span>：选中 G 列（进度%）→ 顶部 <b>「开始」</b> → <b>「条件格式」</b> → <b>「数据条」</b> → 选个颜色。数字立刻变成可视进度条。</li>
+<li><span class="step">逾期标红</span>：选中整张数据区 → <b>「条件格式」</b> → <b>「新建规则」</b> → 规则类型选"使用公式" → 输入 <code>=$L2="逾期"</code> → 格式设为<b>红色填充</b> → 确定。逾期行自动变红。</li>
+<li><span class="step">状态上色（可选）</span>：再建几条规则，<code>=$F2="已完成"</code> 绿色、<code>=$F2="进行中"</code> 黄色，一眼分清。</li>
+</ol>
+</div>
+
+<h2>五、是否逾期公式（L2 单元格粘贴，往下拖）</h2>
+<div class="card">
+<code>=IF(AND(F2&lt;&gt;"已完成", I2&lt;&gt;"", TODAY()&gt;I2), "逾期", "正常")</code>
+<div class="note">含义：状态不是"已完成"、且有截止日期、今天已超过截止日 → 显示"逾期"，否则"正常"。把 L2 写好，鼠标拖右下角填充柄往下拉，整列都生效。</div>
+<div class="note">更新日期 M 列：可手动填，或简单用 <code>=TODAY()</code>（但每次打开会变，建议手动填"最后更新日"更准）。</div>
+</div>
+
+<h2>六、看清"每人进展"——筛选</h2>
+<div class="card">
+<ol>
+<li>选中数据区域（含表头）→ 顶部 <b>「数据」</b> → <b>「筛选」</b>。每列表头出现小三角。</li>
+<li>点 <b>D 列（负责人）</b> 小三角 → 勾选某个人 → 表格只显示他负责的活。看 G 列进度条即知进展。</li>
+<li>点 <b>F 列（状态）</b> 小三角 → 取消"已完成" → 只看还没干完的，适合周会过进度。</li>
+</ol>
+</div>
+
+<h2>七、总览仪表盘——单独建一个"仪表盘"工作表</h2>
+<div class="card">
+<ol>
+<li>底部点 <b>「+」</b> 新建一个工作表，命名 <b>「仪表盘」</b>。</li>
+<li><span class="step">统计卡</span>：在仪表盘写几个 COUNTIF 公式（假设数据在"任务总表"）：
+  <br>· 总任务数：<code>=COUNTA(任务总表!A2:A1000)</code>
+  <br>· 已完成：<code>=COUNTIF(任务总表!F2:F1000,"已完成")</code>
+  <br>· 进行中：<code>=COUNTIF(任务总表!F2:F1000,"进行中")</code>
+  <br>· 逾期：<code>=COUNTIF(任务总表!L2:L1000,"逾期")</code></li>
+<li><span class="step">完成率</span>：<code>=已完成/总任务数</code>，单元格设为百分比格式。</li>
+<li><span class="step">图表</span>：选中统计区 → 顶部 <b>「插入」</b> → <b>「图表」</b> → 状态分布用<b>饼图</b>、各大类任务数用<b>柱状图</b>。</li>
+</ol>
+<div class="note">数据表一更新，仪表盘公式和图表自动跟着变，不用手动重算。</div>
+</div>
+
+<div class="ok">✅ 以上点完，WPS 版驾驶舱就搭好了：大家填"任务总表"，领导看"仪表盘"，要盯某人就筛选 D 列。字段/大类/人员后期都能手动增减——加大类就改 B 列下拉的来源，加人直接在 D 列写新名字。</div>
+
+<div class="warn">⚠️ 敏感信息（工资、身份证、处分）不要进表。每个版本我会打 tag 备份到 GitHub（仓库已建好：github.com/zhousdino/xingzheng-cockpit）。</div>
+
+</body>
+</html>
