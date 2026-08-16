@@ -55,6 +55,11 @@ header.top .meta b{font-weight:600}
 .tbtn:hover{border-color:var(--primary);color:var(--primary-d)}
 .tbtn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 .note{font-size:12px;color:var(--text-2);margin:6px 0 0}
+/* 二级页面快捷导航 */
+.topnav{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0;align-items:center}
+.topnav .lab{font-size:13px;color:var(--text-2);margin-right:4px}
+.navbtn{border:1px solid var(--primary);background:var(--primary);color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;text-decoration:none;transition:.15s;display:inline-block}
+.navbtn:hover{opacity:.92}
 
 .databar{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:var(--shadow)}
 .databar .t{font-weight:600;color:var(--primary-d)}
@@ -232,7 +237,7 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
   <header class="top">
     <div>
       <h1>行政部驾驶舱</h1>
-      <div class="sub">部门工作进展总览 · 任务后台：WPS 在线表格（多人协作填报）· 会议室后台：腾讯在线表格</div>
+      <div class="sub">部门工作进展总览 · 任务/车辆/签证后台：资料库云数据表（部门共享填报）· 会议室后台：腾讯在线表格</div>
     </div>
     <div class="meta">
       数据更新时间：<b id="updTime">—</b><br>
@@ -244,7 +249,7 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
   <div class="databar" style="margin-top:12px;justify-content:space-between">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
       <span class="t">数据状态</span>
-      <span class="syncstatus" id="syncStatus"><span class="dot"></span><span id="syncText">正在连接本地桥接服务…</span></span>
+      <span class="syncstatus" id="syncStatus"><span class="dot"></span><span id="syncText">每小时自动刷新（资料库 + 腾讯会议室）</span></span>
     </div>
     <span class="hint" id="syncDetail"></span>
   </div>
@@ -261,68 +266,14 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
   <div class="note">↑ 点上方按钮随时更换皮肤；你的选择会被记住，下次打开还是这套。</div>
 
   <!-- 手动同步入口（已默认折叠；自动同步已接通时通常不需要） -->
-  <details class="import" id="manualImport">
-    <summary>手动同步入口（备用，自动同步已接通时无需打开）</summary>
-    <div class="impbox">
-      <p><b>任务数据（WPS 在线表格）：</b>在 WPS 表里全选 → 复制 → 粘贴到下方文本框 → 点「生成驾驶舱」仅本机预览；点「上传到本地服务」让驾驶舱自动刷新。也可上传 CSV 文件。</p>
-      <div class="row" style="margin-bottom:8px">
-        <button class="ghost" id="btnReset">恢复示例</button>
-        <button id="btnSyncNow">立即同步</button>
-        <span id="srcTag" class="hint"></span>
-      </div>
-      <textarea id="pasteArea" placeholder="在此粘贴从 WPS 复制的表格数据（含表头第一行）…"></textarea>
-      <div class="row">
-        <button id="btnGen">生成驾驶舱</button>
-        <button id="btnUploadTask" class="primary">上传到本地服务</button>
-        <label class="file">上传 CSV 文件<input type="file" id="fileCsv" accept=".csv"></label>
-        <span class="msg" id="impMsg"></span>
-      </div>
+    <!-- 二级页面导航 -->
+  <nav class="topnav">
+    <span class="lab">快捷入口：</span>
+    <a class="navbtn" href="任务管理.html">部门任务看板</a>
+    <a class="navbtn" href="车辆管理.html">车辆管理看板</a>
+  </nav>
+  <div class="note">任务 / 车辆 / 签证 数据在「资料库」云表填报（部门多人共享），会议室数据自动来自腾讯表；所有数据每小时自动同步到本页，无需手动操作。</div>
 
-      <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
-
-      <p><b>会议室数据（腾讯在线表格）：</b>在腾讯表格里选中预约区域（含表头）→ 复制 → 粘贴 → 点「生成会议室」预览，或「上传到本地服务」。若腾讯表已设为公开可读，也可填链接后点「同步读取」。</p>
-      <div class="row" style="margin-bottom:8px">
-        <button id="btnSyncNow2">立即同步</button>
-        <button class="ghost" id="btnResetRoom">恢复示例</button>
-        <span id="roomSrcTag" class="hint"></span>
-      </div>
-      <textarea id="pasteRoom" placeholder="在此粘贴从腾讯表格复制的会议室预约数据（含表头，如：会议室/日期/开始时间/结束时间/预约人/用途/状态）…"></textarea>
-      <div class="row">
-        <button id="btnGenRoom">生成会议室</button>
-        <button id="btnUploadRoom" class="primary">上传到本地服务</button>
-        <label class="file">上传 CSV<input type="file" id="fileRoomCsv" accept=".csv"></label>
-        <input id="roomLink" type="text" value="https://docs.qq.com/sheet/DUFNXTnBsV1pGYmZ4?tab=BB08J2">
-        <button id="btnSyncRoom">同步读取</button>
-        <span class="msg" id="roomMsg"></span>
-      </div>
-
-      <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
-
-      <p><b>签证情况（WPS 在线表格 · 签证 sheet）：</b>在 WPS 表的「签证」sheet 中全选 → 复制 → 粘贴到下方文本框 → 点「上传到本地服务」，驾驶舱自动刷新。也可上传 CSV 文件。</p>
-      <div class="row" style="margin-bottom:8px">
-        <button id="btnUploadVisa" class="primary">上传到本地服务</button>
-        <label class="file">上传 CSV 文件<input type="file" id="fileVisaCsv" accept=".csv"></label>
-        <span class="msg" id="visaMsg"></span>
-      </div>
-      <textarea id="pasteVisa" placeholder="在此粘贴从 WPS「签证」sheet 复制的数据（含表头：姓名/国家/签证类型/状态/提交日期/预计出签/有效期至/备注）…"></textarea>
-
-      <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
-
-      <p><b>车辆情况（WPS 在线表格 · 车辆信息 / 车辆排期 两个 sheet）：</b>在 WPS 表对应 sheet 全选 → 复制 → 粘贴到下方文本框 → 点「上传到本地服务」，驾驶舱自动刷新。也可上传 CSV 文件。</p>
-      <div class="row" style="margin-bottom:8px">
-        <button id="btnUploadVehicle" class="primary">上传「车辆信息」</button>
-        <label class="file">上传 CSV<input type="file" id="fileVehicleCsv" accept=".csv"></label>
-        <span class="msg" id="vehMsg"></span>
-      </div>
-      <textarea id="pasteVehicle" placeholder="在此粘贴「车辆信息」sheet（含表头：车牌/车型/保险/保险到期/驾驶员/通行证/通行证到期/状态/所有情况/备注）…"></textarea>
-      <div class="row" style="margin-bottom:8px;margin-top:8px">
-        <button id="btnUploadVehSched" class="primary">上传「车辆排期」</button>
-        <label class="file">上传 CSV<input type="file" id="fileVehSchedCsv" accept=".csv"></label>
-        <span class="msg" id="vehSchedMsg"></span>
-      </div>
-      <textarea id="pasteVehSched" placeholder="在此粘贴「车辆排期」sheet（含表头：日期/车牌/任务/驾驶人/出发地/目的地/开始时间/结束时间/备注）…"></textarea>
-    </div>
-  </details>
 
   <!-- ============ ① 会议室实时预约（置顶 · 最直观） ============ -->
   <div class="sec-title">① 会议室实时预约（会务接待）</div>
@@ -340,7 +291,7 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
 
   <!-- ============ ② 车辆情况（车辆台账 · 当日安排 · 当前位置） ============ -->
   <div class="sec-title">② 车辆情况（车辆台账 · 当日安排 · 当前位置）</div>
-  <div class="sec-sub">数据来源：WPS 在线表格「车辆信息」「车辆排期」两个 sheet（经金山文档连接器每小时自动同步）。保险 / 通行证 临期·过期自动标红；当前位置默认取今日排期目的地（计划位置），若表内填了「当前位置 + 上报时间」则优先显示真实上报位置。</div>
+  <div class="sec-sub">数据来源：资料库云数据表（每小时自动同步）。保险 / 通行证 临期·过期自动标红；当前位置默认取今日排期目的地（计划位置），若表内填了「当前位置 + 上报时间」则优先显示真实上报位置。</div>
   <div class="card">
     <div class="vehkpi" id="vehKpi"></div>
     <div id="vehBoard"></div>
@@ -348,7 +299,7 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
 
   <!-- ============ ③ 签证情况（签证办理进度） ============ -->
   <div class="sec-title">③ 签证情况（签证办理进度）</div>
-  <div class="sec-sub">数据来源：WPS 在线表格「签证」sheet（经金山文档连接器每小时自动同步）。集中查看部门人员签证办理状态，临期 / 过期自动标红。</div>
+  <div class="sec-sub">数据来源：资料库云数据表（每小时自动同步）。集中查看部门人员签证办理状态，临期 / 过期自动标红。</div>
   <div class="card">
     <div class="visakpi" id="visaKpi"></div>
     <div id="visaBoard"></div>
@@ -686,7 +637,7 @@ function parseVisas(text){
 }
 
 /* ============ 渲染 ============ */
-window.__COCKPIT_DATA__ = {"tasks":[],"rooms":[{"room":"","date":"2026-08-12","start":"16:00","end":"17:00","booker":"杨明","purpose":"安全部门例会","status":"","attendees":"18","phone":"598952971","span":"16:00-17:00"},{"room":"","date":"2026-08-13","start":"15:00","end":"15:30","booker":"Intakhabun Nasir","purpose":"Commercial Department Variation Proposal discussion with Consultant and Cost Consultant","status":"","attendees":"10","phone":"539549202","span":"15:00-15:30"},{"room":"","date":"2026-08-15","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"25","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-15","start":"12:00","end":"13:30","booker":"余成","purpose":"项目策划查漏补缺会","status":"","attendees":"15","phone":"564754303","span":"12：00-13：30"},{"room":"","date":"2026-08-15","start":"20:00","end":"21:00","booker":"杨凤利","purpose":"项目管道施工进度专题研讨会","status":"","attendees":"10","phone":"570611985","span":"20：00-21：00"},{"room":"","date":"2026-08-16","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"12","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-16","start":"11:00","end":"12:30","booker":"Arshad S (HSE Trainer)","purpose":"Bar bending Training","status":"","attendees":"20","phone":"594591587","span":"11:00-12:30"},{"room":"","date":"2026-08-16","start":"16:00","end":"17:00","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"20","phone":"570611985","span":"16:00-17:00"},{"room":"","date":"2026-08-17","start":"15:00","end":"16:00","booker":"靳程","purpose":"与业主的设计周例会","status":"","attendees":"10","phone":"569108260","span":"15:00-16:00"},{"room":"","date":"2026-08-17","start":"11:00","end":"12:30","booker":"杨凤利","purpose":"External Weekly Project Meeting项目外部内部周例会","status":"","attendees":"25","phone":"570611985","span":"11:00-12:30"}],"visas":[],"vehicles":[],"vehiclesched":[],"updatedAt":"2026-08-16T06:54:21.833Z","sources":{"tasks":{"mode":"wps-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"rooms":{"mode":"drop-file","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"visas":{"mode":"visa-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"vehicles":{"mode":"vehicle-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"vehiclesched":{"mode":"vehiclesched-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null}}};
+window.__COCKPIT_DATA__ = {"tasks":[],"rooms":[{"room":"","date":"2026-08-12","start":"16:00","end":"17:00","booker":"杨明","purpose":"安全部门例会","status":"","attendees":"18","phone":"598952971","span":"16:00-17:00"},{"room":"","date":"2026-08-13","start":"15:00","end":"15:30","booker":"Intakhabun Nasir","purpose":"Commercial Department Variation Proposal discussion with Consultant and Cost Consultant","status":"","attendees":"10","phone":"539549202","span":"15:00-15:30"},{"room":"","date":"2026-08-15","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"25","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-15","start":"12:00","end":"13:30","booker":"余成","purpose":"项目策划查漏补缺会","status":"","attendees":"15","phone":"564754303","span":"12：00-13：30"},{"room":"","date":"2026-08-15","start":"20:00","end":"21:00","booker":"杨凤利","purpose":"项目管道施工进度专题研讨会","status":"","attendees":"10","phone":"570611985","span":"20：00-21：00"},{"room":"","date":"2026-08-16","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"12","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-16","start":"11:00","end":"12:30","booker":"Arshad S (HSE Trainer)","purpose":"Bar bending Training","status":"","attendees":"20","phone":"594591587","span":"11:00-12:30"},{"room":"","date":"2026-08-16","start":"16:00","end":"17:00","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"20","phone":"570611985","span":"16:00-17:00"},{"room":"","date":"2026-08-17","start":"15:00","end":"16:00","booker":"靳程","purpose":"与业主的设计周例会","status":"","attendees":"10","phone":"569108260","span":"15:00-16:00"},{"room":"","date":"2026-08-17","start":"11:00","end":"12:30","booker":"杨凤利","purpose":"External Weekly Project Meeting项目外部内部周例会","status":"","attendees":"25","phone":"570611985","span":"11:00-12:30"}],"visas":[],"vehicles":[],"vehiclesched":[],"updatedAt":"2026-08-16T07:37:31.044Z","sources":{"tasks":{"mode":"wps-none","updatedAt":"2026-08-16T07:37:31.044Z","error":null},"rooms":{"mode":"drop-file","updatedAt":"2026-08-16T07:37:31.044Z","error":null},"visas":{"mode":"visa-none","updatedAt":"2026-08-16T07:37:31.044Z","error":null},"vehicles":{"mode":"vehicle-none","updatedAt":"2026-08-16T07:37:31.044Z","error":null},"vehiclesched":{"mode":"vehiclesched-none","updatedAt":"2026-08-16T07:37:31.044Z","error":null}}};
 let DATA=[];
 function setData(rows,srcLabel){
   DATA=rows;
@@ -1071,109 +1022,20 @@ function applyTheme(t){
 }
 document.querySelectorAll('.tbtn').forEach(b=>b.onclick=()=>applyTheme(b.dataset.set));
 
-/* ============ 任务事件 ============ */
-document.getElementById('btnReset').onclick=()=>{
+/* ============ 示例数据兜底（无真实数据时展示版式） ============ */
+function loadSampleTask(){
   const rows=SAMPLE.map(arr=>{
     const o={};
     o.progress=arr[6]; o.status=arr[5]; o.category=arr[1]; o.owner=arr[3]; o.deadline=arr[8];
     o.priority=arr[9]; o.name=arr[0]; o.collab=arr[4]; o.note=arr[2]; o.blocker=arr[10]; o.update=arr[12];
     return o;
   });
-  setData(rows,'示例数据');
-  document.getElementById('srcTag').textContent='当前显示：示例数据（占位，请粘贴真实数据）';
-};
-document.getElementById('btnGen').onclick=()=>{
-  const txt=document.getElementById('pasteArea').value;
-  if(!txt.trim()){ document.getElementById('impMsg').textContent='请先粘贴数据'; document.getElementById('impMsg').style.color='#C2272D'; return; }
-  const rows=parse(txt);
-  if(!rows||!rows.length){ document.getElementById('impMsg').textContent='未解析到数据，请确认已复制含表头的整张表'; document.getElementById('impMsg').style.color='#C2272D'; return; }
-  setData(rows,'已导入');
-  document.getElementById('impMsg').textContent='✓ 已导入 '+rows.length+' 条'; document.getElementById('impMsg').style.color='#2E8B57';
-  document.getElementById('srcTag').textContent='当前显示：WPS 导入数据（'+rows.length+' 条）';
-};
-document.getElementById('fileCsv').onchange=(e)=>{
-  const f=e.target.files[0]; if(!f) return;
-  const rd=new FileReader();
-  rd.onload=()=>{
-    const tsv=parseCSV(rd.result);
-    const rows=parse(tsv);
-    if(!rows||!rows.length){ document.getElementById('impMsg').textContent='CSV 解析失败'; document.getElementById('impMsg').style.color='#C2272D'; return; }
-    setData(rows,'CSV');
-    document.getElementById('impMsg').textContent='✓ 已导入 '+rows.length+' 条'; document.getElementById('impMsg').style.color='#2E8B57';
-    document.getElementById('srcTag').textContent='当前显示：CSV 导入（'+rows.length+' 条）';
-  };
-  rd.readAsText(f,'UTF-8');
-};
-
-/* ============ 会议室事件 ============ */
-document.getElementById('btnResetRoom').onclick=()=>{
-  const rows=SAMPLE_ROOM.map(arr=>{const o={};o.room=arr[0];o.date=arr[1];o.start=arr[2];o.end=arr[3];o.booker=arr[4];o.purpose=arr[5];o.status=arr[6];return o;});
-  setRoomData(rows,'示例数据');
-};
-document.getElementById('btnGenRoom').onclick=()=>{
-  const txt=document.getElementById('pasteRoom').value;
-  if(!txt.trim()){ document.getElementById('roomMsg').textContent='请先粘贴会议室数据'; document.getElementById('roomMsg').style.color='#C2272D'; return; }
-  const rows=parseRoom(txt);
-  if(!rows||!rows.length){ document.getElementById('roomMsg').textContent='未解析到数据，请确认已复制含表头的会议室区域'; document.getElementById('roomMsg').style.color='#C2272D'; return; }
-  setRoomData(rows,'已导入');
-};
-document.getElementById('fileRoomCsv').onchange=(e)=>{
-  const f=e.target.files[0]; if(!f) return;
-  const rd=new FileReader();
-  rd.onload=()=>{
-    const tsv=parseCSV(rd.result);
-    const rows=parseRoom(tsv);
-    if(!rows||!rows.length){ document.getElementById('roomMsg').textContent='CSV 解析失败'; document.getElementById('roomMsg').style.color='#C2272D'; return; }
-    setRoomData(rows,'CSV');
-  };
-  rd.readAsText(f,'UTF-8');
-};
-document.getElementById('btnSyncRoom').onclick=()=>{
-  const link=document.getElementById('roomLink').value.trim();
-  document.getElementById('roomMsg').textContent='正在通过本地服务同步…'; document.getElementById('roomMsg').style.color='#2E8B57';
-  fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tencentLink:link})})
-    .then(r=>r.json())
-    .then(j=>{
-      if(!j.ok){ document.getElementById('roomMsg').textContent='同步失败：'+((j.sources&&j.sources.rooms&&j.sources.rooms.error)||'未知'); document.getElementById('roomMsg').style.color='#C2272D'; return; }
-      document.getElementById('roomMsg').textContent='✓ 已触发同步，'+j.rooms+' 条会议室数据';
-      document.getElementById('roomMsg').style.color='#2E8B57';
-      loadData();
-    })
-    .catch(err=>{
-      document.getElementById('roomMsg').textContent='同步失败：本地桥接服务未启动？请先运行 node bridge/server.js。'+err;
-      document.getElementById('roomMsg').style.color='#C2272D';
-    });
-};
-
-/* 上传到本地服务（同源，无跨域；最稳的实时方式） */
-function uploadToService(text,type,msgId){
-  const msg=document.getElementById(msgId);
-  if(!text.trim()){ msg.textContent='请先粘贴数据'; msg.style.color='#C2272D'; return; }
-  msg.textContent='正在上传到本地服务…'; msg.style.color='#2E8B57';
-  fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type,text})})
-    .then(r=>r.json())
-    .then(j=>{
-      if(!j.ok){ msg.textContent='上传失败：'+(j.error||''); msg.style.color='#C2272D'; return; }
-      msg.textContent='✓ 已上传 '+j.count+' 条到本地服务，驾驶舱将自动刷新'; msg.style.color='#2E8B57';
-      loadData();
-    })
-    .catch(err=>{
-      msg.textContent='上传失败：本地桥接服务未启动？请先运行 node bridge/server.js。'; msg.style.color='#C2272D';
-    });
+  DATA=rows; render();
 }
-document.getElementById('btnUploadTask').onclick=()=>uploadToService(document.getElementById('pasteArea').value,'tasks','impMsg');
-document.getElementById('btnUploadRoom').onclick=()=>uploadToService(document.getElementById('pasteRoom').value,'rooms','roomMsg');
-document.getElementById('btnUploadVisa').onclick=()=>uploadToService(document.getElementById('pasteVisa').value,'visas','visaMsg');
-document.getElementById('fileVisaCsv').onchange=(e)=>{
-  const f=e.target.files[0]; if(!f) return;
-  const rd=new FileReader();
-  rd.onload=()=>{ uploadToService(rd.result,'visas','visaMsg'); };
-  rd.readAsText(f,'UTF-8');
-};
-document.getElementById('btnUploadVehicle').onclick=()=>uploadToService(document.getElementById('pasteVehicle').value,'vehicles','vehMsg');
-document.getElementById('fileVehicleCsv').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ uploadToService(rd.result,'vehicles','vehMsg'); }; rd.readAsText(f,'UTF-8'); };
-document.getElementById('btnUploadVehSched').onclick=()=>uploadToService(document.getElementById('pasteVehSched').value,'vehiclesched','vehSchedMsg');
-document.getElementById('fileVehSchedCsv').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ uploadToService(rd.result,'vehiclesched','vehSchedMsg'); }; rd.readAsText(f,'UTF-8'); };
+function loadSampleRoom(){
+  const rows=SAMPLE_ROOM.map(arr=>{const o={};o.room=arr[0];o.date=arr[1];o.start=arr[2];o.end=arr[3];o.booker=arr[4];o.purpose=arr[5];o.status=arr[6];return o;});
+  ROOM_DATA=rows; renderRooms();
+}
 
 /* ============ 自动轮询本地服务 ============ */
 function fmtTime(iso){
@@ -1232,8 +1094,6 @@ async function loadData(){
   if((t&&t.mode==='wps-none')||(r2&&r2.mode==='tencent-none')) detail+=' · 提示：展开下方手动入口可粘贴数据';
   setSync('', '自动同步正常', detail);
 }
-document.getElementById('btnSyncNow').onclick=triggerSync;
-document.getElementById('btnSyncNow2').onclick=triggerSync;
 async function triggerSync(){
   if(window.__COCKPIT_DATA__){ setSync('','已是内嵌数据','静态版无需手动同步；数据每小时自动重建。'); return; }
   setSync('load','正在同步…','');
@@ -1252,8 +1112,8 @@ if(saved && ['dark','business','glass','gov','warm'].includes(saved)) applyTheme
 else applyTheme('dark');
 updateClock();
 // 默认展示示例，便于没有数据也能看版式；随后尝试从本地服务拉真实数据覆盖
-document.getElementById('btnReset').onclick();
-document.getElementById('btnResetRoom').onclick();
+loadSampleTask();
+loadSampleRoom();
 // 启动即尝试从本地桥接服务加载真实数据
 loadData();
 // 每 60 秒自动刷新（实时）

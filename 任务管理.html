@@ -11,7 +11,7 @@
   <header class="top">
     <div>
       <h1>任务填写与管理</h1>
-      <div class="sub">部门任务台账录入与看板 · 表单化填报，无需直接改金山表格</div>
+      <div class="sub">部门任务台账 · 数据来自 WorkBuddy「资料库」云表，录入请点右上角按钮</div>
     </div>
     <div class="meta">
       数据更新时间：<b id="updTime">—</b><br>
@@ -32,10 +32,10 @@
 
   <div class="databar" style="justify-content:space-between">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-      <span class="t">填报说明</span>
-      <span class="hint">填写并提交后，数据经自动任务写回金山《行政部驾驶舱模板》的「任务总表」sheet，驾驶舱自动刷新。</span>
+      <span class="t">数据来源</span>
+      <span class="hint">本看板为只读视图，数据来自 WorkBuddy「资料库」云表，由每小时自动任务同步刷新（录入后约 1 小时同步到本看板）。</span>
     </div>
-    <button id="btnAdd" style="border:1px solid var(--primary);background:var(--primary);color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600">+ 新增任务</button>
+    <a href="https://www.workbuddy.cn/space/d/E810IQGqpV9dHEwsnuIsb7" target="_blank" rel="noopener" class="lib-btn">去资料库录入 / 修改任务</a>
   </div>
 
   <!-- KPI -->
@@ -43,7 +43,7 @@
 
   <!-- 筛选 -->
   <div class="sec-title">部门任务台账</div>
-  <div class="sec-sub">以下为当前任务（状态、进度、临期·逾期自动标识）。点击下方任务卡片可编辑。</div>
+  <div class="sec-sub">以下为当前任务（状态、进度、临期·逾期自动标识）。</div>
   <div class="filters" id="filters">
     <button class="fbtn active" data-f="all">全部</button>
     <button class="fbtn" data-f="进行中">进行中</button>
@@ -62,68 +62,13 @@
     <div id="taskBoard"></div>
   </div>
 
-  <!-- 新增/编辑 弹层 -->
-  <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto">
-    <div style="background:var(--card);border:1px solid var(--line);border-radius:var(--radius);max-width:760px;width:100%;padding:22px 24px;box-shadow:var(--shadow)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <h2 id="modalTitle" style="font-size:17px;color:var(--primary-d);margin:0">新增任务</h2>
-        <button id="btnClose" style="border:none;background:none;font-size:22px;cursor:pointer;color:var(--text-2)">×</button>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 16px">
-        <label class="fld" style="grid-column:1/3"><span>任务名称 *</span><input id="f_name" type="text" placeholder="如 三季度车辆年检"></label>
-        <label class="fld"><span>所属大类 *</span>
-          <select id="f_category">
-            <option value="会务接待">会务接待</option>
-            <option value="车辆管理">车辆管理</option>
-            <option value="后勤管理">后勤管理</option>
-            <option value="物资采购">物资采购</option>
-            <option value="行政办公">行政办公</option>
-            <option value="人力资源">人力资源</option>
-            <option value="其他">其他</option>
-          </select>
-        </label>
-        <label class="fld"><span>负责人 *</span><input id="f_owner" type="text" placeholder="如 李娜"></label>
-        <label class="fld" style="grid-column:1/3"><span>子项备注</span><input id="f_note" type="text" placeholder="如 12台公务车年审排期"></label>
-        <label class="fld" style="grid-column:1/3"><span>协同人（多人用逗号分隔）</span><input id="f_collab" type="text" placeholder="如 王伟,张敏"></label>
-        <label class="fld"><span>状态</span>
-          <select id="f_status">
-            <option value="未开始">未开始</option>
-            <option value="进行中">进行中</option>
-            <option value="已完成">已完成</option>
-            <option value="已暂停">已暂停</option>
-            <option value="已逾期">已逾期</option>
-          </select>
-        </label>
-        <label class="fld"><span>优先级</span>
-          <select id="f_priority">
-            <option value="高">高</option>
-            <option value="中">中</option>
-            <option value="低">低</option>
-          </select>
-        </label>
-        <label class="fld"><span>进度%</span><input id="f_progress" type="number" min="0" max="100" placeholder="0-100"></label>
-        <label class="fld"><span>开始日期</span><input id="f_start" type="date"></label>
-        <label class="fld"><span>截止日期</span><input id="f_deadline" type="date"></label>
-        <label class="fld" style="grid-column:1/3"><span>堵点说明</span><input id="f_blocker" type="text" placeholder="如 施工队排期冲突"></label>
-      </div>
-
-      <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
-        <button id="btnSave" style="border:1px solid var(--primary);background:var(--primary);color:#fff;padding:9px 22px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600">提交</button>
-        <button id="btnCancel" style="border:1px solid var(--line);background:var(--card);color:var(--text);padding:9px 18px;border-radius:8px;cursor:pointer;font-size:14px">取消</button>
-        <span id="formMsg" style="font-size:13px;color:var(--good);font-weight:600"></span>
-      </div>
-    </div>
-  </div>
-
-  <footer>行政部驾驶舱 · 任务填写与管理（表单录入版）· 与主页共用同一套风格与皮肤</footer>
+  <footer>行政部驾驶舱 · 任务填写与管理（资料库只读看板）· 与主页共用同一套风格与皮肤</footer>
 </div>
 
 <style>
-/* 表单字段（沿用主页设计语言） */
-.fld{display:flex;flex-direction:column;gap:5px;font-size:13px}
-.fld > span{color:var(--text-2);font-weight:600}
-.fld input,.fld select{border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:14px;color:var(--text);background:var(--bg);min-width:0}
-.fld input:focus,.fld select:focus{outline:none;border-color:var(--primary)}
+.lib-btn{display:inline-block;border:1px solid var(--primary);background:var(--primary);color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;text-decoration:none}
+.lib-btn:hover{opacity:.92}
+.kpis{grid-template-columns:repeat(6,1fr)}
 .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}
 .fbtn{border:1px solid var(--line);background:var(--card);color:var(--text-2);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600}
 .fbtn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
@@ -143,7 +88,7 @@
 .tk-due{font-weight:600}
 .tk-due.soon{color:var(--warn)}
 .tk-due.late{color:var(--alert)}
-@media (max-width:600px){.fld{grid-column:1/-1}.kpis{grid-template-columns:repeat(2,1fr)!important}.tkcards{grid-template-columns:1fr}}
+@media (max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)!important}.tkcards{grid-template-columns:1fr}}
 </style>
 
 <script>
@@ -163,7 +108,7 @@ function toDate(s){ if(!s) return null; const m=String(s).match(/(\d{4})[-/](\d{
 function isOverdue(r){ if(r.status==='已逾期') return true; if(r.status==='已完成') return false; const d=toDate(r.deadline); const t=toDate(todayStr()); return !!(d&&t&&d<t); }
 function weekEnd(){
   const t=toDate(todayStr()); if(!t) return null;
-  const day=(t.getDay()+6)%7; // 周一=0
+  const day=(t.getDay()+6)%7;
   const we=new Date(t); we.setDate(t.getDate()+(6-day)); return we;
 }
 
@@ -181,7 +126,7 @@ const SAMPLE_TASKS=[
   {name:'节庆慰问品采购',category:'物资采购',note:'中秋慰问',owner:'刘洋',collab:'张敏',status:'进行中',progress:35,start:'2026-08-10',deadline:'2026-09-15',priority:'中',blocker:'',update:'2026-08-14'},
   {name:'公文流转优化',category:'行政办公',note:'收发文流程简化',owner:'陈静',collab:'',status:'进行中',progress:50,start:'2026-08-03',deadline:'2026-08-28',priority:'中',blocker:'',update:'2026-08-14'},
   {name:'季度培训计划',category:'人力资源',note:'Q3培训排期',owner:'杨帆',collab:'',status:'未开始',progress:0,start:'2026-08-18',deadline:'2026-09-10',priority:'低',blocker:'',update:'2026-08-15'},
-  {name:'外事接待预案',category:'会务接待',note:'涉外活动准备',owner:'赵磊',collab:'',status:'已暂停',progress:20,start:'2026-07-30',deadline:'2026-08-12',priority:'高',blocker:'等外事口径',update:'2026-08-11'},
+  {name:'外事接待预案',category:'会务接待',note:'涉外活动准备',owner:'赵磊',collab:'王伟',status:'已暂停',progress:20,start:'2026-07-30',deadline:'2026-08-12',priority:'高',blocker:'等外事口径',update:'2026-08-11'},
   {name:'油料管理规范',category:'车辆管理',note:'用油台账与限额',owner:'李娜',collab:'',status:'已完成',progress:100,start:'2026-07-01',deadline:'2026-07-31',priority:'中',blocker:'',update:'2026-08-01'},
   {name:'绿植养护外包',category:'后勤管理',note:'办公区绿化',owner:'周婷',collab:'',status:'进行中',progress:65,start:'2026-08-06',deadline:'2026-08-26',priority:'低',blocker:'',update:'2026-08-14'},
   {name:'档案数字化',category:'行政办公',note:'历史档案扫描',owner:'陈静',collab:'胡斌',status:'进行中',progress:25,start:'2026-08-09',deadline:'2026-09-20',priority:'中',blocker:'',update:'2026-08-14'},
@@ -189,19 +134,14 @@ const SAMPLE_TASKS=[
   {name:'应急物资储备',category:'物资采购',note:'防汛物资',owner:'刘洋',collab:'',status:'进行中',progress:80,start:'2026-08-02',deadline:'2026-08-22',priority:'高',blocker:'',update:'2026-08-14'}
 ];
 
-/* ============ 数据加载（优先内嵌/桥接，回退示例） ============ */
+/* ============ 数据加载（优先内嵌，回退示例） ============ */
 let TASK_DATA=[], DEMO=false, curFilter='all', curCat='';
 async function loadData(){
   if(window.__COCKPIT_DATA__ && window.__COCKPIT_DATA__.tasks && window.__COCKPIT_DATA__.tasks.length){
     TASK_DATA=window.__COCKPIT_DATA__.tasks;
-    document.getElementById('updTime').textContent='数据内嵌';
+    document.getElementById('updTime').textContent='数据内嵌（每小时自动更新）';
     prep(); render(); return;
   }
-  try{
-    const r=await fetch('/api/data'); if(r.ok){ const j=await r.json();
-      if(j.tasks && j.tasks.length){ TASK_DATA=j.tasks; document.getElementById('updTime').textContent='本地桥接'; prep(); render(); return; }
-    }
-  }catch(e){}
   DEMO=true; TASK_DATA=SAMPLE_TASKS.map(t=>({...t}));
   document.getElementById('updTime').textContent='示例数据';
   prep(); render();
@@ -236,7 +176,7 @@ function render(){
   if(curCat) list=list.filter(x=>x.r.category===curCat);
 
   const wrap=document.getElementById('taskBoard');
-  if(DEMO && !list.length){ wrap.innerHTML='<div class="empty">以下为<b>示例预览</b>。提交真实任务后自动替换。</div>'; }
+  if(DEMO && !list.length){ wrap.innerHTML='<div class="empty">以下为<b>示例预览</b>。在资料库录入真实任务后，本看板每小时自动同步更新。</div>'; }
   else if(!list.length){ wrap.innerHTML='<div class="empty">没有符合条件的任务。</div>'; }
   else {
     wrap.innerHTML='<div class="tkcards">'+list.map(({r,i})=>{
@@ -245,7 +185,7 @@ function render(){
       if(d&&t){ const days=(d-t)/86400000; if(days<0){dueCls='late';dueTxt=r.deadline+'（已逾期）';} else if(days<=7){dueCls='soon';dueTxt=r.deadline+'（临期'+Math.ceil(days)+'天）';} }
       const prog=Math.max(0,Math.min(100,parseInt(r.progress)||0));
       const block=r.blocker?('<div class="tk-block">堵点：'+esc(r.blocker)+'</div>'):'';
-      return `<div class="tkcard ${r.status==='已完成'?'over':''}" data-i="${i}" style="cursor:pointer;border-left-color:var(--primary)">
+      return `<div class="tkcard ${r.status==='已完成'?'over':''}">
         <div class="tk-top">
           <div><div class="tk-name">${esc(r.name)}</div><span class="tk-cat">${esc(r.category)}</span></div>
           <span class="tag s-${r.status}">${r.status}</span>
@@ -263,7 +203,6 @@ function render(){
       </div>`;
     }).join('')+'</div>';
   }
-  wrap.querySelectorAll('.tkcard').forEach(c=>{ c.onclick=()=>openModal(parseInt(c.dataset.i)); });
 }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
 
@@ -273,68 +212,6 @@ document.querySelectorAll('.fbtn').forEach(b=>b.onclick=()=>{
   b.classList.add('active'); curFilter=b.dataset.f; render();
 });
 document.getElementById('catFilter').onchange=(e)=>{ curCat=e.target.value; render(); };
-
-/* ============ 表单（新增 / 编辑） ============ */
-const modal=document.getElementById('modal');
-let editIdx=-1;
-function openModal(i){
-  editIdx=i;
-  document.getElementById('modalTitle').textContent = i>=0 ? '编辑任务' : '新增任务';
-  const r = i>=0 ? TASK_DATA[i] : {};
-  document.getElementById('f_name').value=r.name||'';
-  document.getElementById('f_category').value=r.category||'会务接待';
-  document.getElementById('f_note').value=r.note||'';
-  document.getElementById('f_owner').value=r.owner||'';
-  document.getElementById('f_collab').value=r.collab||'';
-  document.getElementById('f_status').value=r.status||'未开始';
-  document.getElementById('f_priority').value=r.priority||'中';
-  document.getElementById('f_progress').value=(r.progress!=null?r.progress:'');
-  document.getElementById('f_start').value=r.start||'';
-  document.getElementById('f_deadline').value=r.deadline||'';
-  document.getElementById('f_blocker').value=r.blocker||'';
-  document.getElementById('formMsg').textContent='';
-  modal.style.display='flex';
-}
-function closeModal(){ modal.style.display='none'; editIdx=-1; }
-document.getElementById('btnAdd').onclick=()=>openModal(-1);
-document.getElementById('btnClose').onclick=closeModal;
-document.getElementById('btnCancel').onclick=closeModal;
-modal.onclick=(e)=>{ if(e.target===modal) closeModal(); };
-
-/* 组装成与 bridge/parse.js 的 mapHeader 对齐、且匹配金山「任务总表」表头的带表头 TSV */
-function buildTSV(rec){
-  const head=['任务名称','所属大类','子项备注','负责人','协同人','状态','进度%','开始日期','截止日期','优先级','堵点说明'];
-  const row=[rec.name,rec.category,rec.note,rec.owner,rec.collab,rec.status,rec.progress,rec.start,rec.deadline,rec.priority,rec.blocker];
-  return head.join('\t')+'\n'+row.map(c=>(c==null?'':String(c)).replace(/\t/g,' ')).join('\t');
-}
-document.getElementById('btnSave').onclick=async ()=>{
-  const rec={
-    name:document.getElementById('f_name').value.trim(),
-    category:document.getElementById('f_category').value,
-    note:document.getElementById('f_note').value.trim(),
-    owner:document.getElementById('f_owner').value.trim(),
-    collab:document.getElementById('f_collab').value.trim(),
-    status:document.getElementById('f_status').value,
-    priority:document.getElementById('f_priority').value,
-    progress:document.getElementById('f_progress').value.trim(),
-    start:document.getElementById('f_start').value.trim(),
-    deadline:document.getElementById('f_deadline').value.trim(),
-    blocker:document.getElementById('f_blocker').value.trim()
-  };
-  const msg=document.getElementById('formMsg');
-  if(!rec.name){ msg.style.color='var(--alert)'; msg.textContent='任务名称为必填项'; return; }
-  if(!rec.owner){ msg.style.color='var(--alert)'; msg.textContent='负责人为必填项'; return; }
-  const text=buildTSV(rec);
-  msg.style.color='var(--text-2)'; msg.textContent='提交中…';
-  try{
-    const r=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'tasks',text})});
-    const j=await r.json();
-    if(j.ok){ msg.style.color='var(--good)'; msg.textContent='✓ 已提交，自动同步到驾驶舱'; closeModal(); loadData(); }
-    else { msg.style.color='var(--alert)'; msg.textContent='提交失败：'+(j.error||'未知'); }
-  }catch(e){
-    msg.style.color='var(--alert)'; msg.textContent='提交失败：未连接本地桥接服务（公开链接填报将在下一步接通）。';
-  }
-};
 
 loadData();
 </script>

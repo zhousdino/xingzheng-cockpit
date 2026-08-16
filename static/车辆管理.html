@@ -55,6 +55,11 @@ header.top .meta b{font-weight:600}
 .tbtn:hover{border-color:var(--primary);color:var(--primary-d)}
 .tbtn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 .note{font-size:12px;color:var(--text-2);margin:6px 0 0}
+/* 二级页面快捷导航 */
+.topnav{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0;align-items:center}
+.topnav .lab{font-size:13px;color:var(--text-2);margin-right:4px}
+.navbtn{border:1px solid var(--primary);background:var(--primary);color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;text-decoration:none;transition:.15s;display:inline-block}
+.navbtn:hover{opacity:.92}
 
 .databar{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:var(--shadow)}
 .databar .t{font-weight:600;color:var(--primary-d)}
@@ -232,7 +237,7 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
   <header class="top">
     <div>
       <h1>车辆管理</h1>
-      <div class="sub">部门车辆台账与排期录入 · 表单化填报，无需直接改金山表格</div>
+      <div class="sub">部门车辆台账 · 数据来自 WorkBuddy「资料库」云表，录入请点右上角按钮</div>
     </div>
     <div class="meta">
       数据更新时间：<b id="updTime">—</b><br>
@@ -253,10 +258,10 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
 
   <div class="databar" style="justify-content:space-between">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-      <span class="t">填报说明</span>
-      <span class="hint">填写并提交后，数据经自动任务写回金山《行政部驾驶舱模板》的「车辆信息」「车辆排期」sheet，驾驶舱自动刷新。</span>
+      <span class="t">数据来源</span>
+      <span class="hint">本看板为只读视图，数据来自 WorkBuddy「资料库」云表，由每小时自动任务同步刷新（录入后约 1 小时同步到本看板）。</span>
     </div>
-    <button id="btnAdd" style="border:1px solid var(--primary);background:var(--primary);color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600">+ 新增车辆</button>
+    <a href="https://www.workbuddy.cn/space/d/IlIuElUzWtxAKPBMcGXpBg" target="_blank" rel="noopener" class="lib-btn">去资料库录入 / 修改车辆</a>
   </div>
 
   <!-- KPI -->
@@ -264,65 +269,24 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
 
   <!-- 车辆列表 -->
   <div class="sec-title">车辆台账</div>
-  <div class="sec-sub">以下为当前车辆信息（含保险 / 通行证临期·过期自动标红）。点击下方车辆卡片可编辑。</div>
+  <div class="sec-sub">以下为当前车辆信息（含保险 / 通行证临期·过期自动标红）。</div>
   <div class="card">
     <div id="vehBoard"></div>
   </div>
 
-  <!-- 新增/编辑 弹层 -->
-  <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto">
-    <div style="background:var(--card);border:1px solid var(--line);border-radius:var(--radius);max-width:720px;width:100%;padding:22px 24px;box-shadow:var(--shadow)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <h2 id="modalTitle" style="font-size:17px;color:var(--primary-d);margin:0">新增车辆</h2>
-        <button id="btnClose" style="border:none;background:none;font-size:22px;cursor:pointer;color:var(--text-2)">×</button>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 16px">
-        <label class="fld"><span>车牌 *</span><input id="f_plate" type="text" placeholder="如 新A·12345"></label>
-        <label class="fld"><span>车型</span><input id="f_model" type="text" placeholder="如 别克 GL8"></label>
-        <label class="fld"><span>驾驶员</span><input id="f_driver" type="text" placeholder="如 李娜"></label>
-        <label class="fld"><span>状态</span>
-          <select id="f_status">
-            <option value="正常">正常</option>
-            <option value="保养">保养</option>
-            <option value="维修">维修</option>
-          </select>
-        </label>
-        <label class="fld"><span>保险</span><input id="f_insurance" type="text" placeholder="如 人保 PICC-8821"></label>
-        <label class="fld"><span>保险到期</span><input id="f_insExp" type="date"></label>
-        <label class="fld"><span>通行证</span><input id="f_permit" type="text" placeholder="如 通-034"></label>
-        <label class="fld"><span>通行证到期</span><input id="f_permitExp" type="date"></label>
-        <label class="fld"><span>所有情况</span>
-          <select id="f_ownership">
-            <option value="自购">自购</option>
-            <option value="租赁">租赁</option>
-          </select>
-        </label>
-        <label class="fld"><span>当前位置</span><input id="f_curLoc" type="text" placeholder="可留空，默认取今日排期目的地"></label>
-      </div>
-      <label class="fld" style="margin-top:12px"><span>备注</span><input id="f_note" type="text" placeholder="如 主要用于接待"></label>
-
-      <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
-        <button id="btnSave" style="border:1px solid var(--primary);background:var(--primary);color:#fff;padding:9px 22px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600">提交</button>
-        <button id="btnCancel" style="border:1px solid var(--line);background:var(--card);color:var(--text);padding:9px 18px;border-radius:8px;cursor:pointer;font-size:14px">取消</button>
-        <span id="formMsg" style="font-size:13px;color:var(--good);font-weight:600"></span>
-      </div>
-    </div>
-  </div>
-
-  <footer>行政部驾驶舱 · 车辆管理（表单录入版）· 与主页共用同一套风格与皮肤</footer>
+  <footer>行政部驾驶舱 · 车辆管理（资料库只读看板）· 与主页共用同一套风格与皮肤</footer>
 </div>
 
 <style>
-/* 表单字段（沿用主页设计语言） */
-.fld{display:flex;flex-direction:column;gap:5px;font-size:13px}
-.fld > span{color:var(--text-2);font-weight:600}
-.fld input,.fld select{border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:14px;color:var(--text);background:var(--bg);min-width:0}
-.fld input:focus,.fld select:focus{outline:none;border-color:var(--primary)}
-@media (max-width:600px){.fld{grid-column:1/-1}.kpis{grid-template-columns:repeat(2,1fr)!important}}
+.lib-btn{display:inline-block;border:1px solid var(--primary);background:var(--primary);color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;text-decoration:none}
+.lib-btn:hover{opacity:.92}
+.kpis{grid-template-columns:repeat(6,1fr)}
+@keyframes warnflash{0%,100%{opacity:1}50%{opacity:.55}}
+@media (max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)!important}}
 </style>
 
 <script>
-window.__COCKPIT_DATA__ = {"tasks":[],"rooms":[{"room":"","date":"2026-08-12","start":"16:00","end":"17:00","booker":"杨明","purpose":"安全部门例会","status":"","attendees":"18","phone":"598952971","span":"16:00-17:00"},{"room":"","date":"2026-08-13","start":"15:00","end":"15:30","booker":"Intakhabun Nasir","purpose":"Commercial Department Variation Proposal discussion with Consultant and Cost Consultant","status":"","attendees":"10","phone":"539549202","span":"15:00-15:30"},{"room":"","date":"2026-08-15","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"25","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-15","start":"12:00","end":"13:30","booker":"余成","purpose":"项目策划查漏补缺会","status":"","attendees":"15","phone":"564754303","span":"12：00-13：30"},{"room":"","date":"2026-08-15","start":"20:00","end":"21:00","booker":"杨凤利","purpose":"项目管道施工进度专题研讨会","status":"","attendees":"10","phone":"570611985","span":"20：00-21：00"},{"room":"","date":"2026-08-16","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"12","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-16","start":"11:00","end":"12:30","booker":"Arshad S (HSE Trainer)","purpose":"Bar bending Training","status":"","attendees":"20","phone":"594591587","span":"11:00-12:30"},{"room":"","date":"2026-08-16","start":"16:00","end":"17:00","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"20","phone":"570611985","span":"16:00-17:00"},{"room":"","date":"2026-08-17","start":"15:00","end":"16:00","booker":"靳程","purpose":"与业主的设计周例会","status":"","attendees":"10","phone":"569108260","span":"15:00-16:00"},{"room":"","date":"2026-08-17","start":"11:00","end":"12:30","booker":"杨凤利","purpose":"External Weekly Project Meeting项目外部内部周例会","status":"","attendees":"25","phone":"570611985","span":"11:00-12:30"}],"visas":[],"vehicles":[],"vehiclesched":[],"updatedAt":"2026-08-16T06:54:21.833Z","sources":{"tasks":{"mode":"wps-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"rooms":{"mode":"drop-file","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"visas":{"mode":"visa-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"vehicles":{"mode":"vehicle-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"vehiclesched":{"mode":"vehiclesched-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null}}};
+window.__COCKPIT_DATA__ = {"tasks":[],"rooms":[{"room":"","date":"2026-08-12","start":"16:00","end":"17:00","booker":"杨明","purpose":"安全部门例会","status":"","attendees":"18","phone":"598952971","span":"16:00-17:00"},{"room":"","date":"2026-08-13","start":"15:00","end":"15:30","booker":"Intakhabun Nasir","purpose":"Commercial Department Variation Proposal discussion with Consultant and Cost Consultant","status":"","attendees":"10","phone":"539549202","span":"15:00-15:30"},{"room":"","date":"2026-08-15","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"25","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-15","start":"12:00","end":"13:30","booker":"余成","purpose":"项目策划查漏补缺会","status":"","attendees":"15","phone":"564754303","span":"12：00-13：30"},{"room":"","date":"2026-08-15","start":"20:00","end":"21:00","booker":"杨凤利","purpose":"项目管道施工进度专题研讨会","status":"","attendees":"10","phone":"570611985","span":"20：00-21：00"},{"room":"","date":"2026-08-16","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"12","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-16","start":"11:00","end":"12:30","booker":"Arshad S (HSE Trainer)","purpose":"Bar bending Training","status":"","attendees":"20","phone":"594591587","span":"11:00-12:30"},{"room":"","date":"2026-08-16","start":"16:00","end":"17:00","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"20","phone":"570611985","span":"16:00-17:00"},{"room":"","date":"2026-08-17","start":"15:00","end":"16:00","booker":"靳程","purpose":"与业主的设计周例会","status":"","attendees":"10","phone":"569108260","span":"15:00-16:00"},{"room":"","date":"2026-08-17","start":"11:00","end":"12:30","booker":"杨凤利","purpose":"External Weekly Project Meeting项目外部内部周例会","status":"","attendees":"25","phone":"570611985","span":"11:00-12:30"}],"visas":[],"vehicles":[],"vehiclesched":[],"updatedAt":"2026-08-16T07:37:31.044Z","sources":{"tasks":{"mode":"wps-none","updatedAt":"2026-08-16T07:37:31.044Z","error":null},"rooms":{"mode":"drop-file","updatedAt":"2026-08-16T07:37:31.044Z","error":null},"visas":{"mode":"visa-none","updatedAt":"2026-08-16T07:37:31.044Z","error":null},"vehicles":{"mode":"vehicle-none","updatedAt":"2026-08-16T07:37:31.044Z","error":null},"vehiclesched":{"mode":"vehiclesched-none","updatedAt":"2026-08-16T07:37:31.044Z","error":null}}};
 
 /* ============ 风格切换（与主页共用 localStorage 键） ============ */
 function applyTheme(t){
@@ -347,20 +311,15 @@ const SAMPLE_VEHICLES=[
   {plate:'新C·11223', model:'丰田陆地巡洋舰', insurance:'人寿财 LR-9012', insExp:'2027-03-20', driver:'赵磊', permit:'通-052', permitExp:'2026-07-31', status:'维修', ownership:'自购', curLoc:'', locTime:'', note:'空调检修中'}
 ];
 
-/* ============ 数据加载（优先内嵌/桥接，回退示例） ============ */
+/* ============ 数据加载（优先内嵌，回退示例） ============ */
 let VEHICLE_DATA=[], VEHICLE_SCHED=[], DEMO=false;
 async function loadData(){
   if(window.__COCKPIT_DATA__ && window.__COCKPIT_DATA__.vehicles && window.__COCKPIT_DATA__.vehicles.length){
     VEHICLE_DATA=window.__COCKPIT_DATA__.vehicles;
     VEHICLE_SCHED=window.__COCKPIT_DATA__.vehiclesched||[];
-    document.getElementById('updTime').textContent='数据内嵌';
+    document.getElementById('updTime').textContent='数据内嵌（每小时自动更新）';
     render(); return;
   }
-  try{
-    const r=await fetch('/api/data'); if(r.ok){ const j=await r.json();
-      if(j.vehicles && j.vehicles.length){ VEHICLE_DATA=j.vehicles; VEHICLE_SCHED=j.vehiclesched||[]; document.getElementById('updTime').textContent='本地桥接'; render(); return; }
-    }
-  }catch(e){}
   // 回退示例
   DEMO=true; VEHICLE_DATA=SAMPLE_VEHICLES; VEHICLE_SCHED=[];
   document.getElementById('updTime').textContent='示例数据';
@@ -374,7 +333,7 @@ function vehCards(list,sched,today){
     const insCls=vehExpClass(v.insExp), permCls=vehExpClass(v.permitExp);
     const insFlag=v.insExp?(v.insExp<today?'（已过期）':(insCls==='warn'?'（临期≤30天）':'')):'';
     const permFlag=v.permitExp?(v.permitExp<today?'（已过期）':(permCls==='warn'?'（临期≤30天）':'')):'';
-    return `<div class="vcard" data-i="${i}" style="cursor:pointer">
+    return `<div class="vcard">
       <div class="vhead"><span class="vplate">${v.plate}</span><span class="vstatus ${sc}">${v.status}</span><span class="vown">${v.ownership||'—'}</span></div>
       <div class="vinfo">
         <div class="it"><span class="k">车型</span><span class="vv">${v.model||'—'}</span></div>
@@ -403,76 +362,10 @@ function render(){
     <div class="kpi"><div class="strip"></div><div class="label">自购</div><div class="num">${ownBuy}</div></div>
     <div class="kpi"><div class="strip"></div><div class="label">租赁</div><div class="num">${ownRent}</div></div>`;
   const wrap=document.getElementById('vehBoard');
-  if(DEMO){ wrap.innerHTML='<div class="empty">以下为<b>示例预览</b>。提交真实车辆后自动替换。</div>'+vehCards(VEHICLE_DATA,[],today); }
+  if(DEMO){ wrap.innerHTML='<div class="empty">以下为<b>示例预览</b>。在资料库录入真实车辆后，本看板每小时自动同步更新。</div>'+vehCards(VEHICLE_DATA,[],today); }
   else if(!total){ wrap.innerHTML='<div class="empty">暂无车辆信息。</div>'; }
   else { wrap.innerHTML=vehCards(VEHICLE_DATA,[],today); }
-  // 点击卡片 → 编辑
-  wrap.querySelectorAll('.vcard').forEach(c=>{
-    c.onclick=()=>openModal(parseInt(c.dataset.i));
-  });
 }
-
-/* ============ 表单（新增 / 编辑） ============ */
-const modal=document.getElementById('modal');
-let editIdx=-1;
-function openModal(i){
-  editIdx=i;
-  document.getElementById('modalTitle').textContent = i>=0 ? '编辑车辆' : '新增车辆';
-  const v = i>=0 ? VEHICLE_DATA[i] : {};
-  document.getElementById('f_plate').value=v.plate||'';
-  document.getElementById('f_model').value=v.model||'';
-  document.getElementById('f_driver').value=v.driver||'';
-  document.getElementById('f_status').value=v.status||'正常';
-  document.getElementById('f_insurance').value=v.insurance||'';
-  document.getElementById('f_insExp').value=v.insExp||'';
-  document.getElementById('f_permit').value=v.permit||'';
-  document.getElementById('f_permitExp').value=v.permitExp||'';
-  document.getElementById('f_ownership').value=v.ownership||'自购';
-  document.getElementById('f_curLoc').value=v.curLoc||'';
-  document.getElementById('f_note').value=v.note||'';
-  document.getElementById('formMsg').textContent='';
-  modal.style.display='flex';
-}
-function closeModal(){ modal.style.display='none'; editIdx=-1; }
-document.getElementById('btnAdd').onclick=()=>openModal(-1);
-document.getElementById('btnClose').onclick=closeModal;
-document.getElementById('btnCancel').onclick=closeModal;
-modal.onclick=(e)=>{ if(e.target===modal) closeModal(); };
-
-/* 组装成与 bridge/parse.js 的 mapVehicleHeader 对齐的带表头 TSV */
-function buildTSV(rec){
-  const head=['车牌','车型','保险','保险到期','驾驶员','通行证','通行证到期','状态','所有情况','当前位置','上报时间','备注'];
-  const row=[rec.plate,rec.model,rec.insurance,rec.insExp,rec.driver,rec.permit,rec.permitExp,rec.status,rec.ownership,rec.curLoc,rec.locTime,rec.note];
-  return head.join('\t')+'\n'+row.map(c=>(c||'').replace(/\t/g,' ')).join('\t');
-}
-document.getElementById('btnSave').onclick=async ()=>{
-  const rec={
-    plate:document.getElementById('f_plate').value.trim(),
-    model:document.getElementById('f_model').value.trim(),
-    insurance:document.getElementById('f_insurance').value.trim(),
-    insExp:document.getElementById('f_insExp').value.trim(),
-    driver:document.getElementById('f_driver').value.trim(),
-    permit:document.getElementById('f_permit').value.trim(),
-    permitExp:document.getElementById('f_permitExp').value.trim(),
-    status:document.getElementById('f_status').value,
-    ownership:document.getElementById('f_ownership').value,
-    curLoc:document.getElementById('f_curLoc').value.trim(),
-    locTime:'',
-    note:document.getElementById('f_note').value.trim()
-  };
-  const msg=document.getElementById('formMsg');
-  if(!rec.plate){ msg.style.color='var(--alert)'; msg.textContent='车牌为必填项'; return; }
-  const text=buildTSV(rec);
-  msg.style.color='var(--text-2)'; msg.textContent='提交中…';
-  try{
-    const r=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'vehicles',text})});
-    const j=await r.json();
-    if(j.ok){ msg.style.color='var(--good)'; msg.textContent='✓ 已提交，自动同步到驾驶舱'; closeModal(); loadData(); }
-    else { msg.style.color='var(--alert)'; msg.textContent='提交失败：'+(j.error||'未知'); }
-  }catch(e){
-    msg.style.color='var(--alert)'; msg.textContent='提交失败：未连接本地桥接服务（公开链接填报将在下一步接通）。';
-  }
-};
 
 loadData();
 </script>
