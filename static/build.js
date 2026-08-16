@@ -44,7 +44,17 @@ const sources = {
 };
 const data = { tasks, rooms, visas, vehicles, vehiclesched, updatedAt, sources };
 
-const tpl = fs.readFileSync(TEMPLATE, 'utf8');
+let tpl = fs.readFileSync(TEMPLATE, 'utf8');
+// 内联共享样式 cockpit-style.css（单一风格来源），保证静态部署不依赖外链文件
+const CSS_PATH = path.join(ROOT, 'cockpit-style.css');
+let cockpitCss = '';
+try { cockpitCss = fs.readFileSync(CSS_PATH, 'utf8'); } catch (e) { /* 无则跳过 */ }
+if (cockpitCss) {
+  const linkTag = '<link rel="stylesheet" href="cockpit-style.css">';
+  if (tpl.indexOf(linkTag) >= 0) {
+    tpl = tpl.replace(linkTag, '<style>\n' + cockpitCss + '\n</style>');
+  }
+}
 // 把内嵌数据注入到 `let DATA=[];` 之前（该全局在 loadData 调用前已就绪）
 const json = JSON.stringify(data).replace(/<\//g, '<\\/');
 const marker = '\nlet DATA=[];';
@@ -62,6 +72,32 @@ fs.writeFileSync(INDEX, injected, 'utf8');
 const DIST = path.join(ROOT, 'dist', 'index.html');
 fs.mkdirSync(path.dirname(DIST), { recursive: true });
 fs.writeFileSync(DIST, injected, 'utf8');
+
+// ---------- 二级页面（车辆管理 / 任务管理）一并打包 ----------
+// 注入内嵌数据 + 内联共享样式，保证在线部署（无桥接服务）也能显示真实数据、风格一致
+const SECONDARY = ['车辆管理.html', '任务管理.html'];
+const dataScript = '\nwindow.__COCKPIT_DATA__ = ' + json + ';\n';
+const distDir = path.dirname(DIST);
+const outDir = path.dirname(OUT);
+SECONDARY.forEach(name => {
+  const sp = path.join(ROOT, name);
+  if (!fs.existsSync(sp)) { console.error('跳过（不存在）: ' + name); return; }
+  let s = fs.readFileSync(sp, 'utf8');
+  const si = s.indexOf('<script>');
+  if (si >= 0) {
+    s = s.slice(0, si) + '<script>' + dataScript + s.slice(si + '<script>'.length);
+  }
+  const linkTag = '<link rel="stylesheet" href="cockpit-style.css">';
+  if (s.indexOf(linkTag) >= 0) {
+    s = s.replace(linkTag, '<style>\n' + cockpitCss + '\n</style>');
+  }
+  fs.writeFileSync(path.join(distDir, name), s, 'utf8');
+  fs.writeFileSync(path.join(outDir, name), s, 'utf8');
+  console.log('SECONDARY ' + name);
+});
+// 复制共享样式到部署目录（外链兜底）
+try { fs.copyFileSync(CSS_PATH, path.join(distDir, 'cockpit-style.css')); } catch (e) {}
+try { fs.copyFileSync(CSS_PATH, path.join(outDir, 'cockpit-style.css')); } catch (e) {}
 
 console.log('BUILT ' + OUT);
 console.log('INDEX ' + INDEX);

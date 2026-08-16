@@ -1,5 +1,8 @@
 .workbuddy/automations/
 dist/
 
+# 桥接服务运行日志
+bridge/*.log
+
 # Python 缓存
 __pycache__/

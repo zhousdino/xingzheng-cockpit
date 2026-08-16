@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>任务填写与管理 · 行政部驾驶舱</title>
+<style>
+
+/* ============ 主题变量（5 套皮肤，随时切换） ============ */
+:root, body[data-theme="business"]{
+  --bg:#F4F6F9; --card:#FFFFFF; --line:#E3E8EF; --text:#1F2933; --text-2:#5B6573;
+  --primary:#2E75B6; --primary-d:#1F4E79; --alert:#C2272D; --good:#2E8B57; --warn:#E0A800;
+  --track:#EEF1F6; --th-bg:#F0F4F9; --shadow:0 1px 3px rgba(16,24,40,.08),0 1px 2px rgba(16,24,40,.06);
+  --radius:12px; --numfont:"Microsoft YaHei",sans-serif; --header-bg:linear-gradient(95deg,#1F4E79,#2E75B6); --header-text:#fff;
+}
+body[data-theme="dark"]{
+  --bg:#0A1A33; --card:#0F2747; --line:#1E3A5F; --text:#E6F0FF; --text-2:#9DB4D6;
+  --primary:#38BDF8; --primary-d:#7DD3FC; --alert:#FF5A5F; --good:#34D399; --warn:#FBBF24;
+  --track:#16335C; --th-bg:#16335C; --shadow:0 0 0 1px #1E3A5F,0 10px 30px rgba(0,0,0,.45);
+  --radius:10px; --numfont:"Consolas","Microsoft YaHei",monospace; --header-bg:linear-gradient(95deg,#0E2A4F,#13385F); --header-text:#E6F0FF;
+}
+body[data-theme="glass"]{
+  --bg:linear-gradient(135deg,#DCE9FF,#EDE4FF,#FFF0E6); --card:rgba(255,255,255,.55); --line:rgba(255,255,255,.7); --text:#16324F; --text-2:#3E5878;
+  --primary:#2E75B6; --primary-d:#1F4E79; --alert:#C2272D; --good:#2E8B57; --warn:#E0A800;
+  --track:rgba(255,255,255,.6); --th-bg:rgba(255,255,255,.6); --shadow:0 8px 32px rgba(31,78,121,.18);
+  --radius:16px; --numfont:"Microsoft YaHei",sans-serif; --header-bg:rgba(255,255,255,.5); --header-text:#16324F;
+}
+body[data-theme="gov"]{
+  --bg:#FFFFFF; --card:#FFFFFF; --line:#E6E9ED; --text:#222222; --text-2:#666666;
+  --primary:#C2272D; --primary-d:#9E1F24; --alert:#C2272D; --good:#2E8B57; --warn:#E0A800;
+  --track:#F0F0F0; --th-bg:#F5F6F8; --shadow:none; --radius:4px; --numfont:"Microsoft YaHei",sans-serif; --header-bg:linear-gradient(95deg,#C2272D,#9E1F24); --header-text:#fff;
+}
+body[data-theme="warm"]{
+  --bg:#FFF7EF; --card:#FFFFFF; --line:#F0DCC8; --text:#3A2E26; --text-2:#8A7159;
+  --primary:#E8833A; --primary-d:#C96A1E; --alert:#D64545; --good:#2E8B57; --warn:#E0A800;
+  --track:#FBEEDD; --th-bg:#FFF1E3; --shadow:0 2px 12px rgba(200,120,40,.12); --radius:14px; --numfont:"Microsoft YaHei",sans-serif; --header-bg:linear-gradient(95deg,#C96A1E,#E8833A); --header-text:#fff;
+}
+
+/* ============ 基础 ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;font-size:14px;transition:background .3s,color .3s}
+.wrap{max-width:1280px;margin:0 auto;padding:18px 22px 60px}
+
+/* 顶栏 */
+header.top{display:flex;align-items:center;justify-content:space-between;background:var(--header-bg);color:var(--header-text);border-radius:var(--radius);padding:16px 22px;box-shadow:var(--shadow);flex-wrap:wrap;gap:10px}
+header.top h1{font-size:21px;font-weight:700;letter-spacing:1px}
+header.top .sub{font-size:12px;opacity:.85;margin-top:2px}
+header.top .meta{font-size:12px;text-align:right;opacity:.92}
+header.top .meta b{font-weight:600}
+
+/* 风格切换条 + 数据更新条 */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px;align-items:center}
+.toolbar .lab{font-size:13px;color:var(--text-2);margin-right:4px}
+.tbtn{border:1px solid var(--line);background:var(--card);color:var(--text);padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:.15s}
+.tbtn:hover{border-color:var(--primary);color:var(--primary-d)}
+.tbtn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.note{font-size:12px;color:var(--text-2);margin:6px 0 0}
+
+.databar{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:var(--shadow)}
+.databar .t{font-weight:600;color:var(--primary-d)}
+.databar .hint{font-size:12px;color:var(--text-2)}
+.databar button{border:1px solid var(--primary);background:var(--primary);color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600}
+.databar button.ghost{background:#fff;color:var(--primary)}
+.databar button.primary{background:var(--good);border-color:var(--good)}
+.databar button:hover{filter:brightness(1.05)}
+.syncstatus{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)}
+.syncstatus .dot{width:8px;height:8px;border-radius:50%;background:var(--good);display:inline-block}
+.syncstatus.err .dot{background:var(--alert)}
+.syncstatus.load .dot{background:var(--warn);animation:pulse 1.2s infinite}
+
+details.import{max-width:1280px;margin:10px auto 0;padding:0 22px}
+details.import > summary{cursor:pointer;color:var(--primary);font-size:13px;list-style:none;user-select:none}
+details.import > summary::-webkit-details-marker{display:none}
+details.import > summary::before{content:"▸ ";font-weight:700}
+details.import[open] > summary::before{content:"▾ "}
+.impbox{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-top:8px;box-shadow:var(--shadow)}
+.impbox p{font-size:12px;color:var(--text-2);margin-bottom:8px}
+.impbox textarea{width:100%;height:120px;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:12px;font-family:Consolas,monospace;resize:vertical;color:var(--text);background:var(--bg)}
+.impbox .row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.impbox .row .msg{font-size:12px;color:var(--good);font-weight:600}
+.impbox label.file{border:1px dashed var(--primary);color:var(--primary);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px}
+.impbox input[type=file]{display:none}
+.impbox input[type=text]{border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:13px;color:var(--text);background:var(--bg);min-width:220px;flex:1}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi .label{font-size:13px;color:var(--text-2)}
+.kpi .num{font-size:30px;font-weight:700;margin-top:6px;color:var(--primary-d);font-family:var(--numfont)}
+.kpi.red .num{color:var(--alert)} .kpi.green .num{color:var(--good)}
+.kpi .strip{position:absolute;left:0;top:0;width:4px;height:100%;background:var(--primary)}
+.kpi.red .strip{background:var(--alert)} .kpi.green .strip{background:var(--good)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+[data-theme="glass"] .card{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.card h2{font-size:15px;font-weight:700;color:var(--primary-d);margin-bottom:12px;padding-left:10px;border-left:4px solid var(--primary)}
+.donut-wrap{display:flex;align-items:center;gap:18px}
+.donut-wrap .legend{font-size:13px}
+.donut-wrap .legend div{display:flex;align-items:center;gap:8px;margin:6px 0}
+.dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+.hbars .row{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:13px}
+.hbars .row .name{width:74px;flex:none;color:var(--text-2);text-align:right}
+.hbars .row .track{flex:1;background:var(--track);border-radius:6px;height:18px;overflow:hidden}
+.hbars .row .fill{height:100%;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:flex-end;color:#fff;font-size:11px;padding-right:6px;min-width:20px}
+.hbars .row .val{width:34px;color:var(--text-2)}
+
+.people .p{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.people .p:last-child{border-bottom:none}
+.people .p .nm{width:70px;flex:none;font-weight:600;color:var(--primary-d)}
+.people .p .mini{flex:1}
+.people .p .mini .ln{display:flex;align-items:center;gap:8px;margin:3px 0}
+.people .p .mini .ln .tk{flex:1;background:var(--track);border-radius:5px;height:12px;overflow:hidden}
+.people .p .mini .ln .fk{height:100%;background:var(--primary)}
+.people .p .mini .ln .tx{font-size:11px;color:var(--text-2);width:88px}
+.people .p .ov{width:46px;text-align:center;font-size:12px;font-weight:700;color:var(--alert)}
+.people .p .ov.ok{color:var(--good)}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:var(--th-bg);color:var(--primary-d);font-weight:600;position:sticky;top:0}
+tbody tr:hover{background:var(--track)}
+.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600;color:#fff}
+.tag.s-已完成{background:var(--good)} .tag.s-进行中{background:var(--warn)} .tag.s-未开始{background:var(--text-2)}
+.tag.s-已暂停{background:#9C6ADE} .tag.s-已逾期{background:var(--alert)}
+.pbar{background:var(--track);border-radius:6px;height:14px;width:90px;overflow:hidden;display:inline-block;vertical-align:middle}
+.pbar i{display:block;height:100%;background:var(--primary)}
+.pct{font-size:12px;color:var(--text-2);margin-left:6px}
+tr.od td{background:rgba(194,39,45,.10)!important}
+tr.od td:first-child{border-left:3px solid var(--alert)}
+.sec-title{font-size:16px;font-weight:700;color:var(--primary-d);margin:22px 0 4px;padding-left:10px;border-left:4px solid var(--alert)}
+.sec-sub{font-size:12px;color:var(--text-2);margin-bottom:10px}
+footer{margin-top:30px;text-align:center;font-size:12px;color:var(--text-2)}
+.empty{color:var(--text-2);font-size:13px;padding:20px;text-align:center}
+@media (max-width:980px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+
+/* ============ 会议室实时预约 ============ */
+.roomkpi{display:flex;gap:20px;align-items:center;flex-wrap:wrap;font-size:14px;margin-bottom:14px}
+.roomkpi .item{display:flex;flex-direction:column;align-items:center}
+.roomkpi .item .n{font-size:22px;font-weight:700;font-family:var(--numfont);color:var(--primary-d)}
+.roomkpi .item.red .n{color:var(--alert)} .roomkpi .item.green .n{color:var(--good)} .roomkpi .item.warn .n{color:var(--warn)}
+.roomkpi .item .l{font-size:12px;color:var(--text-2)}
+.roomkpi .live{margin-left:auto;font-size:12px;color:var(--good);font-weight:600}
+.roomkpi .live .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--good);margin-right:5px;animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.roomcards{display:flex;flex-direction:column;gap:14px}
+.rcard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg)}
+.rhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.rname{font-weight:700;color:var(--primary-d);font-size:14px}
+.rstat{display:inline-block;padding:2px 12px;border-radius:20px;font-size:12px;font-weight:600;color:#fff}
+.rstat.using{background:var(--alert)} .rstat.soon{background:var(--warn);color:#222} .rstat.idle{background:var(--good)}
+.timeline{position:relative;margin:8px 0 4px}
+.timeline .axis{position:relative;height:15px;font-size:10px;color:var(--text-2)}
+.timeline .axis span{position:absolute;transform:translateX(-50%)}
+.timeline .trackbk{position:relative;height:34px;background:var(--track);border-radius:6px;overflow:hidden}
+.timeline .seg{position:absolute;top:4px;height:26px;border-radius:4px;background:var(--primary);color:#fff;font-size:10px;display:flex;align-items:center;padding:0 4px;overflow:hidden;white-space:nowrap}
+.timeline .seg.using{background:var(--alert)} .timeline .seg.soon{background:var(--warn)} .timeline .seg.future{background:var(--primary);opacity:.5} .timeline .seg.done{background:var(--text-2);opacity:.35}
+.timeline .nowmark{position:absolute;top:0;height:34px;width:2px;background:var(--alert);opacity:.85}
+.rlist{list-style:none;margin:6px 0 0;font-size:12.5px}
+.rlist li{padding:4px 0;border-bottom:1px dashed var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rlist li:last-child{border-bottom:none}
+.rlist .rl{margin-left:auto;font-size:11px;font-weight:600;padding:1px 8px;border-radius:10px;color:#fff}
+.rlist li.using .rl{background:var(--alert)} .rlist li.soon .rl{background:var(--warn);color:#222} .rlist li.done .rl{background:var(--text-2);opacity:.7} .rlist li.future .rl{background:var(--track);color:var(--text-2)}
+.allrooms{margin-top:16px;border-top:1px dashed var(--line);padding-top:10px}
+.allrooms h4{font-size:13px;margin:0 0 8px;color:var(--text);font-weight:600}
+.arlist{list-style:none;margin:0;padding:0;font-size:12.5px}
+.arlist li{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:5px 9px;border-radius:6px;margin-bottom:4px;border-left:3px solid var(--line);background:var(--bg)}
+.arlist li.past{opacity:.5;border-left-color:var(--text-2)}
+.arlist li.today{border-left-color:var(--primary);background:rgba(66,133,244,.07)}
+.arlist li.future{border-left-color:#2E8B57;background:rgba(46,139,87,.08)}
+.ar-date{font-variant-numeric:tabular-nums;color:var(--text-2);min-width:86px}
+.badge{font-size:10.5px;font-weight:700;padding:1px 8px;border-radius:10px;color:#fff;white-space:nowrap}
+.badge.past{background:var(--text-2)}
+.badge.today{background:var(--primary)}
+.badge.future{background:#2E8B57}
+.ar-time{font-variant-numeric:tabular-nums;color:var(--text)}
+.ar-pur{color:var(--text)}
+.ar-by{color:var(--text-2)}
+.ar-at{color:var(--text-2);font-size:11px}
+
+/* 签证情况 KPI + 表格 */
+.visakpi{display:flex;gap:20px;align-items:center;flex-wrap:wrap;font-size:14px;margin-bottom:14px}
+.visakpi .item{display:flex;flex-direction:column;align-items:center;min-width:64px}
+.visakpi .item .n{font-size:22px;font-weight:700;font-family:var(--numfont);color:var(--primary-d)}
+.visakpi .item.red .n{color:var(--alert)} .visakpi .item.green .n{color:var(--good)} .visakpi .item.warn .n{color:var(--warn)}
+.visakpi .item .l{font-size:12px;color:var(--text-2)}
+.vtag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600;color:#fff}
+.vtag.doing{background:var(--warn);color:#222}
+.vtag.done{background:var(--good)}
+.vtag.reject{background:var(--alert)}
+.vtag.renew{background:#E0892B}
+.vtag.wait{background:var(--text-2)}
+tr.vrow.warn td{background:rgba(224,169,0,.12)!important}
+tr.vrow.warn td:first-child{border-left:3px solid var(--warn)}
+tr.vrow.alert td{background:rgba(194,39,45,.10)!important}
+tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
+
+/* 车辆情况 KPI + 卡片 */
+.vehkpi{display:flex;gap:18px;align-items:center;flex-wrap:wrap;font-size:14px;margin-bottom:14px}
+.vehkpi .item{display:flex;flex-direction:column;align-items:center;min-width:58px}
+.vehkpi .item .n{font-size:22px;font-weight:700;font-family:var(--numfont);color:var(--primary-d)}
+.vehkpi .item.red .n{color:var(--alert)} .vehkpi .item.warn .n{color:var(--warn)} .vehkpi .item.green .n{color:var(--good)}
+.vehkpi .item .l{font-size:12px;color:var(--text-2)}
+.vcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.vcard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg)}
+.vhead{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.vplate{font-weight:700;color:var(--primary-d);font-size:16px;font-family:var(--numfont)}
+.vstatus{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;color:#fff}
+.vstatus.normal{background:var(--good)} .vstatus.maint{background:var(--warn);color:#222} .vstatus.repair{background:var(--alert)}
+.vown{font-size:12px;font-weight:600;padding:2px 10px;border-radius:20px;background:var(--track);color:var(--text-2)}
+.vinfo{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:12.5px;margin:6px 0}
+.vinfo .it{display:flex;gap:6px;align-items:baseline}
+.vinfo .it .k{color:var(--text-2);min-width:40px}
+.vinfo .it .vv{color:var(--text);font-weight:500;word-break:break-all}
+.vinfo .it .vv.exp{color:var(--alert);font-weight:700}
+.vinfo .it .vv.warn{color:var(--warn);font-weight:700}
+.vsched{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px}
+.vsched .st{font-size:12px;color:var(--text-2);margin-bottom:4px}
+.vsched ul{list-style:none;margin:0;padding:0;font-size:12.5px}
+.vsched li{padding:3px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.vsched li .t{font-variant-numeric:tabular-nums;color:var(--text-2)}
+.vsched li .r{color:var(--text);font-weight:500}
+.vloc{margin-top:8px;font-size:12.5px;background:rgba(66,133,244,.08);border-left:3px solid var(--primary);padding:6px 10px;border-radius:6px}
+.vloc .lab{color:var(--text-2)}
+.vloc .val{color:var(--primary-d);font-weight:600}
+
+</style>
+</head>
+<body data-theme="dark">
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>任务填写与管理</h1>
+      <div class="sub">部门任务台账录入与看板 · 表单化填报，无需直接改金山表格</div>
+    </div>
+    <div class="meta">
+      数据更新时间：<b id="updTime">—</b><br>
+      <a href="./" style="color:inherit;text-decoration:underline">← 返回驾驶舱</a>
+    </div>
+  </header>
+
+  <!-- 风格切换（与主页一致） -->
+  <div class="toolbar">
+    <span class="lab">界面风格：</span>
+    <button class="tbtn" data-set="dark">深色科技大屏</button>
+    <button class="tbtn" data-set="business">浅色商务</button>
+    <button class="tbtn" data-set="glass">毛玻璃渐变</button>
+    <button class="tbtn" data-set="gov">政务简约</button>
+    <button class="tbtn" data-set="warm">暖橙现代</button>
+  </div>
+  <div class="note">↑ 点上方按钮随时更换皮肤；你的选择会被记住。</div>
+
+  <div class="databar" style="justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span class="t">填报说明</span>
+      <span class="hint">填写并提交后，数据经自动任务写回金山《行政部驾驶舱模板》的「任务总表」sheet，驾驶舱自动刷新。</span>
+    </div>
+    <button id="btnAdd" style="border:1px solid var(--primary);background:var(--primary);color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600">+ 新增任务</button>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpis" id="kpis" style="grid-template-columns:repeat(6,1fr)"></div>
+
+  <!-- 筛选 -->
+  <div class="sec-title">部门任务台账</div>
+  <div class="sec-sub">以下为当前任务（状态、进度、临期·逾期自动标识）。点击下方任务卡片可编辑。</div>
+  <div class="filters" id="filters">
+    <button class="fbtn active" data-f="all">全部</button>
+    <button class="fbtn" data-f="进行中">进行中</button>
+    <button class="fbtn" data-f="已完成">已完成</button>
+    <button class="fbtn" data-f="未开始">未开始</button>
+    <button class="fbtn" data-f="已暂停">已暂停</button>
+    <button class="fbtn" data-f="逾期">逾期</button>
+    <span style="flex:1"></span>
+    <select id="catFilter" style="border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:var(--bg);color:var(--text);font-size:13px">
+      <option value="">全部分类</option>
+    </select>
+  </div>
+
+  <!-- 任务列表 -->
+  <div class="card">
+    <div id="taskBoard"></div>
+  </div>
+
+  <!-- 新增/编辑 弹层 -->
+  <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto">
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:var(--radius);max-width:760px;width:100%;padding:22px 24px;box-shadow:var(--shadow)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h2 id="modalTitle" style="font-size:17px;color:var(--primary-d);margin:0">新增任务</h2>
+        <button id="btnClose" style="border:none;background:none;font-size:22px;cursor:pointer;color:var(--text-2)">×</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 16px">
+        <label class="fld" style="grid-column:1/3"><span>任务名称 *</span><input id="f_name" type="text" placeholder="如 三季度车辆年检"></label>
+        <label class="fld"><span>所属大类 *</span>
+          <select id="f_category">
+            <option value="会务接待">会务接待</option>
+            <option value="车辆管理">车辆管理</option>
+            <option value="后勤管理">后勤管理</option>
+            <option value="物资采购">物资采购</option>
+            <option value="行政办公">行政办公</option>
+            <option value="人力资源">人力资源</option>
+            <option value="其他">其他</option>
+          </select>
+        </label>
+        <label class="fld"><span>负责人 *</span><input id="f_owner" type="text" placeholder="如 李娜"></label>
+        <label class="fld" style="grid-column:1/3"><span>子项备注</span><input id="f_note" type="text" placeholder="如 12台公务车年审排期"></label>
+        <label class="fld" style="grid-column:1/3"><span>协同人（多人用逗号分隔）</span><input id="f_collab" type="text" placeholder="如 王伟,张敏"></label>
+        <label class="fld"><span>状态</span>
+          <select id="f_status">
+            <option value="未开始">未开始</option>
+            <option value="进行中">进行中</option>
+            <option value="已完成">已完成</option>
+            <option value="已暂停">已暂停</option>
+            <option value="已逾期">已逾期</option>
+          </select>
+        </label>
+        <label class="fld"><span>优先级</span>
+          <select id="f_priority">
+            <option value="高">高</option>
+            <option value="中">中</option>
+            <option value="低">低</option>
+          </select>
+        </label>
+        <label class="fld"><span>进度%</span><input id="f_progress" type="number" min="0" max="100" placeholder="0-100"></label>
+        <label class="fld"><span>开始日期</span><input id="f_start" type="date"></label>
+        <label class="fld"><span>截止日期</span><input id="f_deadline" type="date"></label>
+        <label class="fld" style="grid-column:1/3"><span>堵点说明</span><input id="f_blocker" type="text" placeholder="如 施工队排期冲突"></label>
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
+        <button id="btnSave" style="border:1px solid var(--primary);background:var(--primary);color:#fff;padding:9px 22px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600">提交</button>
+        <button id="btnCancel" style="border:1px solid var(--line);background:var(--card);color:var(--text);padding:9px 18px;border-radius:8px;cursor:pointer;font-size:14px">取消</button>
+        <span id="formMsg" style="font-size:13px;color:var(--good);font-weight:600"></span>
+      </div>
+    </div>
+  </div>
+
+  <footer>行政部驾驶舱 · 任务填写与管理（表单录入版）· 与主页共用同一套风格与皮肤</footer>
+</div>
+
+<style>
+/* 表单字段（沿用主页设计语言） */
+.fld{display:flex;flex-direction:column;gap:5px;font-size:13px}
+.fld > span{color:var(--text-2);font-weight:600}
+.fld input,.fld select{border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:14px;color:var(--text);background:var(--bg);min-width:0}
+.fld input:focus,.fld select:focus{outline:none;border-color:var(--primary)}
+.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}
+.fbtn{border:1px solid var(--line);background:var(--card);color:var(--text-2);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600}
+.fbtn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+/* 任务卡片 */
+.tkcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+.tkcard{border:1px solid var(--line);border-left:4px solid var(--primary);border-radius:var(--radius);padding:14px 16px;background:var(--bg)}
+.tkcard.over{opacity:.6}
+.tk-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.tk-name{font-size:15px;font-weight:700;color:var(--text);line-height:1.35}
+.tk-cat{display:inline-block;margin-top:6px;font-size:12px;font-weight:600;color:#fff;background:var(--primary);padding:2px 9px;border-radius:20px}
+.tk-meta{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--text-2)}
+.tk-meta b{color:var(--text);font-weight:600}
+.tk-bar{margin-top:10px;height:7px;background:var(--line);border-radius:6px;overflow:hidden}
+.tk-bar > i{display:block;height:100%;background:var(--primary)}
+.tk-prog{margin-top:5px;font-size:12px;color:var(--text-2)}
+.tk-block{margin-top:8px;font-size:12.5px;color:var(--alert);background:rgba(194,39,45,.08);padding:6px 9px;border-radius:6px}
+.tk-due{font-weight:600}
+.tk-due.soon{color:var(--warn)}
+.tk-due.late{color:var(--alert)}
+@media (max-width:600px){.fld{grid-column:1/-1}.kpis{grid-template-columns:repeat(2,1fr)!important}.tkcards{grid-template-columns:1fr}}
+</style>
+
+<script>
+window.__COCKPIT_DATA__ = {"tasks":[],"rooms":[{"room":"","date":"2026-08-12","start":"16:00","end":"17:00","booker":"杨明","purpose":"安全部门例会","status":"","attendees":"18","phone":"598952971","span":"16:00-17:00"},{"room":"","date":"2026-08-13","start":"15:00","end":"15:30","booker":"Intakhabun Nasir","purpose":"Commercial Department Variation Proposal discussion with Consultant and Cost Consultant","status":"","attendees":"10","phone":"539549202","span":"15:00-15:30"},{"room":"","date":"2026-08-15","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"25","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-15","start":"12:00","end":"13:30","booker":"余成","purpose":"项目策划查漏补缺会","status":"","attendees":"15","phone":"564754303","span":"12：00-13：30"},{"room":"","date":"2026-08-15","start":"20:00","end":"21:00","booker":"杨凤利","purpose":"项目管道施工进度专题研讨会","status":"","attendees":"10","phone":"570611985","span":"20：00-21：00"},{"room":"","date":"2026-08-16","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"12","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-16","start":"11:00","end":"12:30","booker":"Arshad S (HSE Trainer)","purpose":"Bar bending Training","status":"","attendees":"20","phone":"594591587","span":"11:00-12:30"},{"room":"","date":"2026-08-16","start":"16:00","end":"17:00","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"20","phone":"570611985","span":"16:00-17:00"},{"room":"","date":"2026-08-17","start":"15:00","end":"16:00","booker":"靳程","purpose":"与业主的设计周例会","status":"","attendees":"10","phone":"569108260","span":"15:00-16:00"},{"room":"","date":"2026-08-17","start":"11:00","end":"12:30","booker":"杨凤利","purpose":"External Weekly Project Meeting项目外部内部周例会","status":"","attendees":"25","phone":"570611985","span":"11:00-12:30"}],"visas":[],"vehicles":[],"vehiclesched":[],"updatedAt":"2026-08-16T06:54:21.833Z","sources":{"tasks":{"mode":"wps-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"rooms":{"mode":"drop-file","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"visas":{"mode":"visa-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"vehicles":{"mode":"vehicle-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"vehiclesched":{"mode":"vehiclesched-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null}}};
+
+/* ============ 风格切换（与主页共用 localStorage 键） ============ */
+function applyTheme(t){
+  document.body.dataset.theme=t;
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.toggle('active',b.dataset.set===t));
+  try{ localStorage.setItem('xz-cockpit-theme',t); }catch(e){}
+}
+document.querySelectorAll('.tbtn').forEach(b=>b.onclick=()=>applyTheme(b.dataset.set));
+let saved=null; try{ saved=localStorage.getItem('xz-cockpit-theme'); }catch(e){}
+if(saved && ['dark','business','glass','gov','warm'].includes(saved)) applyTheme(saved); else applyTheme('dark');
+
+/* ============ 工具（与主页一致） ============ */
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function toDate(s){ if(!s) return null; const m=String(s).match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/); if(!m) return null; return new Date(+m[1],+m[2]-1,+m[3]); }
+function isOverdue(r){ if(r.status==='已逾期') return true; if(r.status==='已完成') return false; const d=toDate(r.deadline); const t=toDate(todayStr()); return !!(d&&t&&d<t); }
+function weekEnd(){
+  const t=toDate(todayStr()); if(!t) return null;
+  const day=(t.getDay()+6)%7; // 周一=0
+  const we=new Date(t); we.setDate(t.getDate()+(6-day)); return we;
+}
+
+/* ============ 示例数据（无真实数据时演示，与主页一致） ============ */
+const SAMPLE_TASKS=[
+  {name:'年度工作会议统筹',category:'会务接待',note:'主会场布置与议程',owner:'王伟',collab:'李娜,张敏',status:'已完成',progress:100,start:'2026-07-10',deadline:'2026-07-20',priority:'高',blocker:'',update:'2026-07-21'},
+  {name:'三季度车辆年检',category:'车辆管理',note:'12台公务车年审排期',owner:'李娜',collab:'',status:'进行中',progress:60,start:'2026-08-01',deadline:'2026-08-25',priority:'中',blocker:'部分车辆预约紧张',update:'2026-08-14'},
+  {name:'食堂供应商比选',category:'后勤管理',note:'三家比价与合同',owner:'张敏',collab:'周婷',status:'进行中',progress:45,start:'2026-08-05',deadline:'2026-08-30',priority:'高',blocker:'',update:'2026-08-14'},
+  {name:'办公耗材采购',category:'物资采购',note:'三季度耗材清单',owner:'刘洋',collab:'',status:'已完成',progress:100,start:'2026-07-15',deadline:'2026-08-01',priority:'中',blocker:'',update:'2026-08-02'},
+  {name:'印章使用台账梳理',category:'行政办公',note:'用印记录电子化',owner:'陈静',collab:'',status:'已暂停',progress:30,start:'2026-07-20',deadline:'2026-08-18',priority:'低',blocker:'等法务确认模板',update:'2026-08-10'},
+  {name:'新员工入职手续',category:'人力资源',note:'3名新员工报到',owner:'杨帆',collab:'胡斌',status:'进行中',progress:70,start:'2026-08-08',deadline:'2026-08-20',priority:'高',blocker:'',update:'2026-08-14'},
+  {name:'上级检查接待',category:'会务接待',note:'迎检路线与材料',owner:'赵磊',collab:'王伟',status:'进行中',progress:40,start:'2026-08-12',deadline:'2026-08-22',priority:'高',blocker:'',update:'2026-08-14'},
+  {name:'车辆维修台账',category:'车辆管理',note:'维修记录归集',owner:'李娜',collab:'',status:'未开始',progress:0,start:'2026-08-15',deadline:'2026-09-05',priority:'低',blocker:'',update:'2026-08-15'},
+  {name:'宿舍修缮',category:'后勤管理',note:'3号楼漏水处理',owner:'周婷',collab:'',status:'逾期',progress:55,start:'2026-07-25',deadline:'2026-08-10',priority:'中',blocker:'施工队排期冲突',update:'2026-08-13'},
+  {name:'节庆慰问品采购',category:'物资采购',note:'中秋慰问',owner:'刘洋',collab:'张敏',status:'进行中',progress:35,start:'2026-08-10',deadline:'2026-09-15',priority:'中',blocker:'',update:'2026-08-14'},
+  {name:'公文流转优化',category:'行政办公',note:'收发文流程简化',owner:'陈静',collab:'',status:'进行中',progress:50,start:'2026-08-03',deadline:'2026-08-28',priority:'中',blocker:'',update:'2026-08-14'},
+  {name:'季度培训计划',category:'人力资源',note:'Q3培训排期',owner:'杨帆',collab:'',status:'未开始',progress:0,start:'2026-08-18',deadline:'2026-09-10',priority:'低',blocker:'',update:'2026-08-15'},
+  {name:'外事接待预案',category:'会务接待',note:'涉外活动准备',owner:'赵磊',collab:'',status:'已暂停',progress:20,start:'2026-07-30',deadline:'2026-08-12',priority:'高',blocker:'等外事口径',update:'2026-08-11'},
+  {name:'油料管理规范',category:'车辆管理',note:'用油台账与限额',owner:'李娜',collab:'',status:'已完成',progress:100,start:'2026-07-01',deadline:'2026-07-31',priority:'中',blocker:'',update:'2026-08-01'},
+  {name:'绿植养护外包',category:'后勤管理',note:'办公区绿化',owner:'周婷',collab:'',status:'进行中',progress:65,start:'2026-08-06',deadline:'2026-08-26',priority:'低',blocker:'',update:'2026-08-14'},
+  {name:'档案数字化',category:'行政办公',note:'历史档案扫描',owner:'陈静',collab:'胡斌',status:'进行中',progress:25,start:'2026-08-09',deadline:'2026-09-20',priority:'中',blocker:'',update:'2026-08-14'},
+  {name:'绩效考核填报',category:'人力资源',note:'半年考核',owner:'杨帆',collab:'',status:'未开始',progress:0,start:'2026-08-20',deadline:'2026-09-30',priority:'高',blocker:'',update:'2026-08-15'},
+  {name:'应急物资储备',category:'物资采购',note:'防汛物资',owner:'刘洋',collab:'',status:'进行中',progress:80,start:'2026-08-02',deadline:'2026-08-22',priority:'高',blocker:'',update:'2026-08-14'}
+];
+
+/* ============ 数据加载（优先内嵌/桥接，回退示例） ============ */
+let TASK_DATA=[], DEMO=false, curFilter='all', curCat='';
+async function loadData(){
+  if(window.__COCKPIT_DATA__ && window.__COCKPIT_DATA__.tasks && window.__COCKPIT_DATA__.tasks.length){
+    TASK_DATA=window.__COCKPIT_DATA__.tasks;
+    document.getElementById('updTime').textContent='数据内嵌';
+    prep(); render(); return;
+  }
+  try{
+    const r=await fetch('/api/data'); if(r.ok){ const j=await r.json();
+      if(j.tasks && j.tasks.length){ TASK_DATA=j.tasks; document.getElementById('updTime').textContent='本地桥接'; prep(); render(); return; }
+    }
+  }catch(e){}
+  DEMO=true; TASK_DATA=SAMPLE_TASKS.map(t=>({...t}));
+  document.getElementById('updTime').textContent='示例数据';
+  prep(); render();
+}
+function prep(){
+  TASK_DATA.forEach(r=>{ if(isOverdue(r) && r.status!=='已逾期') r.status='已逾期'; });
+  const sel=document.getElementById('catFilter');
+  const cats=[...new Set(TASK_DATA.map(r=>r.category))];
+  sel.innerHTML='<option value="">全部分类</option>'+cats.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+}
+
+/* ============ 渲染 ============ */
+function render(){
+  const today=todayStr(), we=weekEnd();
+  const total=TASK_DATA.length;
+  const doing=TASK_DATA.filter(r=>r.status==='进行中').length;
+  const done=TASK_DATA.filter(r=>r.status==='已完成').length;
+  const overdue=TASK_DATA.filter(r=>r.status==='已逾期').length;
+  const high=TASK_DATA.filter(r=>r.priority==='高'&&r.status!=='已完成').length;
+  const dueWeek=TASK_DATA.filter(r=>{ const d=toDate(r.deadline); return d&&we&&d>=toDate(today)&&d<=we&&r.status!=='已完成'; }).length;
+  document.getElementById('kpis').innerHTML=`
+    <div class="kpi"><div class="strip"></div><div class="label">任务总数</div><div class="num">${total}</div></div>
+    <div class="kpi warn"><div class="strip"></div><div class="label">进行中</div><div class="num">${doing}</div></div>
+    <div class="kpi green"><div class="strip"></div><div class="label">已完成</div><div class="num">${done}</div></div>
+    <div class="kpi red"><div class="strip"></div><div class="label">逾期</div><div class="num">${overdue}</div></div>
+    <div class="kpi"><div class="strip"></div><div class="label">高优先级</div><div class="num">${high}</div></div>
+    <div class="kpi"><div class="strip"></div><div class="label">本周截止</div><div class="num">${dueWeek}</div></div>`;
+
+  let list=TASK_DATA.map((r,i)=>({r,i}));
+  if(curFilter==='逾期') list=list.filter(x=>x.r.status==='已逾期');
+  else if(curFilter!=='all') list=list.filter(x=>x.r.status===curFilter);
+  if(curCat) list=list.filter(x=>x.r.category===curCat);
+
+  const wrap=document.getElementById('taskBoard');
+  if(DEMO && !list.length){ wrap.innerHTML='<div class="empty">以下为<b>示例预览</b>。提交真实任务后自动替换。</div>'; }
+  else if(!list.length){ wrap.innerHTML='<div class="empty">没有符合条件的任务。</div>'; }
+  else {
+    wrap.innerHTML='<div class="tkcards">'+list.map(({r,i})=>{
+      const d=toDate(r.deadline), t=toDate(today);
+      let dueCls='', dueTxt=r.deadline||'—';
+      if(d&&t){ const days=(d-t)/86400000; if(days<0){dueCls='late';dueTxt=r.deadline+'（已逾期）';} else if(days<=7){dueCls='soon';dueTxt=r.deadline+'（临期'+Math.ceil(days)+'天）';} }
+      const prog=Math.max(0,Math.min(100,parseInt(r.progress)||0));
+      const block=r.blocker?('<div class="tk-block">堵点：'+esc(r.blocker)+'</div>'):'';
+      return `<div class="tkcard ${r.status==='已完成'?'over':''}" data-i="${i}" style="cursor:pointer;border-left-color:var(--primary)">
+        <div class="tk-top">
+          <div><div class="tk-name">${esc(r.name)}</div><span class="tk-cat">${esc(r.category)}</span></div>
+          <span class="tag s-${r.status}">${r.status}</span>
+        </div>
+        <div class="tk-meta">
+          <span>负责人：<b>${esc(r.owner||'—')}</b></span>
+          <span>协同：<b>${esc(r.collab||'—')}</b></span>
+          <span>优先级：<b>${esc(r.priority||'—')}</b></span>
+          <span class="tk-due ${dueCls}">截止：<b>${dueTxt}</b></span>
+        </div>
+        <div class="tk-bar"><i style="width:${prog}%"></i></div>
+        <div class="tk-prog">进度 ${prog}%</div>
+        ${r.note?('<div class="tk-meta" style="margin-top:6px">备注：'+esc(r.note)+'</div>'):''}
+        ${block}
+      </div>`;
+    }).join('')+'</div>';
+  }
+  wrap.querySelectorAll('.tkcard').forEach(c=>{ c.onclick=()=>openModal(parseInt(c.dataset.i)); });
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
+
+/* ============ 筛选交互 ============ */
+document.querySelectorAll('.fbtn').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); curFilter=b.dataset.f; render();
+});
+document.getElementById('catFilter').onchange=(e)=>{ curCat=e.target.value; render(); };
+
+/* ============ 表单（新增 / 编辑） ============ */
+const modal=document.getElementById('modal');
+let editIdx=-1;
+function openModal(i){
+  editIdx=i;
+  document.getElementById('modalTitle').textContent = i>=0 ? '编辑任务' : '新增任务';
+  const r = i>=0 ? TASK_DATA[i] : {};
+  document.getElementById('f_name').value=r.name||'';
+  document.getElementById('f_category').value=r.category||'会务接待';
+  document.getElementById('f_note').value=r.note||'';
+  document.getElementById('f_owner').value=r.owner||'';
+  document.getElementById('f_collab').value=r.collab||'';
+  document.getElementById('f_status').value=r.status||'未开始';
+  document.getElementById('f_priority').value=r.priority||'中';
+  document.getElementById('f_progress').value=(r.progress!=null?r.progress:'');
+  document.getElementById('f_start').value=r.start||'';
+  document.getElementById('f_deadline').value=r.deadline||'';
+  document.getElementById('f_blocker').value=r.blocker||'';
+  document.getElementById('formMsg').textContent='';
+  modal.style.display='flex';
+}
+function closeModal(){ modal.style.display='none'; editIdx=-1; }
+document.getElementById('btnAdd').onclick=()=>openModal(-1);
+document.getElementById('btnClose').onclick=closeModal;
+document.getElementById('btnCancel').onclick=closeModal;
+modal.onclick=(e)=>{ if(e.target===modal) closeModal(); };
+
+/* 组装成与 bridge/parse.js 的 mapHeader 对齐、且匹配金山「任务总表」表头的带表头 TSV */
+function buildTSV(rec){
+  const head=['任务名称','所属大类','子项备注','负责人','协同人','状态','进度%','开始日期','截止日期','优先级','堵点说明'];
+  const row=[rec.name,rec.category,rec.note,rec.owner,rec.collab,rec.status,rec.progress,rec.start,rec.deadline,rec.priority,rec.blocker];
+  return head.join('\t')+'\n'+row.map(c=>(c==null?'':String(c)).replace(/\t/g,' ')).join('\t');
+}
+document.getElementById('btnSave').onclick=async ()=>{
+  const rec={
+    name:document.getElementById('f_name').value.trim(),
+    category:document.getElementById('f_category').value,
+    note:document.getElementById('f_note').value.trim(),
+    owner:document.getElementById('f_owner').value.trim(),
+    collab:document.getElementById('f_collab').value.trim(),
+    status:document.getElementById('f_status').value,
+    priority:document.getElementById('f_priority').value,
+    progress:document.getElementById('f_progress').value.trim(),
+    start:document.getElementById('f_start').value.trim(),
+    deadline:document.getElementById('f_deadline').value.trim(),
+    blocker:document.getElementById('f_blocker').value.trim()
+  };
+  const msg=document.getElementById('formMsg');
+  if(!rec.name){ msg.style.color='var(--alert)'; msg.textContent='任务名称为必填项'; return; }
+  if(!rec.owner){ msg.style.color='var(--alert)'; msg.textContent='负责人为必填项'; return; }
+  const text=buildTSV(rec);
+  msg.style.color='var(--text-2)'; msg.textContent='提交中…';
+  try{
+    const r=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'tasks',text})});
+    const j=await r.json();
+    if(j.ok){ msg.style.color='var(--good)'; msg.textContent='✓ 已提交，自动同步到驾驶舱'; closeModal(); loadData(); }
+    else { msg.style.color='var(--alert)'; msg.textContent='提交失败：'+(j.error||'未知'); }
+  }catch(e){
+    msg.style.color='var(--alert)'; msg.textContent='提交失败：未连接本地桥接服务（公开链接填报将在下一步接通）。';
+  }
+};
+
+loadData();
+</script>
+</body>
+</html>

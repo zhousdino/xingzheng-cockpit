@@ -62,7 +62,8 @@ function mapHeader(h) {
   const rules = [
     [/任务名称|任务名|事项/, 'name'],
     [/大类|类别|分类/, 'category'],
-    [/备注|子项|说明/, 'note'],
+    [/堵点|卡点|阻碍/, 'blocker'],
+    [/备注|子项/, 'note'],
     [/负责人/, 'owner'],
     [/协同/, 'collab'],
     [/状态/, 'status'],
@@ -70,7 +71,6 @@ function mapHeader(h) {
     [/开始/, 'start'],
     [/截止|到期/, 'deadline'],
     [/优先级|紧急/, 'priority'],
-    [/堵点|卡点|阻碍/, 'blocker'],
     [/更新/, 'update'],
     [/逾期/, 'overdue']
   ];

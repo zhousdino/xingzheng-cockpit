@@ -152,6 +152,19 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    // 静态资源（共享样式 cockpit-style.css、二级页面 HTML 等），从项目根目录提供，避免本地桥接打开时丢样式/页面
+    if (p.endsWith('.css') || p.endsWith('.html')) {
+      // req.url 中的中文文件名是百分号编码的，必须解码后才能匹配真实文件
+      const base = decodeURIComponent(path.basename(p));
+      const fp = path.join(ROOT, '..', base);
+      if (fs.existsSync(fp) && fs.statSync(fp).isFile()) {
+        const ct = p.endsWith('.css') ? 'text/css' : 'text/html';
+        res.writeHead(200, { 'Content-Type': ct + '; charset=utf-8' });
+        res.end(fs.readFileSync(fp, 'utf-8'));
+        return;
+      }
+    }
+
     if (p === '/api/data') {
       loadState();
       sendJSON(res, 200, STATE);
@@ -208,6 +221,14 @@ const server = http.createServer(async (req, res) => {
 
 /* ---------- 启动 ---------- */
 loadState();
+server.on('error', (e) => {
+  if (e.code === 'EADDRINUSE') {
+    console.error('❌ 端口 ' + PORT + ' 已被占用，请先结束占用该端口的旧 bridge 进程再启动。');
+    process.exit(1);
+  } else {
+    console.error('服务器错误:', e.message);
+  }
+});
 server.listen(PORT, () => {
   console.log('行政部驾驶舱桥接服务已启动：http://localhost:' + PORT);
   console.log('数据文件：' + DATA_FILE);

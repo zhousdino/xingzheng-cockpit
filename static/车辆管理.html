@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>车辆管理 · 行政部驾驶舱</title>
+<style>
+
+/* ============ 主题变量（5 套皮肤，随时切换） ============ */
+:root, body[data-theme="business"]{
+  --bg:#F4F6F9; --card:#FFFFFF; --line:#E3E8EF; --text:#1F2933; --text-2:#5B6573;
+  --primary:#2E75B6; --primary-d:#1F4E79; --alert:#C2272D; --good:#2E8B57; --warn:#E0A800;
+  --track:#EEF1F6; --th-bg:#F0F4F9; --shadow:0 1px 3px rgba(16,24,40,.08),0 1px 2px rgba(16,24,40,.06);
+  --radius:12px; --numfont:"Microsoft YaHei",sans-serif; --header-bg:linear-gradient(95deg,#1F4E79,#2E75B6); --header-text:#fff;
+}
+body[data-theme="dark"]{
+  --bg:#0A1A33; --card:#0F2747; --line:#1E3A5F; --text:#E6F0FF; --text-2:#9DB4D6;
+  --primary:#38BDF8; --primary-d:#7DD3FC; --alert:#FF5A5F; --good:#34D399; --warn:#FBBF24;
+  --track:#16335C; --th-bg:#16335C; --shadow:0 0 0 1px #1E3A5F,0 10px 30px rgba(0,0,0,.45);
+  --radius:10px; --numfont:"Consolas","Microsoft YaHei",monospace; --header-bg:linear-gradient(95deg,#0E2A4F,#13385F); --header-text:#E6F0FF;
+}
+body[data-theme="glass"]{
+  --bg:linear-gradient(135deg,#DCE9FF,#EDE4FF,#FFF0E6); --card:rgba(255,255,255,.55); --line:rgba(255,255,255,.7); --text:#16324F; --text-2:#3E5878;
+  --primary:#2E75B6; --primary-d:#1F4E79; --alert:#C2272D; --good:#2E8B57; --warn:#E0A800;
+  --track:rgba(255,255,255,.6); --th-bg:rgba(255,255,255,.6); --shadow:0 8px 32px rgba(31,78,121,.18);
+  --radius:16px; --numfont:"Microsoft YaHei",sans-serif; --header-bg:rgba(255,255,255,.5); --header-text:#16324F;
+}
+body[data-theme="gov"]{
+  --bg:#FFFFFF; --card:#FFFFFF; --line:#E6E9ED; --text:#222222; --text-2:#666666;
+  --primary:#C2272D; --primary-d:#9E1F24; --alert:#C2272D; --good:#2E8B57; --warn:#E0A800;
+  --track:#F0F0F0; --th-bg:#F5F6F8; --shadow:none; --radius:4px; --numfont:"Microsoft YaHei",sans-serif; --header-bg:linear-gradient(95deg,#C2272D,#9E1F24); --header-text:#fff;
+}
+body[data-theme="warm"]{
+  --bg:#FFF7EF; --card:#FFFFFF; --line:#F0DCC8; --text:#3A2E26; --text-2:#8A7159;
+  --primary:#E8833A; --primary-d:#C96A1E; --alert:#D64545; --good:#2E8B57; --warn:#E0A800;
+  --track:#FBEEDD; --th-bg:#FFF1E3; --shadow:0 2px 12px rgba(200,120,40,.12); --radius:14px; --numfont:"Microsoft YaHei",sans-serif; --header-bg:linear-gradient(95deg,#C96A1E,#E8833A); --header-text:#fff;
+}
+
+/* ============ 基础 ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;font-size:14px;transition:background .3s,color .3s}
+.wrap{max-width:1280px;margin:0 auto;padding:18px 22px 60px}
+
+/* 顶栏 */
+header.top{display:flex;align-items:center;justify-content:space-between;background:var(--header-bg);color:var(--header-text);border-radius:var(--radius);padding:16px 22px;box-shadow:var(--shadow);flex-wrap:wrap;gap:10px}
+header.top h1{font-size:21px;font-weight:700;letter-spacing:1px}
+header.top .sub{font-size:12px;opacity:.85;margin-top:2px}
+header.top .meta{font-size:12px;text-align:right;opacity:.92}
+header.top .meta b{font-weight:600}
+
+/* 风格切换条 + 数据更新条 */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px;align-items:center}
+.toolbar .lab{font-size:13px;color:var(--text-2);margin-right:4px}
+.tbtn{border:1px solid var(--line);background:var(--card);color:var(--text);padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:.15s}
+.tbtn:hover{border-color:var(--primary);color:var(--primary-d)}
+.tbtn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.note{font-size:12px;color:var(--text-2);margin:6px 0 0}
+
+.databar{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:var(--shadow)}
+.databar .t{font-weight:600;color:var(--primary-d)}
+.databar .hint{font-size:12px;color:var(--text-2)}
+.databar button{border:1px solid var(--primary);background:var(--primary);color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600}
+.databar button.ghost{background:#fff;color:var(--primary)}
+.databar button.primary{background:var(--good);border-color:var(--good)}
+.databar button:hover{filter:brightness(1.05)}
+.syncstatus{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)}
+.syncstatus .dot{width:8px;height:8px;border-radius:50%;background:var(--good);display:inline-block}
+.syncstatus.err .dot{background:var(--alert)}
+.syncstatus.load .dot{background:var(--warn);animation:pulse 1.2s infinite}
+
+details.import{max-width:1280px;margin:10px auto 0;padding:0 22px}
+details.import > summary{cursor:pointer;color:var(--primary);font-size:13px;list-style:none;user-select:none}
+details.import > summary::-webkit-details-marker{display:none}
+details.import > summary::before{content:"▸ ";font-weight:700}
+details.import[open] > summary::before{content:"▾ "}
+.impbox{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-top:8px;box-shadow:var(--shadow)}
+.impbox p{font-size:12px;color:var(--text-2);margin-bottom:8px}
+.impbox textarea{width:100%;height:120px;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:12px;font-family:Consolas,monospace;resize:vertical;color:var(--text);background:var(--bg)}
+.impbox .row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.impbox .row .msg{font-size:12px;color:var(--good);font-weight:600}
+.impbox label.file{border:1px dashed var(--primary);color:var(--primary);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px}
+.impbox input[type=file]{display:none}
+.impbox input[type=text]{border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:13px;color:var(--text);background:var(--bg);min-width:220px;flex:1}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi .label{font-size:13px;color:var(--text-2)}
+.kpi .num{font-size:30px;font-weight:700;margin-top:6px;color:var(--primary-d);font-family:var(--numfont)}
+.kpi.red .num{color:var(--alert)} .kpi.green .num{color:var(--good)}
+.kpi .strip{position:absolute;left:0;top:0;width:4px;height:100%;background:var(--primary)}
+.kpi.red .strip{background:var(--alert)} .kpi.green .strip{background:var(--good)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+[data-theme="glass"] .card{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.card h2{font-size:15px;font-weight:700;color:var(--primary-d);margin-bottom:12px;padding-left:10px;border-left:4px solid var(--primary)}
+.donut-wrap{display:flex;align-items:center;gap:18px}
+.donut-wrap .legend{font-size:13px}
+.donut-wrap .legend div{display:flex;align-items:center;gap:8px;margin:6px 0}
+.dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+.hbars .row{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:13px}
+.hbars .row .name{width:74px;flex:none;color:var(--text-2);text-align:right}
+.hbars .row .track{flex:1;background:var(--track);border-radius:6px;height:18px;overflow:hidden}
+.hbars .row .fill{height:100%;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:flex-end;color:#fff;font-size:11px;padding-right:6px;min-width:20px}
+.hbars .row .val{width:34px;color:var(--text-2)}
+
+.people .p{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.people .p:last-child{border-bottom:none}
+.people .p .nm{width:70px;flex:none;font-weight:600;color:var(--primary-d)}
+.people .p .mini{flex:1}
+.people .p .mini .ln{display:flex;align-items:center;gap:8px;margin:3px 0}
+.people .p .mini .ln .tk{flex:1;background:var(--track);border-radius:5px;height:12px;overflow:hidden}
+.people .p .mini .ln .fk{height:100%;background:var(--primary)}
+.people .p .mini .ln .tx{font-size:11px;color:var(--text-2);width:88px}
+.people .p .ov{width:46px;text-align:center;font-size:12px;font-weight:700;color:var(--alert)}
+.people .p .ov.ok{color:var(--good)}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:var(--th-bg);color:var(--primary-d);font-weight:600;position:sticky;top:0}
+tbody tr:hover{background:var(--track)}
+.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600;color:#fff}
+.tag.s-已完成{background:var(--good)} .tag.s-进行中{background:var(--warn)} .tag.s-未开始{background:var(--text-2)}
+.tag.s-已暂停{background:#9C6ADE} .tag.s-已逾期{background:var(--alert)}
+.pbar{background:var(--track);border-radius:6px;height:14px;width:90px;overflow:hidden;display:inline-block;vertical-align:middle}
+.pbar i{display:block;height:100%;background:var(--primary)}
+.pct{font-size:12px;color:var(--text-2);margin-left:6px}
+tr.od td{background:rgba(194,39,45,.10)!important}
+tr.od td:first-child{border-left:3px solid var(--alert)}
+.sec-title{font-size:16px;font-weight:700;color:var(--primary-d);margin:22px 0 4px;padding-left:10px;border-left:4px solid var(--alert)}
+.sec-sub{font-size:12px;color:var(--text-2);margin-bottom:10px}
+footer{margin-top:30px;text-align:center;font-size:12px;color:var(--text-2)}
+.empty{color:var(--text-2);font-size:13px;padding:20px;text-align:center}
+@media (max-width:980px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+
+/* ============ 会议室实时预约 ============ */
+.roomkpi{display:flex;gap:20px;align-items:center;flex-wrap:wrap;font-size:14px;margin-bottom:14px}
+.roomkpi .item{display:flex;flex-direction:column;align-items:center}
+.roomkpi .item .n{font-size:22px;font-weight:700;font-family:var(--numfont);color:var(--primary-d)}
+.roomkpi .item.red .n{color:var(--alert)} .roomkpi .item.green .n{color:var(--good)} .roomkpi .item.warn .n{color:var(--warn)}
+.roomkpi .item .l{font-size:12px;color:var(--text-2)}
+.roomkpi .live{margin-left:auto;font-size:12px;color:var(--good);font-weight:600}
+.roomkpi .live .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--good);margin-right:5px;animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.roomcards{display:flex;flex-direction:column;gap:14px}
+.rcard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg)}
+.rhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.rname{font-weight:700;color:var(--primary-d);font-size:14px}
+.rstat{display:inline-block;padding:2px 12px;border-radius:20px;font-size:12px;font-weight:600;color:#fff}
+.rstat.using{background:var(--alert)} .rstat.soon{background:var(--warn);color:#222} .rstat.idle{background:var(--good)}
+.timeline{position:relative;margin:8px 0 4px}
+.timeline .axis{position:relative;height:15px;font-size:10px;color:var(--text-2)}
+.timeline .axis span{position:absolute;transform:translateX(-50%)}
+.timeline .trackbk{position:relative;height:34px;background:var(--track);border-radius:6px;overflow:hidden}
+.timeline .seg{position:absolute;top:4px;height:26px;border-radius:4px;background:var(--primary);color:#fff;font-size:10px;display:flex;align-items:center;padding:0 4px;overflow:hidden;white-space:nowrap}
+.timeline .seg.using{background:var(--alert)} .timeline .seg.soon{background:var(--warn)} .timeline .seg.future{background:var(--primary);opacity:.5} .timeline .seg.done{background:var(--text-2);opacity:.35}
+.timeline .nowmark{position:absolute;top:0;height:34px;width:2px;background:var(--alert);opacity:.85}
+.rlist{list-style:none;margin:6px 0 0;font-size:12.5px}
+.rlist li{padding:4px 0;border-bottom:1px dashed var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rlist li:last-child{border-bottom:none}
+.rlist .rl{margin-left:auto;font-size:11px;font-weight:600;padding:1px 8px;border-radius:10px;color:#fff}
+.rlist li.using .rl{background:var(--alert)} .rlist li.soon .rl{background:var(--warn);color:#222} .rlist li.done .rl{background:var(--text-2);opacity:.7} .rlist li.future .rl{background:var(--track);color:var(--text-2)}
+.allrooms{margin-top:16px;border-top:1px dashed var(--line);padding-top:10px}
+.allrooms h4{font-size:13px;margin:0 0 8px;color:var(--text);font-weight:600}
+.arlist{list-style:none;margin:0;padding:0;font-size:12.5px}
+.arlist li{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:5px 9px;border-radius:6px;margin-bottom:4px;border-left:3px solid var(--line);background:var(--bg)}
+.arlist li.past{opacity:.5;border-left-color:var(--text-2)}
+.arlist li.today{border-left-color:var(--primary);background:rgba(66,133,244,.07)}
+.arlist li.future{border-left-color:#2E8B57;background:rgba(46,139,87,.08)}
+.ar-date{font-variant-numeric:tabular-nums;color:var(--text-2);min-width:86px}
+.badge{font-size:10.5px;font-weight:700;padding:1px 8px;border-radius:10px;color:#fff;white-space:nowrap}
+.badge.past{background:var(--text-2)}
+.badge.today{background:var(--primary)}
+.badge.future{background:#2E8B57}
+.ar-time{font-variant-numeric:tabular-nums;color:var(--text)}
+.ar-pur{color:var(--text)}
+.ar-by{color:var(--text-2)}
+.ar-at{color:var(--text-2);font-size:11px}
+
+/* 签证情况 KPI + 表格 */
+.visakpi{display:flex;gap:20px;align-items:center;flex-wrap:wrap;font-size:14px;margin-bottom:14px}
+.visakpi .item{display:flex;flex-direction:column;align-items:center;min-width:64px}
+.visakpi .item .n{font-size:22px;font-weight:700;font-family:var(--numfont);color:var(--primary-d)}
+.visakpi .item.red .n{color:var(--alert)} .visakpi .item.green .n{color:var(--good)} .visakpi .item.warn .n{color:var(--warn)}
+.visakpi .item .l{font-size:12px;color:var(--text-2)}
+.vtag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600;color:#fff}
+.vtag.doing{background:var(--warn);color:#222}
+.vtag.done{background:var(--good)}
+.vtag.reject{background:var(--alert)}
+.vtag.renew{background:#E0892B}
+.vtag.wait{background:var(--text-2)}
+tr.vrow.warn td{background:rgba(224,169,0,.12)!important}
+tr.vrow.warn td:first-child{border-left:3px solid var(--warn)}
+tr.vrow.alert td{background:rgba(194,39,45,.10)!important}
+tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
+
+/* 车辆情况 KPI + 卡片 */
+.vehkpi{display:flex;gap:18px;align-items:center;flex-wrap:wrap;font-size:14px;margin-bottom:14px}
+.vehkpi .item{display:flex;flex-direction:column;align-items:center;min-width:58px}
+.vehkpi .item .n{font-size:22px;font-weight:700;font-family:var(--numfont);color:var(--primary-d)}
+.vehkpi .item.red .n{color:var(--alert)} .vehkpi .item.warn .n{color:var(--warn)} .vehkpi .item.green .n{color:var(--good)}
+.vehkpi .item .l{font-size:12px;color:var(--text-2)}
+.vcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.vcard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg)}
+.vhead{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.vplate{font-weight:700;color:var(--primary-d);font-size:16px;font-family:var(--numfont)}
+.vstatus{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;color:#fff}
+.vstatus.normal{background:var(--good)} .vstatus.maint{background:var(--warn);color:#222} .vstatus.repair{background:var(--alert)}
+.vown{font-size:12px;font-weight:600;padding:2px 10px;border-radius:20px;background:var(--track);color:var(--text-2)}
+.vinfo{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:12.5px;margin:6px 0}
+.vinfo .it{display:flex;gap:6px;align-items:baseline}
+.vinfo .it .k{color:var(--text-2);min-width:40px}
+.vinfo .it .vv{color:var(--text);font-weight:500;word-break:break-all}
+.vinfo .it .vv.exp{color:var(--alert);font-weight:700}
+.vinfo .it .vv.warn{color:var(--warn);font-weight:700}
+.vsched{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px}
+.vsched .st{font-size:12px;color:var(--text-2);margin-bottom:4px}
+.vsched ul{list-style:none;margin:0;padding:0;font-size:12.5px}
+.vsched li{padding:3px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.vsched li .t{font-variant-numeric:tabular-nums;color:var(--text-2)}
+.vsched li .r{color:var(--text);font-weight:500}
+.vloc{margin-top:8px;font-size:12.5px;background:rgba(66,133,244,.08);border-left:3px solid var(--primary);padding:6px 10px;border-radius:6px}
+.vloc .lab{color:var(--text-2)}
+.vloc .val{color:var(--primary-d);font-weight:600}
+
+</style>
+</head>
+<body data-theme="dark">
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>车辆管理</h1>
+      <div class="sub">部门车辆台账与排期录入 · 表单化填报，无需直接改金山表格</div>
+    </div>
+    <div class="meta">
+      数据更新时间：<b id="updTime">—</b><br>
+      <a href="index.html" style="color:inherit;text-decoration:underline">← 返回驾驶舱</a>
+    </div>
+  </header>
+
+  <!-- 风格切换（与主页一致） -->
+  <div class="toolbar">
+    <span class="lab">界面风格：</span>
+    <button class="tbtn" data-set="dark">深色科技大屏</button>
+    <button class="tbtn" data-set="business">浅色商务</button>
+    <button class="tbtn" data-set="glass">毛玻璃渐变</button>
+    <button class="tbtn" data-set="gov">政务简约</button>
+    <button class="tbtn" data-set="warm">暖橙现代</button>
+  </div>
+  <div class="note">↑ 点上方按钮随时更换皮肤；你的选择会被记住。</div>
+
+  <div class="databar" style="justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span class="t">填报说明</span>
+      <span class="hint">填写并提交后，数据经自动任务写回金山《行政部驾驶舱模板》的「车辆信息」「车辆排期」sheet，驾驶舱自动刷新。</span>
+    </div>
+    <button id="btnAdd" style="border:1px solid var(--primary);background:var(--primary);color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600">+ 新增车辆</button>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpis" id="kpis" style="grid-template-columns:repeat(6,1fr)"></div>
+
+  <!-- 车辆列表 -->
+  <div class="sec-title">车辆台账</div>
+  <div class="sec-sub">以下为当前车辆信息（含保险 / 通行证临期·过期自动标红）。点击下方车辆卡片可编辑。</div>
+  <div class="card">
+    <div id="vehBoard"></div>
+  </div>
+
+  <!-- 新增/编辑 弹层 -->
+  <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto">
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:var(--radius);max-width:720px;width:100%;padding:22px 24px;box-shadow:var(--shadow)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h2 id="modalTitle" style="font-size:17px;color:var(--primary-d);margin:0">新增车辆</h2>
+        <button id="btnClose" style="border:none;background:none;font-size:22px;cursor:pointer;color:var(--text-2)">×</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 16px">
+        <label class="fld"><span>车牌 *</span><input id="f_plate" type="text" placeholder="如 新A·12345"></label>
+        <label class="fld"><span>车型</span><input id="f_model" type="text" placeholder="如 别克 GL8"></label>
+        <label class="fld"><span>驾驶员</span><input id="f_driver" type="text" placeholder="如 李娜"></label>
+        <label class="fld"><span>状态</span>
+          <select id="f_status">
+            <option value="正常">正常</option>
+            <option value="保养">保养</option>
+            <option value="维修">维修</option>
+          </select>
+        </label>
+        <label class="fld"><span>保险</span><input id="f_insurance" type="text" placeholder="如 人保 PICC-8821"></label>
+        <label class="fld"><span>保险到期</span><input id="f_insExp" type="date"></label>
+        <label class="fld"><span>通行证</span><input id="f_permit" type="text" placeholder="如 通-034"></label>
+        <label class="fld"><span>通行证到期</span><input id="f_permitExp" type="date"></label>
+        <label class="fld"><span>所有情况</span>
+          <select id="f_ownership">
+            <option value="自购">自购</option>
+            <option value="租赁">租赁</option>
+          </select>
+        </label>
+        <label class="fld"><span>当前位置</span><input id="f_curLoc" type="text" placeholder="可留空，默认取今日排期目的地"></label>
+      </div>
+      <label class="fld" style="margin-top:12px"><span>备注</span><input id="f_note" type="text" placeholder="如 主要用于接待"></label>
+
+      <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
+        <button id="btnSave" style="border:1px solid var(--primary);background:var(--primary);color:#fff;padding:9px 22px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600">提交</button>
+        <button id="btnCancel" style="border:1px solid var(--line);background:var(--card);color:var(--text);padding:9px 18px;border-radius:8px;cursor:pointer;font-size:14px">取消</button>
+        <span id="formMsg" style="font-size:13px;color:var(--good);font-weight:600"></span>
+      </div>
+    </div>
+  </div>
+
+  <footer>行政部驾驶舱 · 车辆管理（表单录入版）· 与主页共用同一套风格与皮肤</footer>
+</div>
+
+<style>
+/* 表单字段（沿用主页设计语言） */
+.fld{display:flex;flex-direction:column;gap:5px;font-size:13px}
+.fld > span{color:var(--text-2);font-weight:600}
+.fld input,.fld select{border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:14px;color:var(--text);background:var(--bg);min-width:0}
+.fld input:focus,.fld select:focus{outline:none;border-color:var(--primary)}
+@media (max-width:600px){.fld{grid-column:1/-1}.kpis{grid-template-columns:repeat(2,1fr)!important}}
+</style>
+
+<script>
+window.__COCKPIT_DATA__ = {"tasks":[],"rooms":[{"room":"","date":"2026-08-12","start":"16:00","end":"17:00","booker":"杨明","purpose":"安全部门例会","status":"","attendees":"18","phone":"598952971","span":"16:00-17:00"},{"room":"","date":"2026-08-13","start":"15:00","end":"15:30","booker":"Intakhabun Nasir","purpose":"Commercial Department Variation Proposal discussion with Consultant and Cost Consultant","status":"","attendees":"10","phone":"539549202","span":"15:00-15:30"},{"room":"","date":"2026-08-15","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"25","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-15","start":"12:00","end":"13:30","booker":"余成","purpose":"项目策划查漏补缺会","status":"","attendees":"15","phone":"564754303","span":"12：00-13：30"},{"room":"","date":"2026-08-15","start":"20:00","end":"21:00","booker":"杨凤利","purpose":"项目管道施工进度专题研讨会","status":"","attendees":"10","phone":"570611985","span":"20：00-21：00"},{"room":"","date":"2026-08-16","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"12","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-16","start":"11:00","end":"12:30","booker":"Arshad S (HSE Trainer)","purpose":"Bar bending Training","status":"","attendees":"20","phone":"594591587","span":"11:00-12:30"},{"room":"","date":"2026-08-16","start":"16:00","end":"17:00","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"20","phone":"570611985","span":"16:00-17:00"},{"room":"","date":"2026-08-17","start":"15:00","end":"16:00","booker":"靳程","purpose":"与业主的设计周例会","status":"","attendees":"10","phone":"569108260","span":"15:00-16:00"},{"room":"","date":"2026-08-17","start":"11:00","end":"12:30","booker":"杨凤利","purpose":"External Weekly Project Meeting项目外部内部周例会","status":"","attendees":"25","phone":"570611985","span":"11:00-12:30"}],"visas":[],"vehicles":[],"vehiclesched":[],"updatedAt":"2026-08-16T06:54:21.833Z","sources":{"tasks":{"mode":"wps-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"rooms":{"mode":"drop-file","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"visas":{"mode":"visa-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"vehicles":{"mode":"vehicle-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null},"vehiclesched":{"mode":"vehiclesched-none","updatedAt":"2026-08-16T06:54:21.833Z","error":null}}};
+
+/* ============ 风格切换（与主页共用 localStorage 键） ============ */
+function applyTheme(t){
+  document.body.dataset.theme=t;
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.toggle('active',b.dataset.set===t));
+  try{ localStorage.setItem('xz-cockpit-theme',t); }catch(e){}
+}
+document.querySelectorAll('.tbtn').forEach(b=>b.onclick=()=>applyTheme(b.dataset.set));
+let saved=null; try{ saved=localStorage.getItem('xz-cockpit-theme'); }catch(e){}
+if(saved && ['dark','business','glass','gov','warm'].includes(saved)) applyTheme(saved); else applyTheme('dark');
+
+/* ============ 工具（与主页一致） ============ */
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function toDate(s){ if(!s) return null; const m=String(s).match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/); if(!m) return null; return new Date(+m[1],+m[2]-1,+m[3]); }
+function vehExpClass(date){ if(!date) return ''; const today=todayStr(); if(date<today) return 'exp'; const d=toDate(date),t=toDate(today); if(d&&t){ const days=(d-t)/86400000; if(days>=0&&days<=30) return 'warn'; } return ''; }
+function vehStatusClass(s){ return s==='保养'?'maint':(s==='维修'?'repair':'normal'); }
+
+/* ============ 示例数据（无真实数据时演示） ============ */
+const SAMPLE_VEHICLES=[
+  {plate:'新A·12345', model:'别克 GL8', insurance:'人保 PICC-8821', insExp:'2026-09-30', driver:'李娜', permit:'通-034', permitExp:'2026-12-31', status:'正常', ownership:'自购', curLoc:'', locTime:'', note:'主要用于接待'},
+  {plate:'新B·67890', model:'江铃全顺', insurance:'平安 PA-5543', insExp:'2026-08-10', driver:'王强', permit:'通-017', permitExp:'2026-10-15', status:'保养', ownership:'租赁', curLoc:'', locTime:'', note:'下周年检'},
+  {plate:'新C·11223', model:'丰田陆地巡洋舰', insurance:'人寿财 LR-9012', insExp:'2027-03-20', driver:'赵磊', permit:'通-052', permitExp:'2026-07-31', status:'维修', ownership:'自购', curLoc:'', locTime:'', note:'空调检修中'}
+];
+
+/* ============ 数据加载（优先内嵌/桥接，回退示例） ============ */
+let VEHICLE_DATA=[], VEHICLE_SCHED=[], DEMO=false;
+async function loadData(){
+  if(window.__COCKPIT_DATA__ && window.__COCKPIT_DATA__.vehicles && window.__COCKPIT_DATA__.vehicles.length){
+    VEHICLE_DATA=window.__COCKPIT_DATA__.vehicles;
+    VEHICLE_SCHED=window.__COCKPIT_DATA__.vehiclesched||[];
+    document.getElementById('updTime').textContent='数据内嵌';
+    render(); return;
+  }
+  try{
+    const r=await fetch('/api/data'); if(r.ok){ const j=await r.json();
+      if(j.vehicles && j.vehicles.length){ VEHICLE_DATA=j.vehicles; VEHICLE_SCHED=j.vehiclesched||[]; document.getElementById('updTime').textContent='本地桥接'; render(); return; }
+    }
+  }catch(e){}
+  // 回退示例
+  DEMO=true; VEHICLE_DATA=SAMPLE_VEHICLES; VEHICLE_SCHED=[];
+  document.getElementById('updTime').textContent='示例数据';
+  render();
+}
+
+/* ============ 渲染 ============ */
+function vehCards(list,sched,today){
+  return '<div class="vcards">'+list.map((v,i)=>{
+    const sc=vehStatusClass(v.status);
+    const insCls=vehExpClass(v.insExp), permCls=vehExpClass(v.permitExp);
+    const insFlag=v.insExp?(v.insExp<today?'（已过期）':(insCls==='warn'?'（临期≤30天）':'')):'';
+    const permFlag=v.permitExp?(v.permitExp<today?'（已过期）':(permCls==='warn'?'（临期≤30天）':'')):'';
+    return `<div class="vcard" data-i="${i}" style="cursor:pointer">
+      <div class="vhead"><span class="vplate">${v.plate}</span><span class="vstatus ${sc}">${v.status}</span><span class="vown">${v.ownership||'—'}</span></div>
+      <div class="vinfo">
+        <div class="it"><span class="k">车型</span><span class="vv">${v.model||'—'}</span></div>
+        <div class="it"><span class="k">驾驶员</span><span class="vv">${v.driver||'—'}</span></div>
+        <div class="it"><span class="k">保险</span><span class="vv ${insCls}">${v.insurance||'—'}${v.insExp?(v.insExp+insFlag):''}</span></div>
+        <div class="it"><span class="k">通行证</span><span class="vv ${permCls}">${v.permit||'—'}${v.permitExp?(v.permitExp+permFlag):''}</span></div>
+        <div class="it" style="grid-column:1/3"><span class="k">备注</span><span class="vv">${v.note||'—'}</span></div>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+function render(){
+  const today=todayStr();
+  const vk=document.getElementById('kpis');
+  const total=VEHICLE_DATA.length;
+  const normal=VEHICLE_DATA.filter(r=>r.status==='正常').length;
+  const maint=VEHICLE_DATA.filter(r=>r.status==='保养').length;
+  const repair=VEHICLE_DATA.filter(r=>r.status==='维修').length;
+  const ownBuy=VEHICLE_DATA.filter(r=>r.ownership==='自购').length;
+  const ownRent=VEHICLE_DATA.filter(r=>r.ownership==='租赁').length;
+  vk.innerHTML=`
+    <div class="kpi"><div class="strip"></div><div class="label">车辆总数</div><div class="num">${total}</div></div>
+    <div class="kpi green"><div class="strip"></div><div class="label">正常</div><div class="num">${normal}</div></div>
+    <div class="kpi warn"><div class="strip"></div><div class="label">保养</div><div class="num">${maint}</div></div>
+    <div class="kpi red"><div class="strip"></div><div class="label">维修</div><div class="num">${repair}</div></div>
+    <div class="kpi"><div class="strip"></div><div class="label">自购</div><div class="num">${ownBuy}</div></div>
+    <div class="kpi"><div class="strip"></div><div class="label">租赁</div><div class="num">${ownRent}</div></div>`;
+  const wrap=document.getElementById('vehBoard');
+  if(DEMO){ wrap.innerHTML='<div class="empty">以下为<b>示例预览</b>。提交真实车辆后自动替换。</div>'+vehCards(VEHICLE_DATA,[],today); }
+  else if(!total){ wrap.innerHTML='<div class="empty">暂无车辆信息。</div>'; }
+  else { wrap.innerHTML=vehCards(VEHICLE_DATA,[],today); }
+  // 点击卡片 → 编辑
+  wrap.querySelectorAll('.vcard').forEach(c=>{
+    c.onclick=()=>openModal(parseInt(c.dataset.i));
+  });
+}
+
+/* ============ 表单（新增 / 编辑） ============ */
+const modal=document.getElementById('modal');
+let editIdx=-1;
+function openModal(i){
+  editIdx=i;
+  document.getElementById('modalTitle').textContent = i>=0 ? '编辑车辆' : '新增车辆';
+  const v = i>=0 ? VEHICLE_DATA[i] : {};
+  document.getElementById('f_plate').value=v.plate||'';
+  document.getElementById('f_model').value=v.model||'';
+  document.getElementById('f_driver').value=v.driver||'';
+  document.getElementById('f_status').value=v.status||'正常';
+  document.getElementById('f_insurance').value=v.insurance||'';
+  document.getElementById('f_insExp').value=v.insExp||'';
+  document.getElementById('f_permit').value=v.permit||'';
+  document.getElementById('f_permitExp').value=v.permitExp||'';
+  document.getElementById('f_ownership').value=v.ownership||'自购';
+  document.getElementById('f_curLoc').value=v.curLoc||'';
+  document.getElementById('f_note').value=v.note||'';
+  document.getElementById('formMsg').textContent='';
+  modal.style.display='flex';
+}
+function closeModal(){ modal.style.display='none'; editIdx=-1; }
+document.getElementById('btnAdd').onclick=()=>openModal(-1);
+document.getElementById('btnClose').onclick=closeModal;
+document.getElementById('btnCancel').onclick=closeModal;
+modal.onclick=(e)=>{ if(e.target===modal) closeModal(); };
+
+/* 组装成与 bridge/parse.js 的 mapVehicleHeader 对齐的带表头 TSV */
+function buildTSV(rec){
+  const head=['车牌','车型','保险','保险到期','驾驶员','通行证','通行证到期','状态','所有情况','当前位置','上报时间','备注'];
+  const row=[rec.plate,rec.model,rec.insurance,rec.insExp,rec.driver,rec.permit,rec.permitExp,rec.status,rec.ownership,rec.curLoc,rec.locTime,rec.note];
+  return head.join('\t')+'\n'+row.map(c=>(c||'').replace(/\t/g,' ')).join('\t');
+}
+document.getElementById('btnSave').onclick=async ()=>{
+  const rec={
+    plate:document.getElementById('f_plate').value.trim(),
+    model:document.getElementById('f_model').value.trim(),
+    insurance:document.getElementById('f_insurance').value.trim(),
+    insExp:document.getElementById('f_insExp').value.trim(),
+    driver:document.getElementById('f_driver').value.trim(),
+    permit:document.getElementById('f_permit').value.trim(),
+    permitExp:document.getElementById('f_permitExp').value.trim(),
+    status:document.getElementById('f_status').value,
+    ownership:document.getElementById('f_ownership').value,
+    curLoc:document.getElementById('f_curLoc').value.trim(),
+    locTime:'',
+    note:document.getElementById('f_note').value.trim()
+  };
+  const msg=document.getElementById('formMsg');
+  if(!rec.plate){ msg.style.color='var(--alert)'; msg.textContent='车牌为必填项'; return; }
+  const text=buildTSV(rec);
+  msg.style.color='var(--text-2)'; msg.textContent='提交中…';
+  try{
+    const r=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'vehicles',text})});
+    const j=await r.json();
+    if(j.ok){ msg.style.color='var(--good)'; msg.textContent='✓ 已提交，自动同步到驾驶舱'; closeModal(); loadData(); }
+    else { msg.style.color='var(--alert)'; msg.textContent='提交失败：'+(j.error||'未知'); }
+  }catch(e){
+    msg.style.color='var(--alert)'; msg.textContent='提交失败：未连接本地桥接服务（公开链接填报将在下一步接通）。';
+  }
+};
+
+loadData();
+</script>
+</body>
+</html>
