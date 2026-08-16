@@ -131,43 +131,7 @@ tr.od td:first-child{border-left:3px solid var(--alert)}
 .sec-sub{font-size:12px;color:var(--text-2);margin-bottom:10px}
 footer{margin-top:30px;text-align:center;font-size:12px;color:var(--text-2)}
 .empty{color:var(--text-2);font-size:13px;padding:20px;text-align:center}
-@media (max-width:980px){.kpis{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:1fr}}
-/* ============ 手机 / 窄屏自适应 ============ */
-@media (max-width:600px){
-  .wrap{padding:10px 12px 50px}
-  body{font-size:13px}
-  header.top{flex-direction:column;align-items:flex-start;gap:6px;padding:14px 16px}
-  header.top h1{font-size:18px}
-  header.top .meta{text-align:left}
-  .toolbar{gap:6px}
-  .toolbar .tbtn{font-size:12px;padding:6px 11px}
-  .kpis{grid-template-columns:repeat(2,1fr);gap:10px}
-  .kpi{padding:12px}
-  .kpi .num{font-size:24px}
-  .grid2{grid-template-columns:1fr}
-  .card{overflow-x:auto;padding:14px}
-  .sec-title{font-size:15px}
-  .donut-wrap{flex-direction:column;align-items:flex-start;gap:10px}
-  table{font-size:12px;white-space:nowrap}
-  th,td{padding:6px 8px}
-  .roomkpi{gap:12px}
-  .arlist li{font-size:12px}
-  .vcards{grid-template-columns:1fr}
-  footer{font-size:11px}
-  .databar{flex-direction:column;align-items:flex-start;gap:8px}
-  .databar button{width:100%}
-}
-/* 触屏设备（UA 判定，含横屏手机 / 平板）同样套用紧凑布局 */
-html.ui-mobile .grid2{grid-template-columns:1fr}
-html.ui-mobile .kpis{grid-template-columns:repeat(2,1fr)}
-html.ui-mobile header.top{flex-direction:column;align-items:flex-start}
-html.ui-mobile .wrap{padding:10px 12px 50px}
-html.ui-mobile .card{overflow-x:auto}
-html.ui-mobile table{font-size:12px}
-html.ui-mobile th,td{padding:6px 8px}
-html.ui-mobile .donut-wrap{flex-direction:column;align-items:flex-start}
-html.ui-mobile .databar{flex-direction:column;align-items:flex-start;gap:8px}
-html.ui-mobile .databar button{width:100%}
+@media (max-width:980px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
 
 /* ============ 会议室实时预约 ============ */
 .roomkpi{display:flex;gap:20px;align-items:center;flex-wrap:wrap;font-size:14px;margin-bottom:14px}
@@ -212,7 +176,6 @@ html.ui-mobile .databar button{width:100%}
 .ar-time{font-variant-numeric:tabular-nums;color:var(--text)}
 .ar-pur{color:var(--text)}
 .ar-by{color:var(--text-2)}
-.ar-dep{color:var(--primary-d);font-weight:600;background:rgba(66,133,244,.10);padding:1px 8px;border-radius:10px;white-space:nowrap}
 .ar-at{color:var(--text-2);font-size:11px}
 
 /* 签证情况 KPI + 表格 */
@@ -260,42 +223,6 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
 .vloc{margin-top:8px;font-size:12.5px;background:rgba(66,133,244,.08);border-left:3px solid var(--primary);padding:6px 10px;border-radius:6px}
 .vloc .lab{color:var(--text-2)}
 .vloc .val{color:var(--primary-d);font-weight:600}
-.vdetail{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px}
-.vdetail>summary{cursor:pointer;font-size:12.5px;color:var(--primary);user-select:none;list-style:none;padding:2px 0}
-.vdetail>summary::-webkit-details-marker{display:none}
-.vdetail>summary::before{content:"▸ "}
-.vdetail[open]>summary::before{content:"▾ "}
-.vdetail .vinfo{margin-top:6px}
-
-/* ============ 分角色视角（不同的人看不同内容） ============ */
-.viewerBar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px;align-items:center}
-.viewerBar .lab{font-size:13px;color:var(--text-2);margin-right:2px}
-.vsel{border:1px solid var(--primary);background:var(--card);color:var(--text);padding:7px 12px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;max-width:240px}
-.vsel:focus{outline:none}
-.vhint{font-size:12px;color:var(--text-2)}
-.rlmine{font-size:12px;color:var(--text-2);display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin-left:8px}
-.rlmine input{width:15px;height:15px;cursor:pointer}
-.scopectl{font-size:12px;color:var(--text-2);display:inline-flex;align-items:center;gap:5px;margin-left:6px}
-.scopectl select{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:6px;padding:3px 8px;font-size:12px}
-.vmask{font-size:11px;color:var(--warn);margin-left:6px}
-
-/* 引导选人弹层 */
-.viewer-modal{position:fixed;inset:0;background:rgba(8,15,30,.72);display:none;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
-.viewer-modal .vmbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 28px;max-width:560px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.4)}
-.viewer-modal h3{font-size:18px;color:var(--primary-d);margin-bottom:6px}
-.viewer-modal p{font-size:13px;color:var(--text-2);margin-bottom:16px;line-height:1.6}
-.viewer-modal .vmlist{display:flex;flex-wrap:wrap;gap:10px}
-.viewer-modal .vmbtn{border:1px solid var(--primary);background:var(--card);color:var(--primary-d);padding:9px 16px;border-radius:22px;cursor:pointer;font-size:14px;font-weight:600;transition:.15s}
-.viewer-modal .vmbtn:hover{background:var(--primary);color:#fff}
-.viewer-modal .vmall{margin-top:14px}
-.viewer-modal .vmall button{width:100%;border:1px dashed var(--text-2);background:transparent;color:var(--text-2);padding:9px;border-radius:10px;cursor:pointer;font-size:13px}
-
-@media (max-width:600px){
-  .viewerBar .vsel{max-width:170px;font-size:12px;padding:6px 10px}
-  .viewer-modal .vmbtn{font-size:13px;padding:8px 12px}
-  .viewer-modal .vmbox{padding:20px 18px}
-}
-html.ui-mobile .viewerBar .vsel{max-width:170px}
 </style>
 </head>
 <body data-theme="dark">
@@ -330,13 +257,6 @@ html.ui-mobile .viewerBar .vsel{max-width:170px}
     <button class="tbtn" data-set="warm">暖橙现代</button>
   </div>
   <div class="note">↑ 点上方按钮随时更换皮肤；你的选择会被记住，下次打开还是这套。</div>
-
-  <!-- 分角色视角：当前身份切换 -->
-  <div class="viewerBar" id="viewerBar">
-    <span class="lab">当前视角：</span>
-    <select id="viewerSel" class="vsel"></select>
-    <span class="vhint" id="viewerHint"></span>
-  </div>
 
   <!-- 手动同步入口（已默认折叠；自动同步已接通时通常不需要） -->
   <details class="import" id="manualImport">
@@ -404,7 +324,7 @@ html.ui-mobile .viewerBar .vsel{max-width:170px}
 
   <!-- ============ ① 会议室实时预约（置顶 · 最直观） ============ -->
   <div class="sec-title">① 会议室实时预约（会务接待）</div>
-  <div class="sec-sub">数据来源：腾讯在线表格（会议室预约）。实时状态基于当前时间自动判定，每 60 秒刷新一次。当前时间：<b id="clock">—</b><label class="rlmine"><input type="checkbox" id="roomOnlyMine"> 只看与我相关的预约</label></div>
+  <div class="sec-sub">数据来源：腾讯在线表格（会议室预约）。实时状态基于当前时间自动判定，每 60 秒刷新一次。当前时间：<b id="clock">—</b></div>
   <div class="card">
     <div class="roomkpi" id="roomKpi">
       <div class="item"><span class="n" id="rkTotal">—</span><span class="l">今日有会</span></div>
@@ -417,8 +337,8 @@ html.ui-mobile .viewerBar .vsel{max-width:170px}
   </div>
 
   <!-- ============ ② 车辆情况（车辆台账 · 当日安排 · 当前位置） ============ -->
-  <div class="sec-title">② 车辆情况（当前位置 · 今日安排）</div>
-  <div class="sec-sub">首页看板只显示每辆车的<b>当前位置</b>与<b>今日安排</b>，车辆详情（保险 / 驾驶员 / 通行证 / 状态）点开「车辆详情」查看。数据来源：WPS 在线表格「车辆信息」「车辆排期」两个 sheet（经金山文档连接器每小时自动同步）；当前位置默认取今日排期目的地（计划位置），若表内填了「当前位置 + 上报时间」则优先显示真实上报位置。</div>
+  <div class="sec-title">② 车辆情况（车辆台账 · 当日安排 · 当前位置）</div>
+  <div class="sec-sub">数据来源：WPS 在线表格「车辆信息」「车辆排期」两个 sheet（经金山文档连接器每小时自动同步）。保险 / 通行证 临期·过期自动标红；当前位置默认取今日排期目的地（计划位置），若表内填了「当前位置 + 上报时间」则优先显示真实上报位置。</div>
   <div class="card">
     <div class="vehkpi" id="vehKpi"></div>
     <div id="vehBoard"></div>
@@ -426,7 +346,7 @@ html.ui-mobile .viewerBar .vsel{max-width:170px}
 
   <!-- ============ ③ 签证情况（签证办理进度） ============ -->
   <div class="sec-title">③ 签证情况（签证办理进度）</div>
-  <div class="sec-sub">数据来源：WPS 在线表格「签证」sheet（经金山文档连接器每小时自动同步）。集中查看部门人员签证办理状态，临期 / 过期自动标红。<span class="vmask" id="visaMaskHint"></span></div>
+  <div class="sec-sub">数据来源：WPS 在线表格「签证」sheet（经金山文档连接器每小时自动同步）。集中查看部门人员签证办理状态，临期 / 过期自动标红。</div>
   <div class="card">
     <div class="visakpi" id="visaKpi"></div>
     <div id="visaBoard"></div>
@@ -434,7 +354,7 @@ html.ui-mobile .viewerBar .vsel{max-width:170px}
 
   <!-- ============ ④ 部门整体任务（总体情况） ============ -->
   <div class="sec-title">④ 部门整体任务（总体情况）</div>
-  <div class="sec-sub">数据来源：WPS 在线表格（任务总表）。以下为本部门全部工作的总体进展。<span class="scopectl">查看范围：<select id="taskScope"><option value="mine">只看我的</option><option value="all">看全部</option></select></span></div>
+  <div class="sec-sub">数据来源：WPS 在线表格（任务总表）。以下为本部门全部工作的总体进展。</div>
 
   <!-- KPI -->
   <div class="kpis" id="kpis"></div>
@@ -491,7 +411,7 @@ html.ui-mobile .viewerBar .vsel{max-width:170px}
     </table>
   </div>
 
-  <footer>行政部驾驶舱 · 分角色视角版 v1.12.0 · 顺序：① 会议室 ② 车辆情况 ③ 签证情况 ④ 部门任务 · 任务/签证/车辆：WPS（金山文档连接器直读）；会议室：腾讯（腾讯文档连接器直读） · 顶部「当前视角」可切换身份（不同人看不同内容）· 数据不出本机 · 内置 5 套皮肤可切换</footer>
+  <footer>行政部驾驶舱 · 布局优先级版 v1.10.0 · 顺序：① 会议室 ② 车辆情况 ③ 签证情况 ④ 部门任务 · 任务/签证/车辆：WPS（金山文档连接器直读）；会议室：腾讯（腾讯文档连接器直读） · 数据不出本机 · 内置 5 套皮肤可切换</footer>
 </div>
 
 <script>
@@ -501,76 +421,6 @@ const COLORS = {
 };
 const CATS = ['会务接待','车辆管理','后勤管理','物资采购','行政办公','人力资源','其他'];
 const PRIOS = ['高','中','低'];
-
-/* ============ 分角色视角配置 ============
-   想让某人拥有"管理员"视角（看得到签证姓名、看全部任务），把名字加到 admins。
-   想补一个暂时没任务的在册人员（领导/行政主管/新同事），加到 extraPeople。
-   其余人名会从任务表的「负责人」「协同人」自动收集，无需手填。 */
-const CONFIG = {
-  admins: ['老周'],        // 管理员（领导/行政主管）：可看签证姓名 + 全部任务
-  extraPeople: []          // 额外在册人员（可选，逗号分隔的多个名字用数组）
-};
-
-/* 当前视角状态：viewer=选中的人('all' 表示总览)；roomOnlyMine=会议室只看我；taskScope=任务查看范围 */
-let STATE = { viewer:'all', roomOnlyMine:false, taskScope:null };
-let NEED_GUIDE = false;   // 首次打开尚未选择身份
-
-function isAdmin(){
-  const v=STATE.viewer;
-  if(v==='all') return true;
-  if(!v) return false;
-  return (CONFIG.admins||[]).includes(v);
-}
-function currentViewTasks(){
-  const scope = STATE.taskScope || (isAdmin()? 'all':'mine');
-  if(scope==='all') return DATA;
-  const me=STATE.viewer;
-  if(!me || me==='all') return DATA;
-  const collabOf=r=>String(r.collab||'').split(/[,，]/).map(s=>s.trim()).filter(Boolean);
-  return DATA.filter(r=> r.owner===me || collabOf(r).includes(me));
-}
-function buildRoster(){
-  const set=new Set();
-  (CONFIG.admins||[]).forEach(n=>set.add(n));
-  (CONFIG.extraPeople||[]).forEach(n=>set.add(n));
-  DATA.forEach(r=>{
-    if(r.owner) set.add(r.owner);
-    String(r.collab||'').split(/[,，]/).forEach(c=>{ c=c.trim(); if(c) set.add(c); });
-  });
-  return [...set].sort((a,b)=>a.localeCompare(b,'zh'));
-}
-function refreshViewerSelect(){
-  const sel=document.getElementById('viewerSel'); if(!sel) return;
-  const roster=buildRoster();
-  const admins=new Set(CONFIG.admins||[]);
-  let html='<option value="all">总览（全部）</option>';
-  roster.forEach(n=>{ html+='<option value="'+n+'">'+n+(admins.has(n)?'（管理员）':'')+'</option>'; });
-  sel.innerHTML=html;
-  if(STATE.viewer) sel.value=STATE.viewer;
-  const sc=document.getElementById('taskScope');
-  if(sc){ const def=isAdmin()?'all':'mine'; sc.value=STATE.taskScope||def; }
-}
-function showGuide(){
-  const modal=document.getElementById('viewerModal'); if(!modal) return;
-  const box=document.getElementById('viewerModalList');
-  const roster=buildRoster();
-  const admins=new Set(CONFIG.admins||[]);
-  let html='';
-  roster.forEach(n=>{ html+='<button class="vmbtn" data-v="'+n+'">'+n+(admins.has(n)?'（管理员）':'')+'</button>'; });
-  box.innerHTML=html;
-  box.querySelectorAll('.vmbtn').forEach(b=>{ b.onclick=()=>pickViewer(b.getAttribute('data-v')); });
-  const allBtn=document.getElementById('viewerModalAll');
-  if(allBtn) allBtn.onclick=()=>pickViewer('all');
-  modal.style.display='flex';
-}
-function pickViewer(v){
-  NEED_GUIDE=false;
-  STATE.viewer=v;
-  try{ localStorage.setItem('xz-cockpit-viewer',v); }catch(e){}
-  const modal=document.getElementById('viewerModal'); if(modal) modal.style.display='none';
-  refreshViewerSelect();
-  render(); renderVisas(); renderRooms(); renderVehicles();
-}
 
 /* 会议室时间轴范围 */
 const ROOM_START_HOUR=7, ROOM_END_HOUR=22;
@@ -602,13 +452,13 @@ const SAMPLE_HEAD = ['任务名称','所属大类','子项备注','负责人','�
 /* 会议室示例（日期设为今天，演示实时状态） */
 const SAMPLE_ROOM_HEAD = ['会议室','日期','开始时间','结束时间','预约人','用途','状态'];
 const SAMPLE_ROOM = [
-  ['第一会议室','2026-08-15','09:00','10:30','王伟','部门周例会','已确认','综合部'],
-  ['第一会议室','2026-08-15','14:00','15:00','李娜','供应商洽谈','已确认','物资采购部'],
-  ['第一会议室','2026-08-15','16:00','17:00','张敏','制度培训','已确认','人力资源部'],
-  ['第二会议室','2026-08-15','10:00','11:30','赵磊','迎检准备','已确认','会务接待部'],
-  ['第二会议室','2026-08-15','14:30','16:00','陈静','合同评审','已确认','行政办公部'],
-  ['第三会议室','2026-08-15','13:30','14:30','杨帆','招聘面试','已确认','人力资源部'],
-  ['大会议室','2026-08-15','15:00','17:30','周婷','季度总结会','已确认','综合部']
+  ['第一会议室','2026-08-15','09:00','10:30','王伟','部门周例会','已确认'],
+  ['第一会议室','2026-08-15','14:00','15:00','李娜','供应商洽谈','已确认'],
+  ['第一会议室','2026-08-15','16:00','17:00','张敏','制度培训','已确认'],
+  ['第二会议室','2026-08-15','10:00','11:30','赵磊','迎检准备','已确认'],
+  ['第二会议室','2026-08-15','14:30','16:00','陈静','合同评审','已确认'],
+  ['第三会议室','2026-08-15','13:30','14:30','杨帆','招聘面试','已确认'],
+  ['大会议室','2026-08-15','15:00','17:30','周婷','季度总结会','已确认']
 ];
 
 /* 车辆示例（无真实数据时演示用，日期自动取今天） */
@@ -648,11 +498,6 @@ function timeToMin(t){
   const m=String(t).match(/(\d{1,2}):(\d{2})/);
   if(!m) return null;
   return (+m[1])*60 + (+m[2]);
-}
-
-/* 逾期标记：在全部数据上跑一次（视图过滤不改写原始状态） */
-function markOverdue(){
-  DATA.forEach(r=>{ r.overdue=isOverdue(r); if(r.overdue && r.status!=='已逾期') r.status='已逾期'; });
 }
 
 /* ============ 任务解析 ============ */
@@ -728,7 +573,6 @@ function mapRoomHeader(h){
     [/开始时间|开始/,'start'],
     [/结束时间|结束|止/,'end'],
     [/预约人|预订人|申请人|预定人/,'booker'],
-    [/部门|所属部门|Department/i,'dept'],
     [/联系电话|电话|手机/,'phone'],
     [/参会人数|人数/,'attendees'],
     [/用途|会议主题|事项|内容|主题/,'purpose'],
@@ -748,7 +592,7 @@ function parseRoom(text){
   const rows=[];
   for(let r=hi+1;r<lines.length;r++){
     const cells=lines[r].split('\t');
-    const rec={room:'',date:'',start:'',end:'',booker:'',dept:'',purpose:'',status:'',attendees:'',phone:''};
+    const rec={room:'',date:'',start:'',end:'',booker:'',purpose:'',status:'',attendees:'',phone:''};
     for(const h of used){
       let v=(cells[h.i]||'').trim();
       if(h.key==='date') v=normDate(v);
@@ -860,12 +704,11 @@ function setRoomData(rows,label){
 
 function render(){
   document.getElementById('today').textContent=todayStr();
-  markOverdue();
-  const VIEW=currentViewTasks();
-  const total=VIEW.length;
-  const done=VIEW.filter(r=>r.status==='已完成').length;
-  const doing=VIEW.filter(r=>r.status==='进行中').length;
-  const od=VIEW.filter(r=>r.overdue).length;
+  DATA.forEach(r=>{ r.overdue=isOverdue(r); if(r.overdue && r.status!=='已逾期') r.status='已逾期'; });
+  const total=DATA.length;
+  const done=DATA.filter(r=>r.status==='已完成').length;
+  const doing=DATA.filter(r=>r.status==='进行中').length;
+  const od=DATA.filter(r=>r.overdue).length;
   const rate= total? Math.round(done/total*100):0;
 
   // KPI
@@ -886,7 +729,7 @@ function render(){
 
   // 状态分布
   const stCount={};
-  VIEW.forEach(r=>stCount[r.status]=(stCount[r.status]||0)+1);
+  DATA.forEach(r=>stCount[r.status]=(stCount[r.status]||0)+1);
   const order=['进行中','未开始','已完成','已暂停','已逾期'];
   let html='<div class="hbars">';
   const maxSt=Math.max(1,...Object.values(stCount));
@@ -901,18 +744,18 @@ function render(){
 
   // 大类 bars
   const catCount={}; CATS.forEach(c=>catCount[c]=0);
-  VIEW.forEach(r=>{ if(catCount[r.category]===undefined) catCount[r.category]=0; catCount[r.category]++; });
+  DATA.forEach(r=>{ if(catCount[r.category]===undefined) catCount[r.category]=0; catCount[r.category]++; });
   document.getElementById('catBars').innerHTML=hbars(catCount);
 
   // 优先级 bars
   const priCount={}; PRIOS.forEach(p=>priCount[p]=0);
-  VIEW.forEach(r=>{ if(priCount[r.priority]===undefined) priCount[r.priority]=0; priCount[r.priority]++; });
+  DATA.forEach(r=>{ if(priCount[r.priority]===undefined) priCount[r.priority]=0; priCount[r.priority]++; });
   const priColor={'高':'#C2272D','中':'#E0A800','低':'#6B7280'};
   document.getElementById('priBars').innerHTML=hbars(priCount,priColor);
 
   // 人员负载
   const people={};
-  VIEW.forEach(r=>{
+  DATA.forEach(r=>{
     const o=r.owner||'未分配';
     if(!people[o]) people[o]={count:0,prog:0,od:0};
     people[o].count++; people[o].prog+= (parseInt(r.progress)||0); if(r.overdue) people[o].od++;
@@ -931,7 +774,7 @@ function render(){
   document.getElementById('people').innerHTML=ph||'<div class="empty">暂无数据</div>';
 
   // 逾期表
-  const odRows=VIEW.filter(r=>r.overdue).sort((a,b)=>toDate(a.deadline)-toDate(b.deadline));
+  const odRows=DATA.filter(r=>r.overdue).sort((a,b)=>toDate(a.deadline)-toDate(b.deadline));
   const otb=document.querySelector('#odTable tbody');
   otb.innerHTML = odRows.length? odRows.map(r=>`
     <tr class="od"><td>${r.name}</td><td>${r.category}</td><td>${r.owner}</td>
@@ -942,7 +785,7 @@ function render(){
 
   // 全部任务表
   const atb=document.querySelector('#allTable tbody');
-  atb.innerHTML = VIEW.length? VIEW.map(r=>`
+  atb.innerHTML = DATA.length? DATA.map(r=>`
     <tr class="${r.overdue?'od':''}"><td>${r.name}</td><td>${r.category}</td><td>${r.owner}</td>
     <td>${r.collab||'—'}</td>
     <td><span class="tag s-${r.status}">${r.status}</span></td>
@@ -965,9 +808,6 @@ function renderVisas(){
   const wrap=document.getElementById('visaBoard');
   const vk=document.getElementById('visaKpi');
   const list=VISA_DATA;
-  const admin=isAdmin();
-  const maskHint=document.getElementById('visaMaskHint');
-  if(maskHint) maskHint.textContent = admin? '' : '（非管理员视角：姓名已隐藏）';
   const total=list.length;
   const doing=list.filter(r=>visaStatusClass(r.status)==='doing').length;
   const done=list.filter(r=>visaStatusClass(r.status)==='done').length;
@@ -995,7 +835,7 @@ function renderVisas(){
     }
     const sc=visaStatusClass(r.status);
     const expFlag = r.expiry ? (r.expiry<today ? '（已过期）' : (rowcls==='warn' ? '（临期≤30天）':'')) : '';
-    return `<tr class="vrow ${rowcls}"><td>${admin?(r.name||'—'):'＊＊'}</td><td>${r.country||'—'}</td><td>${r.vtype||'—'}</td>
+    return `<tr class="vrow ${rowcls}"><td>${r.name||'—'}</td><td>${r.country||'—'}</td><td>${r.vtype||'—'}</td>
       <td><span class="vtag ${sc}">${scLabel[sc]||r.status}</span></td>
       <td>${r.submit||'—'}</td><td>${r.issue||'—'}</td>
       <td>${r.expiry? (r.expiry+expFlag):'—'}</td><td>${r.note||'—'}</td></tr>`;
@@ -1016,32 +856,28 @@ function vehStatusClass(s){ return s==='保养'?'maint':(s==='维修'?'repair':'
 function vehCards(list,sched,today){
   return '<div class="vcards">'+list.map(v=>{
     const sc=vehStatusClass(v.status);
+    const insCls=vehExpClass(v.insExp), permCls=vehExpClass(v.permitExp);
+    const insFlag=v.insExp?(v.insExp<today?'（已过期）':(insCls==='warn'?'（临期≤30天）':'')):'';
+    const permFlag=v.permitExp?(v.permitExp<today?'（已过期）':(permCls==='warn'?'（临期≤30天）':'')):'';
     const todays=sched.filter(s=>s.plate===v.plate && s.date===today);
     const schedHtml = todays.length ? '<ul>'+todays.map(s=>{
       const t=(s.start||'')+(s.end?('–'+s.end):'');
       return '<li><span class="t">'+(t||'—')+'</span><span class="r">'+(s.task||'—')+'</span>'+(s.from?(' · '+s.from+'→'+(s.to||'?')):((s.to)?(' · →'+s.to):''))+(s.driver?(' · '+s.driver):'')+'</li>';
     }).join('')+'</ul>' : '<div class="st">今日无排期</div>';
-    // 当前位置：优先真实上报位置，否则取今日排期目的地（计划位置）
     let locHtml;
-    if(v.curLoc){ locHtml='上报位置：'+v.curLoc+(v.locTime?('（'+v.locTime+' 上报）'):''); }
-    else { const plan = todays.find(s=>s.to) || todays[0]; locHtml='计划位置（今日排期）：'+(plan&&plan.to?plan.to:'今日无排期'); }
-    // 详情（折叠，点开才看具体信息：保险/驾驶员/通行证/状态等）
-    const insCls=vehExpClass(v.insExp), permCls=vehExpClass(v.permitExp);
-    const insFlag=v.insExp?(v.insExp<today?'（已过期）':(insCls==='warn'?'（临期≤30天）':'')):'';
-    const permFlag=v.permitExp?(v.permitExp<today?'（已过期）':(permCls==='warn'?'（临期≤30天）':'')):'';
+    if(v.curLoc){ locHtml='<span class="lab">上报位置：</span><span class="val">'+v.curLoc+'</span>'+(v.locTime?(' <span class="lab">（'+v.locTime+' 上报）</span>'):''); }
+    else { const plan = todays.find(s=>s.to) || todays[0]; locHtml='<span class="lab">计划位置（今日排期）：</span><span class="val">'+(plan&&plan.to?plan.to:'今日无排期')+'</span>'; }
     return `<div class="vcard">
       <div class="vhead"><span class="vplate">${v.plate}</span><span class="vstatus ${sc}">${v.status}</span><span class="vown">${v.ownership||'—'}</span></div>
-      <div class="vloc"><span class="lab">当前位置</span><span class="val">${locHtml}</span></div>
-      <div class="vsched"><div class="st">今日安排（${today}）</div>${schedHtml}</div>
-      <details class="vdetail"><summary>车辆详情（保险 / 驾驶员 / 通行证 / 状态）</summary>
-        <div class="vinfo">
-          <div class="it"><span class="k">车型</span><span class="vv">${v.model||'—'}</span></div>
-          <div class="it"><span class="k">驾驶员</span><span class="vv">${v.driver||'—'}</span></div>
-          <div class="it"><span class="k">保险</span><span class="vv ${insCls}">${v.insurance||'—'}${v.insExp?(v.insExp+insFlag):''}</span></div>
-          <div class="it"><span class="k">通行证</span><span class="vv ${permCls}">${v.permit||'—'}${v.permitExp?(v.permitExp+permFlag):''}</span></div>
-          <div class="it" style="grid-column:1/3"><span class="k">备注</span><span class="vv">${v.note||'—'}</span></div>
-        </div>
-      </details>
+      <div class="vinfo">
+        <div class="it"><span class="k">车型</span><span class="vv">${v.model||'—'}</span></div>
+        <div class="it"><span class="k">驾驶员</span><span class="vv">${v.driver||'—'}</span></div>
+        <div class="it"><span class="k">保险</span><span class="vv ${insCls}">${v.insurance||'—'}${v.insExp?(v.insExp+insFlag):''}</span></div>
+        <div class="it"><span class="k">通行证</span><span class="vv ${permCls}">${v.permit||'—'}${v.permitExp?(v.permitExp+permFlag):''}</span></div>
+        <div class="it" style="grid-column:1/3"><span class="k">备注</span><span class="vv">${v.note||'—'}</span></div>
+      </div>
+      <div class="vsched"><div class="st">当日安排（${today}）</div>${schedHtml}</div>
+      <div class="vloc">${locHtml}</div>
     </div>`;
   }).join('')+'</div>';
 }
@@ -1132,22 +968,13 @@ function axisLabels(){
 }
 function renderRooms(){
   const wrap=document.getElementById('roomCards');
-  let RD=ROOM_DATA;
-  if(STATE.roomOnlyMine && STATE.viewer && STATE.viewer!=='all'){
-    RD=ROOM_DATA.filter(r=>(r.booker||'')===STATE.viewer);
-  }
   if(!ROOM_DATA.length){
     wrap.innerHTML='<div class="empty">暂无会议室数据。请在「会议室数据（腾讯表格）」中粘贴 / 上传，或填公开链接同步。</div>';
     updateRoomKpi(0,0,0,0);
     return;
   }
-  if(!RD.length){
-    wrap.innerHTML='<div class="empty">当前视角下没有与你相关的预约。</div>';
-    updateRoomKpi(0,0,0,0);
-    return;
-  }
   const today=todayStr();
-  const todayRooms=RD.filter(r=> (!r.date || r.date===today) && !isRoomPast(r));
+  const todayRooms=ROOM_DATA.filter(r=> (!r.date || r.date===today) && !isRoomPast(r));
   let cards='';
   if(todayRooms.length){
     const groups={};
@@ -1169,7 +996,7 @@ function renderRooms(){
       const nowMark=(now>=START_MIN&&now<=END_MIN)?`<div class="nowmark" style="left:${(now-START_MIN)/(END_MIN-START_MIN)*100}%"></div>`:'';
       const items=list.map(r=>{
         const cls=resClass(r,now);
-        return `<li class="${cls}"><b>${r.start}–${r.end}</b> ${r.purpose||'—'} · ${r.booker||'—'}${r.dept?(' · '+r.dept):''}${r.attendees?(' · '+r.attendees+'人'):''} <span class="rl">${resLabel(r,now)}</span></li>`;
+        return `<li class="${cls}"><b>${r.start}–${r.end}</b> ${r.purpose||'—'} · ${r.booker||'—'}${r.attendees?(' · '+r.attendees+'人'):''} <span class="rl">${resLabel(r,now)}</span></li>`;
       }).join('') || '<li class="empty">今日无预约</li>';
       cards+=`<div class="rcard">
         <div class="rhead"><span class="rname">${room}</span><span class="rstat ${st.key}">${st.label}</span></div>
@@ -1183,7 +1010,7 @@ function renderRooms(){
     updateRoomKpi(0,0,0,0);
   }
   // 全部预约一览：按日期+时间排序，逐条标注【已开过 / 今天 / 预定】
-  const all=[...RD].filter(r=>!isRoomPast(r)).sort((a,b)=>{
+  const all=[...ROOM_DATA].filter(r=>!isRoomPast(r)).sort((a,b)=>{
     const da=(a.date||'0000-00-00'), db=(b.date||'0000-00-00');
     if(da!==db) return da<db?-1:1;
     return (timeToMin(a.start)||0)-(timeToMin(b.start)||0);
@@ -1191,7 +1018,7 @@ function renderRooms(){
   let allHtml='<div class="allrooms"><h4>实时预约一览（进行中 · 今日待开 · 预定，已结束自动隐藏）</h4><ul class="arlist">';
   all.forEach(r=>{
     const st=roomDateStatus(r);
-    allHtml+=`<li class="ar ${st.key}"><span class="ar-date">${r.date||'—'}</span><span class="badge ${st.key}">${st.label}</span><b class="ar-time">${r.start||'--:--'}–${r.end||'--:--'}</b><span class="ar-pur">${r.purpose||'—'}</span><span class="ar-by">${r.booker||'—'}</span><span class="ar-dep">${r.dept||'—'}</span>${r.attendees?('<span class="ar-at">'+r.attendees+'人</span>'):''}</li>`;
+    allHtml+=`<li class="ar ${st.key}"><span class="ar-date">${r.date||'—'}</span><span class="badge ${st.key}">${st.label}</span><b class="ar-time">${r.start||'--:--'}–${r.end||'--:--'}</b><span class="ar-pur">${r.purpose||'—'}</span><span class="ar-by">${r.booker||'—'}</span>${r.attendees?('<span class="ar-at">'+r.attendees+'人</span>'):''}</li>`;
   });
   allHtml+='</ul></div>';
   wrap.innerHTML=cards+allHtml;
@@ -1277,7 +1104,7 @@ document.getElementById('fileCsv').onchange=(e)=>{
 
 /* ============ 会议室事件 ============ */
 document.getElementById('btnResetRoom').onclick=()=>{
-  const rows=SAMPLE_ROOM.map(arr=>{const o={};o.room=arr[0];o.date=arr[1];o.start=arr[2];o.end=arr[3];o.booker=arr[4];o.purpose=arr[5];o.status=arr[6];o.dept=arr[7]||'综合部';return o;});
+  const rows=SAMPLE_ROOM.map(arr=>{const o={};o.room=arr[0];o.date=arr[1];o.start=arr[2];o.end=arr[3];o.booker=arr[4];o.purpose=arr[5];o.status=arr[6];return o;});
   setRoomData(rows,'示例数据');
 };
 document.getElementById('btnGenRoom').onclick=()=>{
@@ -1369,8 +1196,6 @@ async function loadData(){
     if(st.vehiclesched && st.vehiclesched.length){ VEHICLE_SCHED=st.vehiclesched; }
     renderVisas();
     renderVehicles();
-    refreshViewerSelect();
-    if(NEED_GUIDE) showGuide();
     setSync('','数据已内嵌','更新时间 '+fmtTime(st.updatedAt)+' · 每小时自动重建（免服务器）');
     return;
   }
@@ -1382,7 +1207,6 @@ async function loadData(){
   }
   if(!st){
     setSync('err','未连接本地桥接服务','请访问 http://localhost:8787 查看实时数据；或展开下方「手动同步入口」粘贴数据。');
-    if(NEED_GUIDE) showGuide();
     return;
   }
   if(st.tasks && st.tasks.length){ DATA=st.tasks; document.getElementById('updTime').textContent=fmtTime(st.updatedAt)+'（本地服务同步）'; render(); }
@@ -1392,8 +1216,6 @@ async function loadData(){
   if(st.vehiclesched && st.vehiclesched.length){ VEHICLE_SCHED=st.vehiclesched; }
   renderVisas();
   renderVehicles();
-  refreshViewerSelect();
-  if(NEED_GUIDE) showGuide();
   function srcLabel(mode){
     return ({'wps-openapi':'WPS官方API','wps-cookie':'WPS(Cookie)','wps-public':'WPS公开链接','drop-file':'本地文件','browser-upload':'手动上传','tencent-cookie':'腾讯(Cookie)','tencent-public':'腾讯公开链接'})[mode]||mode||'未配置';
   }
@@ -1420,54 +1242,19 @@ async function triggerSync(){
   }catch(e){ setSync('err','同步请求失败','请访问 http://localhost:8787 查看实时数据，或检查桥接服务是否运行。'); }
 }
 
-/* ============ 移动端检测 ============ */
-function detectMobile(){
-  const ua=/Android|iPhone|iPod|iPad|Mobile|Windows Phone|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent||'');
-  const narrow=window.innerWidth<=600;
-  const isMobile=ua||narrow;
-  document.documentElement.classList.toggle('ui-mobile',isMobile);
-  return isMobile;
-}
-
 /* ============ 初始化 ============ */
 let saved=null;
 try{ saved=localStorage.getItem('xz-cockpit-theme'); }catch(e){}
 if(saved && ['dark','business','glass','gov','warm'].includes(saved)) applyTheme(saved);
 else applyTheme('dark');
 updateClock();
-detectMobile();
-window.addEventListener('resize',()=>detectMobile());
-
-// 分角色视角：恢复上次身份 / 首次引导选人
-let vSaved=null;
-try{ vSaved=localStorage.getItem('xz-cockpit-viewer'); }catch(e){}
-STATE.viewer = vSaved || 'all';
-NEED_GUIDE = !vSaved;
-refreshViewerSelect();
-const vsel=document.getElementById('viewerSel');
-if(vsel) vsel.onchange=(e)=>pickViewer(e.target.value);
-const scsel=document.getElementById('taskScope');
-if(scsel) scsel.onchange=(e)=>{ STATE.taskScope=e.target.value; render(); };
-const rom=document.getElementById('roomOnlyMine');
-if(rom) rom.onchange=(e)=>{ STATE.roomOnlyMine=e.target.checked; renderRooms(); };
-
 // 默认展示示例，便于没有数据也能看版式；随后尝试从本地服务拉真实数据覆盖
 document.getElementById('btnReset').onclick();
 document.getElementById('btnResetRoom').onclick();
-// 启动即尝试从本地桥接服务加载真实数据（数据到位后会按需弹出引导选人）
+// 启动即尝试从本地桥接服务加载真实数据
 loadData();
 // 每 60 秒自动刷新（实时）
 setInterval(()=>{ updateClock(); if(ROOM_DATA.length) renderRooms(); loadData(); }, 60000);
 </script>
-<!-- 引导选人弹层（首次打开） -->
-<div class="viewer-modal" id="viewerModal">
-  <div class="vmbox">
-    <h3>请选择你的身份</h3>
-    <p>行政部驾驶舱为不同的人展示不同内容：选自己，看「我的任务」与今日安排，签证姓名自动隐藏；选「总览」看全部（管理员视角）。选择会被记住，下次自动进入；随时可在顶部「当前视角」切换。</p>
-    <div class="vmlist" id="viewerModalList"></div>
-    <div class="vmall"><button id="viewerModalAll">以「总览（全部）」视角查看</button></div>
-  </div>
-</div>
-
 </body>
 </html>
