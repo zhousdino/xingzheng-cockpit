@@ -266,6 +266,36 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
 .vdetail>summary::before{content:"▸ "}
 .vdetail[open]>summary::before{content:"▾ "}
 .vdetail .vinfo{margin-top:6px}
+
+/* ============ 分角色视角（不同的人看不同内容） ============ */
+.viewerBar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px;align-items:center}
+.viewerBar .lab{font-size:13px;color:var(--text-2);margin-right:2px}
+.vsel{border:1px solid var(--primary);background:var(--card);color:var(--text);padding:7px 12px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;max-width:240px}
+.vsel:focus{outline:none}
+.vhint{font-size:12px;color:var(--text-2)}
+.rlmine{font-size:12px;color:var(--text-2);display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin-left:8px}
+.rlmine input{width:15px;height:15px;cursor:pointer}
+.scopectl{font-size:12px;color:var(--text-2);display:inline-flex;align-items:center;gap:5px;margin-left:6px}
+.scopectl select{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:6px;padding:3px 8px;font-size:12px}
+.vmask{font-size:11px;color:var(--warn);margin-left:6px}
+
+/* 引导选人弹层 */
+.viewer-modal{position:fixed;inset:0;background:rgba(8,15,30,.72);display:none;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.viewer-modal .vmbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 28px;max-width:560px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.viewer-modal h3{font-size:18px;color:var(--primary-d);margin-bottom:6px}
+.viewer-modal p{font-size:13px;color:var(--text-2);margin-bottom:16px;line-height:1.6}
+.viewer-modal .vmlist{display:flex;flex-wrap:wrap;gap:10px}
+.viewer-modal .vmbtn{border:1px solid var(--primary);background:var(--card);color:var(--primary-d);padding:9px 16px;border-radius:22px;cursor:pointer;font-size:14px;font-weight:600;transition:.15s}
+.viewer-modal .vmbtn:hover{background:var(--primary);color:#fff}
+.viewer-modal .vmall{margin-top:14px}
+.viewer-modal .vmall button{width:100%;border:1px dashed var(--text-2);background:transparent;color:var(--text-2);padding:9px;border-radius:10px;cursor:pointer;font-size:13px}
+
+@media (max-width:600px){
+  .viewerBar .vsel{max-width:170px;font-size:12px;padding:6px 10px}
+  .viewer-modal .vmbtn{font-size:13px;padding:8px 12px}
+  .viewer-modal .vmbox{padding:20px 18px}
+}
+html.ui-mobile .viewerBar .vsel{max-width:170px}
 </style>
 </head>
 <body data-theme="dark">
@@ -300,6 +330,13 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
     <button class="tbtn" data-set="warm">暖橙现代</button>
   </div>
   <div class="note">↑ 点上方按钮随时更换皮肤；你的选择会被记住，下次打开还是这套。</div>
+
+  <!-- 分角色视角：当前身份切换 -->
+  <div class="viewerBar" id="viewerBar">
+    <span class="lab">当前视角：</span>
+    <select id="viewerSel" class="vsel"></select>
+    <span class="vhint" id="viewerHint"></span>
+  </div>
 
   <!-- 手动同步入口（已默认折叠；自动同步已接通时通常不需要） -->
   <details class="import" id="manualImport">
@@ -367,7 +404,7 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
 
   <!-- ============ ① 会议室实时预约（置顶 · 最直观） ============ -->
   <div class="sec-title">① 会议室实时预约（会务接待）</div>
-  <div class="sec-sub">数据来源：腾讯在线表格（会议室预约）。实时状态基于当前时间自动判定，每 60 秒刷新一次。当前时间：<b id="clock">—</b></div>
+  <div class="sec-sub">数据来源：腾讯在线表格（会议室预约）。实时状态基于当前时间自动判定，每 60 秒刷新一次。当前时间：<b id="clock">—</b><label class="rlmine"><input type="checkbox" id="roomOnlyMine"> 只看与我相关的预约</label></div>
   <div class="card">
     <div class="roomkpi" id="roomKpi">
       <div class="item"><span class="n" id="rkTotal">—</span><span class="l">今日有会</span></div>
@@ -389,7 +426,7 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
 
   <!-- ============ ③ 签证情况（签证办理进度） ============ -->
   <div class="sec-title">③ 签证情况（签证办理进度）</div>
-  <div class="sec-sub">数据来源：WPS 在线表格「签证」sheet（经金山文档连接器每小时自动同步）。集中查看部门人员签证办理状态，临期 / 过期自动标红。</div>
+  <div class="sec-sub">数据来源：WPS 在线表格「签证」sheet（经金山文档连接器每小时自动同步）。集中查看部门人员签证办理状态，临期 / 过期自动标红。<span class="vmask" id="visaMaskHint"></span></div>
   <div class="card">
     <div class="visakpi" id="visaKpi"></div>
     <div id="visaBoard"></div>
@@ -397,7 +434,7 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
 
   <!-- ============ ④ 部门整体任务（总体情况） ============ -->
   <div class="sec-title">④ 部门整体任务（总体情况）</div>
-  <div class="sec-sub">数据来源：WPS 在线表格（任务总表）。以下为本部门全部工作的总体进展。</div>
+  <div class="sec-sub">数据来源：WPS 在线表格（任务总表）。以下为本部门全部工作的总体进展。<span class="scopectl">查看范围：<select id="taskScope"><option value="mine">只看我的</option><option value="all">看全部</option></select></span></div>
 
   <!-- KPI -->
   <div class="kpis" id="kpis"></div>
@@ -454,7 +491,7 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
     </table>
   </div>
 
-  <footer>行政部驾驶舱 · 布局优先级版 v1.10.0 · 顺序：① 会议室 ② 车辆情况 ③ 签证情况 ④ 部门任务 · 任务/签证/车辆：WPS（金山文档连接器直读）；会议室：腾讯（腾讯文档连接器直读） · 数据不出本机 · 内置 5 套皮肤可切换</footer>
+  <footer>行政部驾驶舱 · 分角色视角版 v1.12.0 · 顺序：① 会议室 ② 车辆情况 ③ 签证情况 ④ 部门任务 · 任务/签证/车辆：WPS（金山文档连接器直读）；会议室：腾讯（腾讯文档连接器直读） · 顶部「当前视角」可切换身份（不同人看不同内容）· 数据不出本机 · 内置 5 套皮肤可切换</footer>
 </div>
 
 <script>
@@ -464,6 +501,76 @@ const COLORS = {
 };
 const CATS = ['会务接待','车辆管理','后勤管理','物资采购','行政办公','人力资源','其他'];
 const PRIOS = ['高','中','低'];
+
+/* ============ 分角色视角配置 ============
+   想让某人拥有"管理员"视角（看得到签证姓名、看全部任务），把名字加到 admins。
+   想补一个暂时没任务的在册人员（领导/行政主管/新同事），加到 extraPeople。
+   其余人名会从任务表的「负责人」「协同人」自动收集，无需手填。 */
+const CONFIG = {
+  admins: ['老周'],        // 管理员（领导/行政主管）：可看签证姓名 + 全部任务
+  extraPeople: []          // 额外在册人员（可选，逗号分隔的多个名字用数组）
+};
+
+/* 当前视角状态：viewer=选中的人('all' 表示总览)；roomOnlyMine=会议室只看我；taskScope=任务查看范围 */
+let STATE = { viewer:'all', roomOnlyMine:false, taskScope:null };
+let NEED_GUIDE = false;   // 首次打开尚未选择身份
+
+function isAdmin(){
+  const v=STATE.viewer;
+  if(v==='all') return true;
+  if(!v) return false;
+  return (CONFIG.admins||[]).includes(v);
+}
+function currentViewTasks(){
+  const scope = STATE.taskScope || (isAdmin()? 'all':'mine');
+  if(scope==='all') return DATA;
+  const me=STATE.viewer;
+  if(!me || me==='all') return DATA;
+  const collabOf=r=>String(r.collab||'').split(/[,，]/).map(s=>s.trim()).filter(Boolean);
+  return DATA.filter(r=> r.owner===me || collabOf(r).includes(me));
+}
+function buildRoster(){
+  const set=new Set();
+  (CONFIG.admins||[]).forEach(n=>set.add(n));
+  (CONFIG.extraPeople||[]).forEach(n=>set.add(n));
+  DATA.forEach(r=>{
+    if(r.owner) set.add(r.owner);
+    String(r.collab||'').split(/[,，]/).forEach(c=>{ c=c.trim(); if(c) set.add(c); });
+  });
+  return [...set].sort((a,b)=>a.localeCompare(b,'zh'));
+}
+function refreshViewerSelect(){
+  const sel=document.getElementById('viewerSel'); if(!sel) return;
+  const roster=buildRoster();
+  const admins=new Set(CONFIG.admins||[]);
+  let html='<option value="all">总览（全部）</option>';
+  roster.forEach(n=>{ html+='<option value="'+n+'">'+n+(admins.has(n)?'（管理员）':'')+'</option>'; });
+  sel.innerHTML=html;
+  if(STATE.viewer) sel.value=STATE.viewer;
+  const sc=document.getElementById('taskScope');
+  if(sc){ const def=isAdmin()?'all':'mine'; sc.value=STATE.taskScope||def; }
+}
+function showGuide(){
+  const modal=document.getElementById('viewerModal'); if(!modal) return;
+  const box=document.getElementById('viewerModalList');
+  const roster=buildRoster();
+  const admins=new Set(CONFIG.admins||[]);
+  let html='';
+  roster.forEach(n=>{ html+='<button class="vmbtn" data-v="'+n+'">'+n+(admins.has(n)?'（管理员）':'')+'</button>'; });
+  box.innerHTML=html;
+  box.querySelectorAll('.vmbtn').forEach(b=>{ b.onclick=()=>pickViewer(b.getAttribute('data-v')); });
+  const allBtn=document.getElementById('viewerModalAll');
+  if(allBtn) allBtn.onclick=()=>pickViewer('all');
+  modal.style.display='flex';
+}
+function pickViewer(v){
+  NEED_GUIDE=false;
+  STATE.viewer=v;
+  try{ localStorage.setItem('xz-cockpit-viewer',v); }catch(e){}
+  const modal=document.getElementById('viewerModal'); if(modal) modal.style.display='none';
+  refreshViewerSelect();
+  render(); renderVisas(); renderRooms(); renderVehicles();
+}
 
 /* 会议室时间轴范围 */
 const ROOM_START_HOUR=7, ROOM_END_HOUR=22;
@@ -541,6 +648,11 @@ function timeToMin(t){
   const m=String(t).match(/(\d{1,2}):(\d{2})/);
   if(!m) return null;
   return (+m[1])*60 + (+m[2]);
+}
+
+/* 逾期标记：在全部数据上跑一次（视图过滤不改写原始状态） */
+function markOverdue(){
+  DATA.forEach(r=>{ r.overdue=isOverdue(r); if(r.overdue && r.status!=='已逾期') r.status='已逾期'; });
 }
 
 /* ============ 任务解析 ============ */
@@ -748,11 +860,12 @@ function setRoomData(rows,label){
 
 function render(){
   document.getElementById('today').textContent=todayStr();
-  DATA.forEach(r=>{ r.overdue=isOverdue(r); if(r.overdue && r.status!=='已逾期') r.status='已逾期'; });
-  const total=DATA.length;
-  const done=DATA.filter(r=>r.status==='已完成').length;
-  const doing=DATA.filter(r=>r.status==='进行中').length;
-  const od=DATA.filter(r=>r.overdue).length;
+  markOverdue();
+  const VIEW=currentViewTasks();
+  const total=VIEW.length;
+  const done=VIEW.filter(r=>r.status==='已完成').length;
+  const doing=VIEW.filter(r=>r.status==='进行中').length;
+  const od=VIEW.filter(r=>r.overdue).length;
   const rate= total? Math.round(done/total*100):0;
 
   // KPI
@@ -773,7 +886,7 @@ function render(){
 
   // 状态分布
   const stCount={};
-  DATA.forEach(r=>stCount[r.status]=(stCount[r.status]||0)+1);
+  VIEW.forEach(r=>stCount[r.status]=(stCount[r.status]||0)+1);
   const order=['进行中','未开始','已完成','已暂停','已逾期'];
   let html='<div class="hbars">';
   const maxSt=Math.max(1,...Object.values(stCount));
@@ -788,18 +901,18 @@ function render(){
 
   // 大类 bars
   const catCount={}; CATS.forEach(c=>catCount[c]=0);
-  DATA.forEach(r=>{ if(catCount[r.category]===undefined) catCount[r.category]=0; catCount[r.category]++; });
+  VIEW.forEach(r=>{ if(catCount[r.category]===undefined) catCount[r.category]=0; catCount[r.category]++; });
   document.getElementById('catBars').innerHTML=hbars(catCount);
 
   // 优先级 bars
   const priCount={}; PRIOS.forEach(p=>priCount[p]=0);
-  DATA.forEach(r=>{ if(priCount[r.priority]===undefined) priCount[r.priority]=0; priCount[r.priority]++; });
+  VIEW.forEach(r=>{ if(priCount[r.priority]===undefined) priCount[r.priority]=0; priCount[r.priority]++; });
   const priColor={'高':'#C2272D','中':'#E0A800','低':'#6B7280'};
   document.getElementById('priBars').innerHTML=hbars(priCount,priColor);
 
   // 人员负载
   const people={};
-  DATA.forEach(r=>{
+  VIEW.forEach(r=>{
     const o=r.owner||'未分配';
     if(!people[o]) people[o]={count:0,prog:0,od:0};
     people[o].count++; people[o].prog+= (parseInt(r.progress)||0); if(r.overdue) people[o].od++;
@@ -818,7 +931,7 @@ function render(){
   document.getElementById('people').innerHTML=ph||'<div class="empty">暂无数据</div>';
 
   // 逾期表
-  const odRows=DATA.filter(r=>r.overdue).sort((a,b)=>toDate(a.deadline)-toDate(b.deadline));
+  const odRows=VIEW.filter(r=>r.overdue).sort((a,b)=>toDate(a.deadline)-toDate(b.deadline));
   const otb=document.querySelector('#odTable tbody');
   otb.innerHTML = odRows.length? odRows.map(r=>`
     <tr class="od"><td>${r.name}</td><td>${r.category}</td><td>${r.owner}</td>
@@ -829,7 +942,7 @@ function render(){
 
   // 全部任务表
   const atb=document.querySelector('#allTable tbody');
-  atb.innerHTML = DATA.length? DATA.map(r=>`
+  atb.innerHTML = VIEW.length? VIEW.map(r=>`
     <tr class="${r.overdue?'od':''}"><td>${r.name}</td><td>${r.category}</td><td>${r.owner}</td>
     <td>${r.collab||'—'}</td>
     <td><span class="tag s-${r.status}">${r.status}</span></td>
@@ -852,6 +965,9 @@ function renderVisas(){
   const wrap=document.getElementById('visaBoard');
   const vk=document.getElementById('visaKpi');
   const list=VISA_DATA;
+  const admin=isAdmin();
+  const maskHint=document.getElementById('visaMaskHint');
+  if(maskHint) maskHint.textContent = admin? '' : '（非管理员视角：姓名已隐藏）';
   const total=list.length;
   const doing=list.filter(r=>visaStatusClass(r.status)==='doing').length;
   const done=list.filter(r=>visaStatusClass(r.status)==='done').length;
@@ -879,7 +995,7 @@ function renderVisas(){
     }
     const sc=visaStatusClass(r.status);
     const expFlag = r.expiry ? (r.expiry<today ? '（已过期）' : (rowcls==='warn' ? '（临期≤30天）':'')) : '';
-    return `<tr class="vrow ${rowcls}"><td>${r.name||'—'}</td><td>${r.country||'—'}</td><td>${r.vtype||'—'}</td>
+    return `<tr class="vrow ${rowcls}"><td>${admin?(r.name||'—'):'＊＊'}</td><td>${r.country||'—'}</td><td>${r.vtype||'—'}</td>
       <td><span class="vtag ${sc}">${scLabel[sc]||r.status}</span></td>
       <td>${r.submit||'—'}</td><td>${r.issue||'—'}</td>
       <td>${r.expiry? (r.expiry+expFlag):'—'}</td><td>${r.note||'—'}</td></tr>`;
@@ -1016,13 +1132,22 @@ function axisLabels(){
 }
 function renderRooms(){
   const wrap=document.getElementById('roomCards');
+  let RD=ROOM_DATA;
+  if(STATE.roomOnlyMine && STATE.viewer && STATE.viewer!=='all'){
+    RD=ROOM_DATA.filter(r=>(r.booker||'')===STATE.viewer);
+  }
   if(!ROOM_DATA.length){
     wrap.innerHTML='<div class="empty">暂无会议室数据。请在「会议室数据（腾讯表格）」中粘贴 / 上传，或填公开链接同步。</div>';
     updateRoomKpi(0,0,0,0);
     return;
   }
+  if(!RD.length){
+    wrap.innerHTML='<div class="empty">当前视角下没有与你相关的预约。</div>';
+    updateRoomKpi(0,0,0,0);
+    return;
+  }
   const today=todayStr();
-  const todayRooms=ROOM_DATA.filter(r=> (!r.date || r.date===today) && !isRoomPast(r));
+  const todayRooms=RD.filter(r=> (!r.date || r.date===today) && !isRoomPast(r));
   let cards='';
   if(todayRooms.length){
     const groups={};
@@ -1058,7 +1183,7 @@ function renderRooms(){
     updateRoomKpi(0,0,0,0);
   }
   // 全部预约一览：按日期+时间排序，逐条标注【已开过 / 今天 / 预定】
-  const all=[...ROOM_DATA].filter(r=>!isRoomPast(r)).sort((a,b)=>{
+  const all=[...RD].filter(r=>!isRoomPast(r)).sort((a,b)=>{
     const da=(a.date||'0000-00-00'), db=(b.date||'0000-00-00');
     if(da!==db) return da<db?-1:1;
     return (timeToMin(a.start)||0)-(timeToMin(b.start)||0);
@@ -1244,6 +1369,8 @@ async function loadData(){
     if(st.vehiclesched && st.vehiclesched.length){ VEHICLE_SCHED=st.vehiclesched; }
     renderVisas();
     renderVehicles();
+    refreshViewerSelect();
+    if(NEED_GUIDE) showGuide();
     setSync('','数据已内嵌','更新时间 '+fmtTime(st.updatedAt)+' · 每小时自动重建（免服务器）');
     return;
   }
@@ -1255,6 +1382,7 @@ async function loadData(){
   }
   if(!st){
     setSync('err','未连接本地桥接服务','请访问 http://localhost:8787 查看实时数据；或展开下方「手动同步入口」粘贴数据。');
+    if(NEED_GUIDE) showGuide();
     return;
   }
   if(st.tasks && st.tasks.length){ DATA=st.tasks; document.getElementById('updTime').textContent=fmtTime(st.updatedAt)+'（本地服务同步）'; render(); }
@@ -1264,6 +1392,8 @@ async function loadData(){
   if(st.vehiclesched && st.vehiclesched.length){ VEHICLE_SCHED=st.vehiclesched; }
   renderVisas();
   renderVehicles();
+  refreshViewerSelect();
+  if(NEED_GUIDE) showGuide();
   function srcLabel(mode){
     return ({'wps-openapi':'WPS官方API','wps-cookie':'WPS(Cookie)','wps-public':'WPS公开链接','drop-file':'本地文件','browser-upload':'手动上传','tencent-cookie':'腾讯(Cookie)','tencent-public':'腾讯公开链接'})[mode]||mode||'未配置';
   }
@@ -1307,13 +1437,37 @@ else applyTheme('dark');
 updateClock();
 detectMobile();
 window.addEventListener('resize',()=>detectMobile());
+
+// 分角色视角：恢复上次身份 / 首次引导选人
+let vSaved=null;
+try{ vSaved=localStorage.getItem('xz-cockpit-viewer'); }catch(e){}
+STATE.viewer = vSaved || 'all';
+NEED_GUIDE = !vSaved;
+refreshViewerSelect();
+const vsel=document.getElementById('viewerSel');
+if(vsel) vsel.onchange=(e)=>pickViewer(e.target.value);
+const scsel=document.getElementById('taskScope');
+if(scsel) scsel.onchange=(e)=>{ STATE.taskScope=e.target.value; render(); };
+const rom=document.getElementById('roomOnlyMine');
+if(rom) rom.onchange=(e)=>{ STATE.roomOnlyMine=e.target.checked; renderRooms(); };
+
 // 默认展示示例，便于没有数据也能看版式；随后尝试从本地服务拉真实数据覆盖
 document.getElementById('btnReset').onclick();
 document.getElementById('btnResetRoom').onclick();
-// 启动即尝试从本地桥接服务加载真实数据
+// 启动即尝试从本地桥接服务加载真实数据（数据到位后会按需弹出引导选人）
 loadData();
 // 每 60 秒自动刷新（实时）
 setInterval(()=>{ updateClock(); if(ROOM_DATA.length) renderRooms(); loadData(); }, 60000);
 </script>
+<!-- 引导选人弹层（首次打开） -->
+<div class="viewer-modal" id="viewerModal">
+  <div class="vmbox">
+    <h3>请选择你的身份</h3>
+    <p>行政部驾驶舱为不同的人展示不同内容：选自己，看「我的任务」与今日安排，签证姓名自动隐藏；选「总览」看全部（管理员视角）。选择会被记住，下次自动进入；随时可在顶部「当前视角」切换。</p>
+    <div class="vmlist" id="viewerModalList"></div>
+    <div class="vmall"><button id="viewerModalAll">以「总览（全部）」视角查看</button></div>
+  </div>
+</div>
+
 </body>
 </html>
