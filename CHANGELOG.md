@@ -1,3 +1,9 @@
+## v1.15.1 · 2026-08-16（hotfix）
+**修复二级页面"返回驾驶舱"链接失效**
+- 车辆管理.html / 签证管理.html / 任务管理.html 的返回链接由相对路径（`index.html` / `./`）改为绝对部署链接 `https://26e39b5a0aed44d7b0bfbb45dd2fd2c6.app.workbuddy.link`。
+- 原因：项目根目录无 `index.html`（仅 build.js 生成到 dist/、static/），本地预览 / 双击打开时相对链接解析为根目录下的 index.html 而 404；绝对链接在「本地预览 / 部署站 / file://」三种场景均指向真实主页。
+- 重跑 `static/build.js` 重打包三张二级页 → CloudStudio 重新部署 dist/（链接不变，verified=true）。
+
 ## v1.15.0 · 2026-08-17
 **车辆/签证看板新增「批量导入模板 + 文件导入」；新增签证管理看板**
 - 车辆管理.html / 新建 签证管理.html 各内联一套自包含批量导入模块（无后端、不直连资料库）：
