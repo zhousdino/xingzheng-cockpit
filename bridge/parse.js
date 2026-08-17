@@ -187,21 +187,30 @@ function parseVisas(text) {
   return rows;
 }
 
-/* ============ 车辆信息（来源：WPS 在线表格「车辆信息」sheet） ============ */
+/* ============ 车辆信息（来源：资料库云数据表「行政部-车辆信息」） ============ */
 function mapVehicleHeader(h) {
   h = String(h).trim();
   const rules = [
     [/车牌|车号|号牌/, 'plate'],
     [/车型|车辆型号|品牌|厂牌/, 'model'],
-    [/保险.*到期|保单到期|保险到期/, 'insExp'],
+    [/车辆类别|类别|车类/, 'vehClass'],
+    [/燃料类型|燃料|能源类型/, 'fuel'],
+    [/车架号|车架|VIN|vin/i, 'vin'],
+    [/所有.*情况|性质|归属|来源/, 'ownership'],
+    [/使用单位|所属工区|工区|部门|单位/, 'unit'],
+    [/租赁起始|起租|租期起|租赁开始/, 'leaseStart'],
+    [/租赁到期|租期止|租止|租赁结束/, 'leaseExp'],
+    [/保险.*到期|保单到期/, 'insExp'],
     [/保险|保单|车险/, 'insurance'],
-    [/驾驶员|司机|负责司机|主驾/, 'driver'],
-    [/通行证.*到期|通行证到期/, 'permitExp'],
+    [/年检.*到期|年审到期|年检|年审/, 'inspExp'],
+    [/通行证.*到期|通行到期/, 'permitExp'],
     [/通行证|通行许可/, 'permit'],
     [/状态|车况|运行情况/, 'status'],
-    [/所有.*情况|性质|归属|来源/, 'ownership'],
+    [/驾驶员|司机|负责司机|主驾/, 'driver'],
     [/当前位置|实时位置|位置/, 'curLoc'],
-    [/上报时间|位置更新|更新时间/, 'locTime'],
+    [/上报时间|位置更新/, 'locTime'],
+    [/当前里程|里程|公里数/, 'mileage'],
+    [/下次保养|保养日期/, 'maintDate'],
     [/备注|说明|备注说明/, 'note']
   ];
   for (const [re, key] of rules) { if (re.test(h)) return key; }
@@ -214,14 +223,19 @@ function parseVehicles(text) {
   const head = lines[hi].split('\t').map((h, i) => ({ key: mapVehicleHeader(h), i }));
   const used = head.filter(h => h.key);
   if (!used.length) return [];
+  const dateKeys = new Set(['insExp', 'permitExp', 'inspExp', 'leaseStart', 'leaseExp', 'locTime', 'maintDate']);
   const rows = [];
   for (let r = hi + 1; r < lines.length; r++) {
     const cells = lines[r].split('\t');
-    const rec = { plate: '', model: '', insurance: '', insExp: '', driver: '', permit: '', permitExp: '', status: '正常', ownership: '', curLoc: '', locTime: '', note: '' };
+    const rec = {
+      plate: '', model: '', vehClass: '', fuel: '', vin: '', ownership: '', unit: '',
+      leaseStart: '', leaseExp: '', insurance: '', insExp: '', inspExp: '', permit: '',
+      permitExp: '', status: '正常', driver: '', curLoc: '', locTime: '', mileage: '', maintDate: '', note: ''
+    };
     for (const h of used) {
       let v = (cells[h.i] || '').trim();
-      if (h.key === 'insExp' || h.key === 'permitExp') v = normDate(v);
-      else if (h.key === 'status') { if (/保养/.test(v)) v = '保养'; else if (/维修/.test(v)) v = '维修'; else v = '正常'; }
+      if (dateKeys.has(h.key)) v = normDate(v);
+      else if (h.key === 'status') { if (/停用|闲置|报废/.test(v)) v = '停用'; else if (/保养/.test(v)) v = '保养'; else if (/维修/.test(v)) v = '维修'; else v = '正常'; }
       else if (h.key === 'ownership') { if (/租/.test(v)) v = '租赁'; else if (/购|自/.test(v)) v = '自购'; }
       rec[h.key] = v;
     }

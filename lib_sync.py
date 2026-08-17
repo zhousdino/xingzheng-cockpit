@@ -32,7 +32,7 @@ GET_CONTENT = r"C:/Users/周舟/.workbuddy/plugins/cache/workbuddy-builtin/skill
 # (资料库 database_id, drop 子目录, 输出文件名)
 TABLES = [
     ("E810IQGqpV9dHEwsnuIsb7", "wps",     "lib_task.csv"),
-    ("IlIuElUzWtxAKPBMcGXpBg", "vehicle", "lib_vehicle.csv"),
+    ("ckVeiMCyKQ9qzTrK159dKk", "vehicle", "lib_vehicle.csv"),
     ("61g9FSYbQZreyiC1Praqai", "visa",    "lib_visa.csv"),
 ]
 

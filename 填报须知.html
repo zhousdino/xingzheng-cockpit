@@ -101,22 +101,30 @@
     <table class="tbl">
       <thead><tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 选项</th></tr></thead>
       <tbody>
-        <tr><td>车牌</td><td class="type">文本</td><td class="req">必填</td><td>车辆号牌，如 新A·12345。</td></tr>
+        <tr><td>车牌</td><td class="type">文本</td><td class="req">必填</td><td>车辆号牌，如 新A·12345（唯一标识）。</td></tr>
         <tr><td>车型</td><td class="type">文本</td><td class="opt">可选</td><td>品牌型号，如 别克GL8。</td></tr>
-        <tr><td>保险</td><td class="type">文本</td><td class="opt">可选</td><td>保险公司 / 保单号。</td></tr>
-        <tr><td>保险到期</td><td class="type">日期</td><td class="opt">可选</td><td>格式 YYYY-MM-DD。</td></tr>
-        <tr><td>驾驶员</td><td class="type">文本</td><td class="opt">可选</td><td>常用驾驶员姓名。</td></tr>
-        <tr><td>通行证</td><td class="type">文本</td><td class="opt">可选</td><td>通行证编号 / 类型。</td></tr>
-        <tr><td>通行证到期</td><td class="type">日期</td><td class="opt">可选</td><td>格式 YYYY-MM-DD。</td></tr>
-        <tr><td>状态</td><td class="type">单选</td><td class="req">必填</td><td>
-          <span class="pill">正常</span><span class="pill">保养</span><span class="pill">维修</span></td></tr>
+        <tr><td>车辆类别</td><td class="type">单选</td><td class="opt">可选</td><td><span class="pill">公务轿车</span><span class="pill">SUV越野</span><span class="pill">皮卡</span><span class="pill">中巴客车</span><span class="pill">货车</span></td></tr>
+        <tr><td>燃料类型</td><td class="type">单选</td><td class="opt">可选</td><td><span class="pill">汽油</span><span class="pill">柴油</span><span class="pill">新能源</span></td></tr>
+        <tr><td>车架号</td><td class="type">文本</td><td class="opt">可选</td><td>VIN 车架号，资产台账必备。</td></tr>
         <tr><td>所有情况</td><td class="type">单选</td><td class="req">必填</td><td><span class="pill">自购</span><span class="pill">租赁</span></td></tr>
+        <tr><td>使用单位</td><td class="type">文本</td><td class="opt">可选</td><td>所属工区 / 部门，如 后勤保障组。</td></tr>
+        <tr><td>租赁起始日</td><td class="type">日期</td><td class="opt">可选</td><td>仅租赁车填，格式 YYYY-MM-DD。</td></tr>
+        <tr><td>租赁到期日</td><td class="type">日期</td><td class="opt">可选</td><td>仅租赁车填，<b>临期/过期会标红</b>预警。</td></tr>
+        <tr><td>保险</td><td class="type">文本</td><td class="opt">可选</td><td>保险公司 / 保单号。</td></tr>
+        <tr><td>保险到期</td><td class="type">日期</td><td class="opt">可选</td><td>格式 YYYY-MM-DD，临期/过期标红。</td></tr>
+        <tr><td>年检到期</td><td class="type">日期</td><td class="opt">可选</td><td>车辆年检截止，<b>临期/过期标红</b>（重点）。</td></tr>
+        <tr><td>通行证</td><td class="type">文本</td><td class="opt">可选</td><td>项目/营地通行证编号。</td></tr>
+        <tr><td>通行证到期</td><td class="type">日期</td><td class="opt">可选</td><td>格式 YYYY-MM-DD，临期/过期标红。</td></tr>
+        <tr><td>状态</td><td class="type">单选</td><td class="req">必填</td><td><span class="pill">正常</span><span class="pill">保养</span><span class="pill">维修</span><span class="pill">停用</span></td></tr>
+        <tr><td>驾驶员</td><td class="type">文本</td><td class="opt">可选</td><td>常用驾驶员姓名。</td></tr>
         <tr><td>当前位置</td><td class="type">文本</td><td class="opt">可选</td><td>车辆当前停放 / 所在位置。</td></tr>
         <tr><td>上报时间</td><td class="type">日期</td><td class="opt">可选</td><td>本次信息上报日期 YYYY-MM-DD。</td></tr>
+        <tr><td>当前里程</td><td class="type">数字</td><td class="opt">可选</td><td>当前公里数，如 86000（用于保养提醒）。</td></tr>
+        <tr><td>下次保养日期</td><td class="type">日期</td><td class="opt">可选</td><td>计划保养日 YYYY-MM-DD，临期标红。</td></tr>
         <tr><td>备注</td><td class="type">文本</td><td class="opt">可选</td><td>其他需要说明的情况。</td></tr>
       </tbody>
     </table>
-    <div class="foot">「状态 = 保养 / 维修」的车辆会在看板单独归类提醒，到期类字段便于提前预警。</div>
+    <div class="foot">看板按「正常/保养/维修/停用」归类；保险/年检/通行证/租赁/下次保养 到期会在看板<b>自动标红预警</b>。本次新增：车辆类别、燃料类型、车架号、使用单位、租赁起止、年检到期、当前里程、下次保养日期，状态新增「停用」。</div>
   </div>
 
   <!-- 签证情况 -->

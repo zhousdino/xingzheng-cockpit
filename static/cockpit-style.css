@@ -204,7 +204,7 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
 .vhead{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .vplate{font-weight:700;color:var(--primary-d);font-size:16px;font-family:var(--numfont)}
 .vstatus{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;color:#fff}
-.vstatus.normal{background:var(--good)} .vstatus.maint{background:var(--warn);color:#222} .vstatus.repair{background:var(--alert)}
+.vstatus.normal{background:var(--good)} .vstatus.maint{background:var(--warn);color:#222} .vstatus.repair{background:var(--alert)} .vstatus.stop{background:var(--text-2);color:#fff}
 .vown{font-size:12px;font-weight:600;padding:2px 10px;border-radius:20px;background:var(--track);color:var(--text-2)}
 .vinfo{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:12.5px;margin:6px 0}
 .vinfo .it{display:flex;gap:6px;align-items:baseline}

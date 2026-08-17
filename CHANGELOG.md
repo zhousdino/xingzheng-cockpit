@@ -1,3 +1,10 @@
+## v1.14.0 · 2026-08-17
+**车辆表完整版重建（21 字段，含租赁起止 + 年检 + 车架号等缺口）**
+- 资料库「车辆信息」整表重建为新表 `ckVeiMCyKQ9qzTrK159dKk`（旧表 `IlIuElUzWtxAKPBMcGXpBg` 弃用；因 library `add_database_field` 在当前环境不生效，沿用 create_database 整表重建）。
+- 字段由 12 扩为 21：新增 车辆类别(单选)/燃料类型(单选)/车架号/使用单位/租赁起始日/租赁到期日/年检到期/当前里程(数字)/下次保养日期；状态由 正常/保养/维修 扩为 +停用（满足用户"租赁需知租赁期限"要求）。
+- 同步改：`lib_sync.py`(vehicle ID)、`bridge/parse.js`(mapVehicleHeader/parseVehicles 新字段+状态含停用+日期/权属归一化)、`行政部驾驶舱_UI_v1.10.0.html` 与 `车辆管理.html`(vehStatusClass 加 stop、vehCards 展示新车架号/类别/燃料/使用单位/年检/租赁/里程/保养、render KPI 增 停用/临期过期预警、SAMPLE 加新字段)、`cockpit-style.css`(.vstatus.stop)、`填报须知.html`(车辆 21 字段表)、`车辆管理.html` 录入按钮换为新表链接。
+- 重新 build + 部署 CloudStudio（链接不变）。
+
 ## v1.13.0 · 2026-08-16
 **架构迁移：资料库云数据表替代金山/WPS，废弃本地桥接服务**
 - 数据源切换：任务/车辆/签证 三表后台由「金山(WPS)在线表格 + kdocs 连接器」改为 **WorkBuddy 内置「资料库」云数据表**（3 张 database：任务总表 / 车辆信息 / 签证情况），字段名与 bridge/parse.js 表头映射对齐，零改造同步。会议室仍走腾讯在线表格 + 腾讯文档连接器（不变）。

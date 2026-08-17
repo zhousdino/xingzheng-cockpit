@@ -190,9 +190,9 @@ const SAMPLE_ROOM = [
 
 /* 车辆示例（无真实数据时演示用，日期自动取今天） */
 const SAMPLE_VEHICLES=[
-  {plate:'新A·12345', model:'别克 GL8', insurance:'人保 PICC-8821', insExp:'2026-09-30', driver:'李娜', permit:'通-034', permitExp:'2026-12-31', status:'正常', ownership:'自购', curLoc:'', locTime:'', note:'主要用于接待'},
-  {plate:'新B·67890', model:'江铃全顺', insurance:'平安 PA-5543', insExp:'2026-08-10', driver:'王强', permit:'通-017', permitExp:'2026-10-15', status:'保养', ownership:'租赁', curLoc:'', locTime:'', note:'下周年检'},
-  {plate:'新C·11223', model:'丰田陆地巡洋舰', insurance:'人寿财 LR-9012', insExp:'2027-03-20', driver:'赵磊', permit:'通-052', permitExp:'2026-07-31', status:'维修', ownership:'自购', curLoc:'', locTime:'', note:'空调检修中'}
+  {plate:'新A·12345', model:'别克 GL8', vehClass:'公务轿车', fuel:'汽油', vin:'LGWEF5A5XKH000123', ownership:'自购', unit:'综合办公室', leaseStart:'', leaseExp:'', insurance:'人保 PICC-8821', insExp:'2026-09-30', inspExp:'2026-11-10', permit:'通-034', permitExp:'2026-12-31', status:'正常', driver:'李娜', curLoc:'', locTime:'', mileage:'42000', maintDate:'2026-10-01', note:'主要用于接待'},
+  {plate:'新B·67890', model:'江铃全顺', vehClass:'中巴客车', fuel:'柴油', vin:'LVZCB2BB5JW000456', ownership:'租赁', unit:'后勤保障组', leaseStart:'2025-09-01', leaseExp:'2026-12-31', insurance:'平安 PA-5543', insExp:'2026-08-10', inspExp:'2026-08-25', permit:'通-017', permitExp:'2026-10-15', status:'保养', driver:'王强', curLoc:'', locTime:'', mileage:'86000', maintDate:'2026-08-20', note:'下周年检'},
+  {plate:'新C·11223', model:'丰田陆地巡洋舰', vehClass:'SUV越野', fuel:'汽油', vin:'JTEBX9FJ0K000789', ownership:'自购', unit:'工程组', leaseStart:'', leaseExp:'', insurance:'人寿财 LR-9012', insExp:'2027-03-20', inspExp:'2026-09-05', permit:'通-052', permitExp:'2026-07-31', status:'维修', driver:'赵磊', curLoc:'', locTime:'', mileage:'120000', maintDate:'2026-08-18', note:'空调检修中'}
 ];
 const SAMPLE_VEH_SCHED=[
   {date:'2026-08-15', plate:'新A·12345', task:'机场接站', driver:'李娜', from:'项目部', to:'T3航站楼', start:'09:00', end:'11:30', note:''},
@@ -594,31 +594,42 @@ function vehExpClass(date){
   if(d&&t){ const days=(d-t)/86400000; if(days>=0&&days<=30) return 'warn'; }
   return '';
 }
-function vehStatusClass(s){ return s==='保养'?'maint':(s==='维修'?'repair':'normal'); }
+function vehStatusClass(s){ return s==='停用'?'stop':(s==='保养'?'maint':(s==='维修'?'repair':'normal')); }
 function vehCards(list,sched,today){
   return '<div class="vcards">'+list.map(v=>{
     const sc=vehStatusClass(v.status);
-    const insCls=vehExpClass(v.insExp), permCls=vehExpClass(v.permitExp);
-    const insFlag=v.insExp?(v.insExp<today?'（已过期）':(insCls==='warn'?'（临期≤30天）':'')):'';
-    const permFlag=v.permitExp?(v.permitExp<today?'（已过期）':(permCls==='warn'?'（临期≤30天）':'')):'';
-    const todays=sched.filter(s=>s.plate===v.plate && s.date===today);
+    const insCls=vehExpClass(v.insExp), permCls=vehExpClass(v.permitExp),
+          inspCls=vehExpClass(v.inspExp), leaseCls=vehExpClass(v.leaseExp),
+          maintCls=vehExpClass(v.maintDate);
+    const flag=d=> d?(d<today?'（已过期）':(vehExpClass(d)==='warn'?'（临期≤30天）':'')):'';
+    const todays=(sched&&sched.length)?sched.filter(s=>s.plate===v.plate && s.date===today):[];
     const schedHtml = todays.length ? '<ul>'+todays.map(s=>{
       const t=(s.start||'')+(s.end?('–'+s.end):'');
       return '<li><span class="t">'+(t||'—')+'</span><span class="r">'+(s.task||'—')+'</span>'+(s.from?(' · '+s.from+'→'+(s.to||'?')):((s.to)?(' · →'+s.to):''))+(s.driver?(' · '+s.driver):'')+'</li>';
-    }).join('')+'</ul>' : '<div class="st">今日无排期</div>';
+    }).join('')+'</ul>' : (sched&&sched.length?'<div class="st">今日无排期</div>':'');
     let locHtml;
     if(v.curLoc){ locHtml='<span class="lab">上报位置：</span><span class="val">'+v.curLoc+'</span>'+(v.locTime?(' <span class="lab">（'+v.locTime+' 上报）</span>'):''); }
     else { const plan = todays.find(s=>s.to) || todays[0]; locHtml='<span class="lab">计划位置（今日排期）：</span><span class="val">'+(plan&&plan.to?plan.to:'今日无排期')+'</span>'; }
     return `<div class="vcard">
-      <div class="vhead"><span class="vplate">${v.plate}</span><span class="vstatus ${sc}">${v.status}</span><span class="vown">${v.ownership||'—'}</span></div>
+      <div class="vhead"><span class="vplate">${v.plate}</span>
+        <span class="vstatus ${sc}">${v.status}</span>
+        <span class="vown">${v.ownership||'—'}</span>
+        ${v.vehClass?('<span class="vown">'+v.vehClass+'</span>'):''}</div>
       <div class="vinfo">
         <div class="it"><span class="k">车型</span><span class="vv">${v.model||'—'}</span></div>
+        <div class="it"><span class="k">燃料</span><span class="vv">${v.fuel||'—'}</span></div>
+        <div class="it"><span class="k">车架号</span><span class="vv">${v.vin||'—'}</span></div>
+        <div class="it"><span class="k">使用单位</span><span class="vv">${v.unit||'—'}</span></div>
         <div class="it"><span class="k">驾驶员</span><span class="vv">${v.driver||'—'}</span></div>
-        <div class="it"><span class="k">保险</span><span class="vv ${insCls}">${v.insurance||'—'}${v.insExp?(v.insExp+insFlag):''}</span></div>
-        <div class="it"><span class="k">通行证</span><span class="vv ${permCls}">${v.permit||'—'}${v.permitExp?(v.permitExp+permFlag):''}</span></div>
+        <div class="it"><span class="k">当前里程</span><span class="vv">${(v.mileage!==''&&v.mileage!=null)?(v.mileage+' km'):'—'}</span></div>
+        <div class="it"><span class="k">保险</span><span class="vv ${insCls}">${v.insurance||'—'}${v.insExp?(v.insExp+flag(v.insExp)):''}</span></div>
+        <div class="it"><span class="k">年检</span><span class="vv ${inspCls}">${v.inspExp?(v.inspExp+flag(v.inspExp)):'—'}</span></div>
+        <div class="it"><span class="k">通行证</span><span class="vv ${permCls}">${v.permit||'—'}${v.permitExp?(v.permitExp+flag(v.permitExp)):''}</span></div>
+        <div class="it"><span class="k">租赁</span><span class="vv ${leaseCls}">${v.leaseExp?(v.leaseStart?(v.leaseStart+' ~ '):'')+v.leaseExp+flag(v.leaseExp):'—'}</span></div>
+        <div class="it"><span class="k">下次保养</span><span class="vv ${maintCls}">${v.maintDate?(v.maintDate+flag(v.maintDate)):'—'}</span></div>
         <div class="it" style="grid-column:1/3"><span class="k">备注</span><span class="vv">${v.note||'—'}</span></div>
       </div>
-      <div class="vsched"><div class="st">当日安排（${today}）</div>${schedHtml}</div>
+      ${(sched&&sched.length)?('<div class="vsched"><div class="st">当日安排（'+today+'）</div>'+schedHtml+'</div>'):''}
       <div class="vloc">${locHtml}</div>
     </div>`;
   }).join('')+'</div>';
@@ -637,21 +648,28 @@ function renderVehicles(){
   const normal=list.filter(r=>r.status==='正常').length;
   const maint=list.filter(r=>r.status==='保养').length;
   const repair=list.filter(r=>r.status==='维修').length;
+  const stop=list.filter(r=>r.status==='停用').length;
   const ownBuy=list.filter(r=>r.ownership==='自购').length;
   const ownRent=list.filter(r=>r.ownership==='租赁').length;
+  const expiring=list.filter(r=>{
+    const ds=[r.insExp,r.inspExp,r.permitExp,r.leaseExp,r.maintDate].filter(Boolean);
+    return ds.some(d=>{ const c=vehExpClass(d); return c==='exp'||c==='warn'; });
+  }).length;
   if(vk) vk.innerHTML=`
     <div class="item"><span class="n">${total}</span><span class="l">车辆总数</span></div>
     <div class="item green"><span class="n">${normal}</span><span class="l">正常</span></div>
     <div class="item warn"><span class="n">${maint}</span><span class="l">保养</span></div>
     <div class="item red"><span class="n">${repair}</span><span class="l">维修</span></div>
+    <div class="item"><span class="n">${stop}</span><span class="l">停用</span></div>
     <div class="item"><span class="n">${ownBuy}</span><span class="l">自购</span></div>
-    <div class="item"><span class="n">${ownRent}</span><span class="l">租赁</span></div>`;
+    <div class="item"><span class="n">${ownRent}</span><span class="l">租赁</span></div>
+    <div class="item red"><span class="n">${expiring}</span><span class="l">临期/过期</span></div>`;
   if(!wrap) return;
   if(demo){
-    wrap.innerHTML='<div class="empty">以下为<b>示例预览</b>。请在资料库「车辆信息」表中填写（车牌 / 车型 / 保险到期 / 驾驶员 / 通行证到期 / 状态 / 所有情况 / 当前位置 等），保存后经资料库每小时自动同步到此处，示例将自动替换为真实数据。</div>'+vehCards(list,sched,today);
+    wrap.innerHTML='<div class="empty">以下为<b>示例预览</b>。请在资料库「车辆信息」表中填写（车牌 / 车型 / 车辆类别 / 燃料类型 / 车架号 / 所有情况 / 使用单位 / 租赁起止 / 保险到期 / 年检到期 / 通行证到期 / 状态 / 驾驶员 / 当前里程 / 下次保养日期 等），保存后经资料库每小时自动同步到此处，示例将自动替换为真实数据。</div>'+vehCards(list,sched,today);
     return;
   }
-  if(!total){ wrap.innerHTML='<div class="empty">暂无车辆信息。请在 WPS 表的「车辆信息」sheet 中填写（建议列：车牌/车型/保险/保险到期/驾驶员/通行证/通行证到期/状态/所有情况/备注），并在「车辆排期」sheet 填写每日安排，保存后自动同步。</div>'; return; }
+  if(!total){ wrap.innerHTML='<div class="empty">暂无车辆信息。请在资料库「车辆信息」表中填写（车牌/车型/车辆类别/燃料类型/车架号/所有情况/使用单位/租赁起止/保险到期/年检到期/通行证到期/状态/驾驶员/当前里程/下次保养日期/备注），保存后经资料库每小时自动同步到此看板。</div>'; return; }
   wrap.innerHTML=vehCards(list,sched,today);
 }
 
