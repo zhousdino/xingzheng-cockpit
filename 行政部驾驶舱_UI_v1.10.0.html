@@ -138,7 +138,7 @@
     </table>
   </div>
 
-  <footer>行政部驾驶舱 · 布局优先级版 v1.10.0 · 顺序：① 会议室 ② 车辆情况 ③ 签证情况 ④ 部门任务 · 任务/签证/车辆：WPS（金山文档连接器直读）；会议室：腾讯（腾讯文档连接器直读） · 数据不出本机 · 内置 5 套皮肤可切换</footer>
+  <footer>行政部驾驶舱 · v1.13.0 · 顺序：① 会议室 ② 车辆情况 ③ 签证情况 ④ 部门任务 · 任务/车辆/签证：资料库云数据表（部门共享填报，每小时自动同步）；会议室：腾讯在线表格 · 内置 5 套皮肤可切换</footer>
 </div>
 
 <script>
@@ -372,18 +372,18 @@ function findHeaderLine(lines,mapFn){
   return 0;
 }
 
-/* ============ 签证解析（来源：WPS 在线表格「签证」sheet） ============ */
+/* ============ 签证解析（来源：资料库云表「签证情况」） ============ */
 function mapVisaHeader(h){
   h=String(h).trim();
   const rules=[
     [/姓名|名字|人员|申请人|持证人|办理人/,'name'],
-    [/国家|目的国|国别|前往|country/i,'country'],
+    [/护照类型|护照种类/,'pptType'],
+    [/护照.*有效期|护照到期|护照.*至/,'pptExp'],
     [/签证类型|签种|类型|visa类型/,'vtype'],
-    [/状态|办理状态|进度状态/,'status'],
-    [/提交|申请日期|送签|递签|受理/,'submit'],
-    [/预计出签|出签|签发|预计签发/,'issue'],
-    [/有效期|到期|过期|届满|有效期至/,'expiry'],
-    [/备注|说明|备注说明/,'note']
+    [/签证签发|签发日期|出签日期/,'issue'],
+    [/签证到期|签证.*至/,'expiry'],
+    [/Iqama|依卡玛|居留/,'iqama'],
+    [/飞签/,'flysign']
   ];
   for(const [re,key] of rules){ if(re.test(h)) return key; }
   return null;
@@ -398,13 +398,13 @@ function parseVisas(text){
   const rows=[];
   for(let r=hi+1;r<lines.length;r++){
     const cells=lines[r].split('\t');
-    const rec={name:'',country:'',vtype:'',status:'未开始',submit:'',issue:'',expiry:'',note:''};
+    const rec={name:'',pptType:'',pptExp:'',vtype:'',issue:'',expiry:'',iqama:'未开始',flysign:''};
     for(const h of used){
       let v=(cells[h.i]||'').trim();
-      if(h.key==='submit'||h.key==='issue'||h.key==='expiry') v=normDate(v);
+      if(h.key==='pptExp'||h.key==='issue'||h.key==='expiry'||h.key==='flysign') v=normDate(v);
       rec[h.key]=v;
     }
-    if(!rec.name && !rec.country && !rec.vtype) continue;
+    if(!rec.name && !rec.vtype) continue;
     rows.push(rec);
   }
   return rows;
@@ -525,49 +525,64 @@ function render(){
 /* ============ 签证情况渲染 ============ */
 function visaStatusClass(s){
   s=String(s||'');
-  if(/已出签|出签|签发/.test(s)) return 'done';
-  if(/已拒签|拒签/.test(s)) return 'reject';
-  if(/待续签|续签/.test(s)) return 'renew';
+  if(/已注销|注销/.test(s)) return 'cancel';
+  if(/已完成|已办好|已出签|出签/.test(s)) return 'done';
   if(/办理中|审批中|审核中/.test(s)) return 'doing';
   return 'wait';
+}
+function pptRemainText(pptExp){
+  if(!pptExp) return '—';
+  const t=toDate(pptExp), today=toDate(todayStr());
+  if(!t) return pptExp;
+  const days=Math.round((t-today)/86400000);
+  if(days<0) return pptExp+'（已过期'+Math.abs(days)+'天）';
+  return pptExp+'（剩'+days+'天）';
 }
 function renderVisas(){
   const wrap=document.getElementById('visaBoard');
   const vk=document.getElementById('visaKpi');
   const list=VISA_DATA;
   const total=list.length;
-  const doing=list.filter(r=>visaStatusClass(r.status)==='doing').length;
-  const done=list.filter(r=>visaStatusClass(r.status)==='done').length;
+  const doing=list.filter(r=>visaStatusClass(r.iqama)==='doing').length;
+  const done=list.filter(r=>visaStatusClass(r.iqama)==='done').length;
   const today=todayStr();
   let alertCnt=0, warnCnt=0;
   list.forEach(r=>{
-    if(!r.expiry) return;
-    if(r.expiry<today){ alertCnt++; return; }
-    const d=toDate(r.expiry), t=toDate(today);
-    if(d&&t){ const days=(d-t)/86400000; if(days>=0 && days<=30) warnCnt++; }
+    const dates=[r.pptExp, r.expiry].filter(Boolean);
+    for(const dt of dates){
+      if(dt<today){ alertCnt++; break; }
+      const d=toDate(dt), t=toDate(today);
+      if(d&&t){ const days=(d-t)/86400000; if(days>=0 && days<=30){ warnCnt++; break; } }
+    }
   });
   if(vk) vk.innerHTML=`
     <div class="item"><span class="n">${total}</span><span class="l">办理人数</span></div>
     <div class="item warn"><span class="n">${doing}</span><span class="l">办理中</span></div>
-    <div class="item green"><span class="n">${done}</span><span class="l">已出签</span></div>
-    <div class="item red"><span class="n">${alertCnt+warnCnt}</span><span class="l">临期/过期</span></div>`;
+    <div class="item green"><span class="n">${done}</span><span class="l">Iqama已完成</span></div>
+    <div class="item red"><span class="n">${alertCnt+warnCnt}</span><span class="l">护照/签证临期或过期</span></div>`;
   if(!wrap) return;
-  if(!total){ wrap.innerHTML='<div class="empty">暂无签证办理信息。请在 WPS 表的「签证」sheet 中填写（建议列：姓名 / 国家 / 签证类型 / 状态 / 提交日期 / 预计出签 / 有效期至 / 备注），保存后经金山文档连接器每小时自动同步到此处。</div>'; return; }
-  const scLabel={'done':'已出签','reject':'已拒签','renew':'待续签','doing':'办理中','wait':'未开始'};
+  if(!total){ wrap.innerHTML='<div class="empty">暂无签证办理信息。请在资料库「签证情况」表中填写（列：姓名 / 护照类型 / 护照有效期至 / 签证类型 / 签证签发日期 / 签证到期日 / Iqama办理状态 / 最近一次飞签时间），保存后经资料库每小时自动同步到此处。</div>'; return; }
+  const scLabel={'cancel':'已注销','done':'已完成','doing':'办理中','wait':'未开始'};
   const rows=list.map(r=>{
-    let rowcls='';
-    if(r.expiry){
-      if(r.expiry<today){ rowcls='alert'; }
-      else { const d=toDate(r.expiry), t=toDate(today); if(d&&t){ const days=(d-t)/86400000; if(days>=0&&days<=30) rowcls='warn'; } }
+    let alert=false, warn=false;
+    const dates=[r.pptExp, r.expiry].filter(Boolean);
+    for(const dt of dates){
+      if(dt<today) alert=true;
+      else { const d=toDate(dt), t=toDate(today); if(d&&t){ const days=(d-t)/86400000; if(days>=0&&days<=30) warn=true; } }
     }
-    const sc=visaStatusClass(r.status);
-    const expFlag = r.expiry ? (r.expiry<today ? '（已过期）' : (rowcls==='warn' ? '（临期≤30天）':'')) : '';
-    return `<tr class="vrow ${rowcls}"><td>${r.name||'—'}</td><td>${r.country||'—'}</td><td>${r.vtype||'—'}</td>
-      <td><span class="vtag ${sc}">${scLabel[sc]||r.status}</span></td>
-      <td>${r.submit||'—'}</td><td>${r.issue||'—'}</td>
-      <td>${r.expiry? (r.expiry+expFlag):'—'}</td><td>${r.note||'—'}</td></tr>`;
+    const rowcls = alert?'alert':(warn?'warn':'');
+    const sc=visaStatusClass(r.iqama);
+    const expFlag = r.expiry ? (r.expiry<today ? '（已过期）' : (warn&&r.expiry>=today?'（临期）':'')) : '';
+    return `<tr class="vrow ${rowcls}"><td>${r.name||'—'}</td>
+      <td>${r.pptType||'—'}</td>
+      <td>${pptRemainText(r.pptExp)}</td>
+      <td>${r.vtype||'—'}</td>
+      <td>${r.issue||'—'}</td>
+      <td>${r.expiry? (r.expiry+expFlag):'—'}</td>
+      <td><span class="vtag ${sc}">${scLabel[sc]||r.iqama}</span></td>
+      <td>${r.flysign||'—'}</td></tr>`;
   }).join('');
-  wrap.innerHTML=`<table><thead><tr><th>姓名</th><th>国家/目的国</th><th>签证类型</th><th>状态</th><th>提交日期</th><th>预计出签</th><th>有效期至</th><th>备注</th></tr></thead><tbody>${rows}</tbody></table>`;
+  wrap.innerHTML=`<table><thead><tr><th>姓名</th><th>护照类型</th><th>护照有效期至</th><th>签证类型</th><th>签证签发日期</th><th>签证到期日</th><th>Iqama办理状态</th><th>最近一次飞签时间</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 /* ============ 车辆情况渲染 ============ */
@@ -633,7 +648,7 @@ function renderVehicles(){
     <div class="item"><span class="n">${ownRent}</span><span class="l">租赁</span></div>`;
   if(!wrap) return;
   if(demo){
-    wrap.innerHTML='<div class="empty">以下为<b>示例预览</b>。请在 WPS 表的「车辆信息」「车辆排期」两个 sheet 中填写（建议列见下方「手动同步入口」），保存后经金山文档连接器每小时自动同步到此处，示例将自动替换为真实数据。</div>'+vehCards(list,sched,today);
+    wrap.innerHTML='<div class="empty">以下为<b>示例预览</b>。请在资料库「车辆信息」表中填写（车牌 / 车型 / 保险到期 / 驾驶员 / 通行证到期 / 状态 / 所有情况 / 当前位置 等），保存后经资料库每小时自动同步到此处，示例将自动替换为真实数据。</div>'+vehCards(list,sched,today);
     return;
   }
   if(!total){ wrap.innerHTML='<div class="empty">暂无车辆信息。请在 WPS 表的「车辆信息」sheet 中填写（建议列：车牌/车型/保险/保险到期/驾驶员/通行证/通行证到期/状态/所有情况/备注），并在「车辆排期」sheet 填写每日安排，保存后自动同步。</div>'; return; }

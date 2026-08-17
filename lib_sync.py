@@ -33,7 +33,7 @@ GET_CONTENT = r"C:/Users/周舟/.workbuddy/plugins/cache/workbuddy-builtin/skill
 TABLES = [
     ("E810IQGqpV9dHEwsnuIsb7", "wps",     "lib_task.csv"),
     ("IlIuElUzWtxAKPBMcGXpBg", "vehicle", "lib_vehicle.csv"),
-    ("x2YEbPkkxTfnCNOxA1EWdM", "visa",    "lib_visa.csv"),
+    ("61g9FSYbQZreyiC1Praqai", "visa",    "lib_visa.csv"),
 ]
 
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}")

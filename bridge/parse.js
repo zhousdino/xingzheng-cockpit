@@ -149,18 +149,18 @@ function parseRooms(text) {
   return rows;
 }
 
-/* ---------- 签证（来源：WPS 在线表格「签证」sheet） ---------- */
+/* ---------- 签证（来源：资料库云表「签证情况」） ---------- */
 function mapVisaHeader(h) {
   h = String(h).trim();
   const rules = [
     [/姓名|名字|人员|申请人|持证人|办理人/, 'name'],
-    [/国家|目的国|国别|前往|country/i, 'country'],
+    [/护照类型|护照种类/, 'pptType'],
+    [/护照.*有效期|护照到期|护照.*至/, 'pptExp'],
     [/签证类型|签种|类型|visa类型/, 'vtype'],
-    [/状态|办理状态|进度状态/, 'status'],
-    [/提交|申请日期|送签|递签|受理/, 'submit'],
-    [/预计出签|出签|签发|预计签发/, 'issue'],
-    [/有效期|到期|过期|届满|有效期至/, 'expiry'],
-    [/备注|说明|备注说明/, 'note']
+    [/签证签发|签发日期|出签日期/, 'issue'],
+    [/签证到期|签证.*至/, 'expiry'],
+    [/Iqama|依卡玛|居留/, 'iqama'],
+    [/飞签/, 'flysign']
   ];
   for (const [re, key] of rules) { if (re.test(h)) return key; }
   return null;
@@ -175,13 +175,13 @@ function parseVisas(text) {
   const rows = [];
   for (let r = hi + 1; r < lines.length; r++) {
     const cells = lines[r].split('\t');
-    const rec = { name: '', country: '', vtype: '', status: '未开始', submit: '', issue: '', expiry: '', note: '' };
+    const rec = { name: '', pptType: '', pptExp: '', vtype: '', issue: '', expiry: '', iqama: '未开始', flysign: '' };
     for (const h of used) {
       let v = (cells[h.i] || '').trim();
-      if (h.key === 'submit' || h.key === 'issue' || h.key === 'expiry') v = normDate(v);
+      if (h.key === 'pptExp' || h.key === 'issue' || h.key === 'expiry' || h.key === 'flysign') v = normDate(v);
       rec[h.key] = v;
     }
-    if (!rec.name && !rec.country && !rec.vtype) continue;
+    if (!rec.name && !rec.vtype) continue;
     rows.push(rec);
   }
   return rows;

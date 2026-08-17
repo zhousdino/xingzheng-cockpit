@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行政部驾驶舱 · 填报须知</title>
+<style>
+  :root{
+    --bg:#0f1729; --panel:#16213a; --panel2:#1d2b4a; --line:#2a3a5e;
+    --text:#e8eefc; --text-2:#9fb0d0; --accent:#3a8dff; --accent2:#34d0a0;
+    --warn:#ff7a59; --amber:#ffc34d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#0c1322,#0f1729 240px);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 16px 60px}
+  header{padding:26px 16px 18px;background:linear-gradient(135deg,#16213a,#1d2b4a);
+    border-bottom:1px solid var(--line);margin-bottom:22px}
+  header h1{margin:0;font-size:22px;letter-spacing:.5px}
+  header p{margin:8px 0 0;color:var(--text-2);font-size:13px;line-height:1.7}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:16px 18px;margin:0 0 16px;line-height:1.85;font-size:14px}
+  .step b{color:var(--accent2)}
+  .step .num{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;
+    background:var(--accent);color:#fff;border-radius:50%;font-size:12px;margin-right:8px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    margin:0 0 18px;overflow:hidden}
+  .card h2{margin:0;padding:14px 18px;font-size:16px;background:var(--panel2);
+    border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+  .card h2 .tag{font-size:11px;color:var(--text-2);font-weight:400}
+  .tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .tbl th,.tbl td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  .tbl th{color:var(--text-2);font-weight:600;background:rgba(255,255,255,.02)}
+  .tbl tr:last-child td{border-bottom:none}
+  .req{color:var(--warn);font-weight:600}
+  .opt{color:var(--text-2)}
+  .pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);
+    border-radius:6px;padding:1px 7px;margin:2px 3px 2px 0;font-size:12px;color:var(--text-2)}
+  .type{color:var(--accent);font-size:12px}
+  .note{font-size:12px;color:var(--text-2);line-height:1.6}
+  .foot{margin-top:8px;font-size:12px;color:var(--text-2);line-height:1.7;
+    border-left:3px solid var(--accent);padding-left:12px}
+  .warnbox{background:rgba(255,122,89,.1);border:1px solid rgba(255,122,89,.4);
+    border-radius:10px;padding:12px 14px;font-size:13px;color:#ffd0c0;margin:0 0 18px;line-height:1.7}
+  @media(max-width:600px){.tbl{font-size:12px}.tbl th,.tbl td{padding:8px 8px}.card h2{font-size:15px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="padding-bottom:0">
+    <h1>行政部驾驶舱 · 填报须知</h1>
+    <p>本须知说明三张「资料库」数据表的填写规范。你拿到的链接是<b style="color:var(--accent2)">可编辑的公开链接</b>，
+    打开即可填报，无需登录账号。填完保存后，驾驶舱大屏会在<b>下一个整点自动刷新</b>显示。</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="warnbox">
+    ⚠️ 因为是「公开链接」，<b>拿到链接的人都能查看和修改</b>。请勿外发到部门以外的群；
+    如链接外泄，请及时在 WorkBuddy 里关闭公开编辑权限。填数据时只填自己负责的内容，不要删改他人行。
+  </div>
+
+  <div class="step">
+    <div><span class="num">1</span><b>打开链接</b>：点击行政部统一发放的「任务 / 车辆 / 签证」资料库链接。</div>
+    <div><span class="num">2</span><b>新建一行</b>：点表格右上角「+ 新建」或行末的加号，出现空白行。</div>
+    <div><span class="num">3</span><b>按下面规范填</b>：参考各表字段说明，下拉项直接选，日期格式 YYYY-MM-DD，进度填 0–100 的数字。</div>
+    <div><span class="num">4</span><b>保存</b>：填完自动保存（或点保存），关掉页面即可，无需其他操作。</div>
+  </div>
+
+  <!-- 任务总表 -->
+  <div class="card">
+    <h2>① 任务总表 <span class="tag">行政部-任务总表</span></h2>
+    <table class="tbl">
+      <thead><tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 选项</th></tr></thead>
+      <tbody>
+        <tr><td>任务名称</td><td class="type">文本</td><td class="req">必填</td><td>任务的具体名称，一句话说清做什么。</td></tr>
+        <tr><td>所属大类</td><td class="type">单选</td><td class="req">必填</td><td>
+          <span class="pill">会务接待</span><span class="pill">车辆管理</span><span class="pill">后勤管理</span>
+          <span class="pill">物资采购</span><span class="pill">行政办公</span><span class="pill">人力资源</span><span class="pill">其他</span></td></tr>
+        <tr><td>子项备注</td><td class="type">文本</td><td class="opt">可选</td><td>细分事项、注意事项等补充信息。</td></tr>
+        <tr><td>负责人</td><td class="type">文本</td><td class="req">必填</td><td>该项任务的主要责任人（写姓名）。</td></tr>
+        <tr><td>协同人</td><td class="type">文本</td><td class="opt">可选</td><td>配合人员，多人用顿号隔开。</td></tr>
+        <tr><td>状态</td><td class="type">单选</td><td class="req">必填</td><td>
+          <span class="pill">未开始</span><span class="pill">进行中</span><span class="pill">已完成</span>
+          <span class="pill">已暂停</span><span class="pill">已逾期</span>
+          <div class="note">「已逾期」由系统按截止日期自动判定，一般选前四项即可。</div></td></tr>
+        <tr><td>进度%</td><td class="type">数字</td><td class="opt">可选</td><td>填 0–100 的整数，如 60 表示完成六成。</td></tr>
+        <tr><td>开始日期</td><td class="type">日期</td><td class="opt">可选</td><td>格式 YYYY-MM-DD。</td></tr>
+        <tr><td>截止日期</td><td class="type">日期</td><td class="req">必填</td><td>格式 YYYY-MM-DD，逾期判定以此为准。</td></tr>
+        <tr><td>优先级</td><td class="type">单选</td><td class="opt">可选</td><td><span class="pill">高</span><span class="pill">中</span><span class="pill">低</span></td></tr>
+        <tr><td>堵点说明</td><td class="type">文本</td><td class="opt">可选</td><td>卡住的原因、需要协调的事项。</td></tr>
+      </tbody>
+    </table>
+    <div class="foot">看板按「负责人 / 状态」展示，并按截止日期自动标红逾期项，请如实填写负责人与截止日期。</div>
+  </div>
+
+  <!-- 车辆信息 -->
+  <div class="card">
+    <h2>② 车辆信息 <span class="tag">行政部-车辆信息</span></h2>
+    <table class="tbl">
+      <thead><tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 选项</th></tr></thead>
+      <tbody>
+        <tr><td>车牌</td><td class="type">文本</td><td class="req">必填</td><td>车辆号牌，如 新A·12345。</td></tr>
+        <tr><td>车型</td><td class="type">文本</td><td class="opt">可选</td><td>品牌型号，如 别克GL8。</td></tr>
+        <tr><td>保险</td><td class="type">文本</td><td class="opt">可选</td><td>保险公司 / 保单号。</td></tr>
+        <tr><td>保险到期</td><td class="type">日期</td><td class="opt">可选</td><td>格式 YYYY-MM-DD。</td></tr>
+        <tr><td>驾驶员</td><td class="type">文本</td><td class="opt">可选</td><td>常用驾驶员姓名。</td></tr>
+        <tr><td>通行证</td><td class="type">文本</td><td class="opt">可选</td><td>通行证编号 / 类型。</td></tr>
+        <tr><td>通行证到期</td><td class="type">日期</td><td class="opt">可选</td><td>格式 YYYY-MM-DD。</td></tr>
+        <tr><td>状态</td><td class="type">单选</td><td class="req">必填</td><td>
+          <span class="pill">正常</span><span class="pill">保养</span><span class="pill">维修</span></td></tr>
+        <tr><td>所有情况</td><td class="type">单选</td><td class="req">必填</td><td><span class="pill">自购</span><span class="pill">租赁</span></td></tr>
+        <tr><td>当前位置</td><td class="type">文本</td><td class="opt">可选</td><td>车辆当前停放 / 所在位置。</td></tr>
+        <tr><td>上报时间</td><td class="type">日期</td><td class="opt">可选</td><td>本次信息上报日期 YYYY-MM-DD。</td></tr>
+        <tr><td>备注</td><td class="type">文本</td><td class="opt">可选</td><td>其他需要说明的情况。</td></tr>
+      </tbody>
+    </table>
+    <div class="foot">「状态 = 保养 / 维修」的车辆会在看板单独归类提醒，到期类字段便于提前预警。</div>
+  </div>
+
+  <!-- 签证情况 -->
+  <div class="card">
+    <h2>③ 签证情况 <span class="tag">行政部-签证情况</span></h2>
+    <table class="tbl">
+      <thead><tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 选项</th></tr></thead>
+      <tbody>
+        <tr><td>姓名</td><td class="type">文本</td><td class="req">必填</td><td>办签证人姓名。</td></tr>
+        <tr><td>护照类型</td><td class="type">单选</td><td class="req">必填</td><td>
+          <span class="pill">普通护照</span><span class="pill">公务护照</span><span class="pill">外交护照</span></td></tr>
+        <tr><td>护照有效期至</td><td class="type">日期</td><td class="req">必填</td><td>
+          格式 YYYY-MM-DD。<div class="note">看板会自动算出「护照剩余天数」并在临期（≤30天）/ 过期时标红，无需另填。</div></td></tr>
+        <tr><td>签证类型</td><td class="type">单选</td><td class="req">必填</td><td>
+          <span class="pill">工作签证</span><span class="pill">商务签证</span><span class="pill">访问签证</span>
+          <span class="pill">旅游签证</span><span class="pill">其他</span></td></tr>
+        <tr><td>签证签发日期</td><td class="type">日期</td><td class="opt">可选</td><td>签证签发日期 YYYY-MM-DD。</td></tr>
+        <tr><td>签证到期日</td><td class="type">日期</td><td class="opt">可选</td><td>签证有效期截止 YYYY-MM-DD，临期 / 过期会标红。</td></tr>
+        <tr><td>Iqama办理状态</td><td class="type">单选</td><td class="req">必填</td><td>
+          <span class="pill">未开始</span><span class="pill">办理中</span><span class="pill">已完成</span>
+          <span class="pill">已注销</span>
+          <div class="note">Iqama 即沙特居留工作许可，看板按此状态统计「办理中 / 已完成」。</div></td></tr>
+        <tr><td>最近一次飞签时间</td><td class="type">日期</td><td class="opt">可选</td><td>最近一次出境 / 续签往返日期 YYYY-MM-DD。</td></tr>
+      </tbody>
+    </table>
+    <div class="foot">「护照有效期至 / 签证到期日」临期（≤30天）或过期会在看板自动标红预警；Iqama 状态变更请及时更新。</div>
+  </div>
+
+  <div class="foot" style="border-color:var(--accent2)">
+    数据每整点自动同步进驾驶舱大屏（<span style="color:var(--text)">https://26e39b5a0aed44d7b0bfbb45dd2fd2c6.app.workbuddy.link</span>）。
+    填报遇到问题，联系行政部负责人。请勿在表里填写工资、身份证号等敏感信息。
+  </div>
+
+</div>
+</body>
+</html>
