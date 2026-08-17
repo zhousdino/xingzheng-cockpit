@@ -149,18 +149,18 @@
       <tbody>
         <tr><td>姓名</td><td class="type">文本</td><td class="req">必填</td><td>办签证人姓名。</td></tr>
         <tr><td>护照类型</td><td class="type">单选</td><td class="req">必填</td><td>
-          <span class="pill">普通护照</span><span class="pill">公务护照</span><span class="pill">外交护照</span></td></tr>
+          <span class="pill">私人护照</span><span class="pill">公务护照</span><span class="pill">外交护照</span><span class="pill">其他</span></td></tr>
         <tr><td>护照有效期至</td><td class="type">日期</td><td class="req">必填</td><td>
           格式 YYYY-MM-DD。<div class="note">看板会自动算出「护照剩余天数」并在临期（≤30天）/ 过期时标红，无需另填。</div></td></tr>
         <tr><td>签证类型</td><td class="type">单选</td><td class="req">必填</td><td>
-          <span class="pill">工作签证</span><span class="pill">商务签证</span><span class="pill">访问签证</span>
-          <span class="pill">旅游签证</span><span class="pill">其他</span></td></tr>
+          <span class="pill">旅游签</span><span class="pill">商务签</span><span class="pill">工作签</span><span class="pill">访问签</span>
+          <span class="pill">多次往返签</span><span class="pill">其他</span></td></tr>
         <tr><td>签证签发日期</td><td class="type">日期</td><td class="opt">可选</td><td>签证签发日期 YYYY-MM-DD。</td></tr>
         <tr><td>签证到期日</td><td class="type">日期</td><td class="opt">可选</td><td>签证有效期截止 YYYY-MM-DD，临期 / 过期会标红。</td></tr>
         <tr><td>Iqama办理状态</td><td class="type">单选</td><td class="req">必填</td><td>
-          <span class="pill">未开始</span><span class="pill">办理中</span><span class="pill">已完成</span>
-          <span class="pill">已注销</span>
-          <div class="note">Iqama 即沙特居留工作许可，看板按此状态统计「办理中 / 已完成」。</div></td></tr>
+          <span class="pill">无工签</span><span class="pill">待提交</span><span class="pill">已体检</span><span class="pill">办理中</span>
+          <span class="pill">已获批</span><span class="pill">已领取Iqama</span><span class="pill">需补资料</span><span class="pill">异常/暂停</span>
+          <div class="note">Iqama 即沙特居留工作许可，看板按此状态统计「办理中 / 已获批 / 已领取」。</div></td></tr>
         <tr><td>最近一次飞签时间</td><td class="type">日期</td><td class="opt">可选</td><td>最近一次出境 / 续签往返日期 YYYY-MM-DD。</td></tr>
       </tbody>
     </table>

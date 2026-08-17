@@ -195,6 +195,7 @@ footer{margin-top:30px;text-align:center;font-size:12px;color:var(--text-2)}
 .vtag.done{background:var(--good)}
 .vtag.wait{background:var(--text-2)}
 .vtag.cancel{background:var(--text-2);text-decoration:line-through;opacity:.7}
+.vtag.alert{background:var(--alert)}
 tr.vrow.warn td{background:rgba(224,169,0,.12)!important}
 tr.vrow.warn td:first-child{border-left:3px solid var(--warn)}
 tr.vrow.alert td{background:rgba(194,39,45,.10)!important}
@@ -325,10 +326,11 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
 .vtbl .warn{color:#ffc34d;font-weight:600}
 .vtbl .st-done{color:#34d0a0;font-weight:600}
 .vtbl .st-doing{color:#ffc34d;font-weight:600}
+.vtbl .st-alert{color:#ff5d5d;font-weight:600}
 </style>
 
 <script>
-window.__COCKPIT_DATA__ = {"tasks":[],"rooms":[{"room":"","date":"2026-08-12","start":"16:00","end":"17:00","booker":"杨明","purpose":"安全部门例会","status":"","attendees":"18","phone":"598952971","span":"16:00-17:00"},{"room":"","date":"2026-08-13","start":"15:00","end":"15:30","booker":"Intakhabun Nasir","purpose":"Commercial Department Variation Proposal discussion with Consultant and Cost Consultant","status":"","attendees":"10","phone":"539549202","span":"15:00-15:30"},{"room":"","date":"2026-08-15","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"25","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-15","start":"12:00","end":"13:30","booker":"余成","purpose":"项目策划查漏补缺会","status":"","attendees":"15","phone":"564754303","span":"12：00-13：30"},{"room":"","date":"2026-08-15","start":"20:00","end":"21:00","booker":"杨凤利","purpose":"项目管道施工进度专题研讨会","status":"","attendees":"10","phone":"570611985","span":"20：00-21：00"},{"room":"","date":"2026-08-16","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"12","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-16","start":"11:00","end":"12:30","booker":"Arshad S (HSE Trainer)","purpose":"Bar bending Training","status":"","attendees":"20","phone":"594591587","span":"11:00-12:30"},{"room":"","date":"2026-08-16","start":"16:00","end":"17:00","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"20","phone":"570611985","span":"16:00-17:00"},{"room":"","date":"2026-08-17","start":"15:00","end":"16:00","booker":"靳程","purpose":"与业主的设计周例会","status":"","attendees":"10","phone":"569108260","span":"15:00-16:00"},{"room":"","date":"2026-08-17","start":"11:00","end":"12:30","booker":"杨凤利","purpose":"External Weekly Project Meeting项目外部内部周例会","status":"","attendees":"25","phone":"570611985","span":"11:00-12:30"},{"room":"","date":"2026-08-17","start":"16:00","end":"17:30","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"29","phone":"570611985","span":"16:00-17:30"},{"room":"会议室（1）","date":"2026-08-20","start":"09:00","end":"10:30","booker":"周舟","purpose":"沙分第六次履约推进会","status":"","attendees":"30","phone":"","span":"09：00-10:30"}],"visas":[],"vehicles":[],"vehiclesched":[],"updatedAt":"2026-08-17T17:28:41.529Z","sources":{"tasks":{"mode":"wps-none","updatedAt":"2026-08-17T17:28:41.529Z","error":null},"rooms":{"mode":"drop-file","updatedAt":"2026-08-17T17:28:41.529Z","error":null},"visas":{"mode":"visa-none","updatedAt":"2026-08-17T17:28:41.529Z","error":null},"vehicles":{"mode":"vehicle-none","updatedAt":"2026-08-17T17:28:41.529Z","error":null},"vehiclesched":{"mode":"vehiclesched-none","updatedAt":"2026-08-17T17:28:41.529Z","error":null}}};
+window.__COCKPIT_DATA__ = {"tasks":[],"rooms":[{"room":"","date":"2026-08-12","start":"16:00","end":"17:00","booker":"杨明","purpose":"安全部门例会","status":"","attendees":"18","phone":"598952971","span":"16:00-17:00"},{"room":"","date":"2026-08-13","start":"15:00","end":"15:30","booker":"Intakhabun Nasir","purpose":"Commercial Department Variation Proposal discussion with Consultant and Cost Consultant","status":"","attendees":"10","phone":"539549202","span":"15:00-15:30"},{"room":"","date":"2026-08-15","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"25","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-15","start":"12:00","end":"13:30","booker":"余成","purpose":"项目策划查漏补缺会","status":"","attendees":"15","phone":"564754303","span":"12：00-13：30"},{"room":"","date":"2026-08-15","start":"20:00","end":"21:00","booker":"杨凤利","purpose":"项目管道施工进度专题研讨会","status":"","attendees":"10","phone":"570611985","span":"20：00-21：00"},{"room":"","date":"2026-08-16","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"12","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-16","start":"11:00","end":"12:30","booker":"Arshad S (HSE Trainer)","purpose":"Bar bending Training","status":"","attendees":"20","phone":"594591587","span":"11:00-12:30"},{"room":"","date":"2026-08-16","start":"16:00","end":"17:00","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"20","phone":"570611985","span":"16:00-17:00"},{"room":"","date":"2026-08-17","start":"15:00","end":"16:00","booker":"靳程","purpose":"与业主的设计周例会","status":"","attendees":"10","phone":"569108260","span":"15:00-16:00"},{"room":"","date":"2026-08-17","start":"11:00","end":"12:30","booker":"杨凤利","purpose":"External Weekly Project Meeting项目外部内部周例会","status":"","attendees":"25","phone":"570611985","span":"11:00-12:30"},{"room":"","date":"2026-08-17","start":"16:00","end":"17:30","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"29","phone":"570611985","span":"16:00-17:30"},{"room":"会议室（1）","date":"2026-08-20","start":"09:00","end":"10:30","booker":"周舟","purpose":"沙分第六次履约推进会","status":"","attendees":"30","phone":"","span":"09：00-10:30"}],"visas":[],"vehicles":[],"vehiclesched":[],"updatedAt":"2026-08-17T17:39:21.438Z","sources":{"tasks":{"mode":"wps-none","updatedAt":"2026-08-17T17:39:21.438Z","error":null},"rooms":{"mode":"drop-file","updatedAt":"2026-08-17T17:39:21.438Z","error":null},"visas":{"mode":"visa-none","updatedAt":"2026-08-17T17:39:21.438Z","error":null},"vehicles":{"mode":"vehicle-none","updatedAt":"2026-08-17T17:39:21.438Z","error":null},"vehiclesched":{"mode":"vehiclesched-none","updatedAt":"2026-08-17T17:39:21.438Z","error":null}}};
 
 /* ============ 风格切换（与主页共用 localStorage 键） ============ */
 function applyTheme(t){
@@ -344,14 +346,14 @@ if(saved && ['dark','business','glass','gov','warm'].includes(saved)) applyTheme
 function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function toDate(s){ if(!s) return null; const m=String(s).match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/); if(!m) return null; return new Date(+m[1],+m[2]-1,+m[3]); }
 function expClass(date){ if(!date) return ''; const today=todayStr(); if(date<today) return 'exp'; const d=toDate(date),t=toDate(today); if(d&&t){ const days=(d-t)/86400000; if(days>=0&&days<=30) return 'warn'; } return ''; }
-function iqamaClass(s){ return s==='已完成'?'st-done':(s==='办理中'?'st-doing':''); }
+function iqamaClass(s){ return (s==='已获批'||s==='已领取Iqama')?'st-done':(s==='办理中'?'st-doing':(s==='异常/暂停'?'st-alert':'')); }
 function dateFlag(d){ if(!d) return ''; return (d<todayStr()?'（已过期）':(expClass(d)==='warn'?'（临期≤30天）':'')); }
 
 /* ============ 示例数据（无真实数据时演示） ============ */
 const SAMPLE_VISAS=[
-  {name:'张三', pptType:'普通护照', pptExp:'2028-01-15', vtype:'工作签证', issue:'2026-05-01', expiry:'2027-05-01', iqama:'已完成', flysign:'2026-06-01'},
-  {name:'李四', pptType:'公务护照', pptExp:'2026-09-10', vtype:'商务签证', issue:'2026-07-01', expiry:'2026-08-20', iqama:'办理中', flysign:'2026-07-15'},
-  {name:'王五', pptType:'普通护照', pptExp:'2029-03-01', vtype:'访问签证', issue:'2026-04-10', expiry:'2027-04-10', iqama:'未开始', flysign:''}
+  {name:'张三', pptType:'私人护照', pptExp:'2028-01-15', vtype:'工作签', issue:'2026-05-01', expiry:'2027-05-01', iqama:'已领取Iqama', flysign:'2026-06-01'},
+  {name:'李四', pptType:'公务护照', pptExp:'2026-09-10', vtype:'商务签', issue:'2026-07-01', expiry:'2026-08-20', iqama:'办理中', flysign:'2026-07-15'},
+  {name:'王五', pptType:'外交护照', pptExp:'2029-03-01', vtype:'访问签', issue:'2026-04-10', expiry:'2027-04-10', iqama:'待提交', flysign:''}
 ];
 
 /* ============ 数据加载（优先内嵌，回退示例） ============ */
@@ -373,9 +375,9 @@ function render(){
   const total=VISA_DATA.length;
   const pptAlert=VISA_DATA.filter(r=>{ const c=expClass(r.pptExp); return c==='exp'||c==='warn'; }).length;
   const visaAlert=VISA_DATA.filter(r=>{ const c=expClass(r.expiry); return c==='exp'||c==='warn'; }).length;
-  const done=VISA_DATA.filter(r=>r.iqama==='已完成').length;
+  const done=VISA_DATA.filter(r=>r.iqama==='已获批'||r.iqama==='已领取Iqama').length;
   const doing=VISA_DATA.filter(r=>r.iqama==='办理中').length;
-  const other=VISA_DATA.filter(r=>r.iqama!=='已完成'&&r.iqama!=='办理中').length;
+  const other=VISA_DATA.filter(r=>r.iqama!=='已获批'&&r.iqama!=='已领取Iqama'&&r.iqama!=='办理中').length;
   vk.innerHTML=`
     <div class="kpi"><div class="strip"></div><div class="label">总人数</div><div class="num">${total}</div></div>
     <div class="kpi red"><div class="strip"></div><div class="label">护照临期/过期</div><div class="num">${pptAlert}</div></div>
@@ -411,9 +413,9 @@ const IMP_SCHEMA = {
   dateCols: ['护照有效期至','签证签发日期','签证到期日','最近一次飞签时间'],
   numCols: [],
   selects: {
-    '护照类型': ['普通护照','公务护照','外交护照'],
-    '签证类型': ['工作签证','商务签证','访问签证','旅游签证','其他'],
-    'Iqama办理状态': ['未开始','办理中','已完成','已注销']
+    '护照类型': ['私人护照','公务护照','外交护照','其他'],
+    '签证类型': ['旅游签','商务签','工作签','访问签','多次往返签','其他'],
+    'Iqama办理状态': ['无工签','待提交','已体检','办理中','已获批','已领取Iqama','需补资料','异常/暂停']
   }
 };
 

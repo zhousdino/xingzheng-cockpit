@@ -4,6 +4,18 @@
 - 原因：项目根目录无 `index.html`（仅 build.js 生成到 dist/、static/），本地预览 / 双击打开时相对链接解析为根目录下的 index.html 而 404；绝对链接在「本地预览 / 部署站 / file://」三种场景均指向真实主页。
 - 重跑 `static/build.js` 重打包三张二级页 → CloudStudio 重新部署 dist/（链接不变，verified=true）。
 
+## v1.16.0 · 2026-08-17
+**签证三张单选列选项扩写（行政部-签证情况 资料库云表）**
+- 护照类型：普通护照→私人护照，新增「其他」→ 私人护照/公务护照/外交护照/其他（4 项）。
+- 签证类型：工作签证→工作签、商务签证→商务签、访问签证→访问签、旅游签证→旅游签，新增「多次往返签」→ 旅游签/商务签/工作签/访问签/多次往返签/其他（6 项）。
+- Iqama办理状态：未开始→无工签、已完成→已获批、已注销→异常/暂停，新增 待提交/已体检/已领取Iqama/需补资料 → 无工签/待提交/已体检/办理中/已获批/已领取Iqama/需补资料/异常/暂停（8 项）。
+- 经 library `update_database_field` 直改云表三列 config.options（保留改名项的原 option id，新项生成 12 位 id；visas 当前为空，无存量引用影响）。同步改：
+  - `签证管理.html`：IMP_SCHEMA.selects 三列新选项 + iqamaClass（已获批/已领取Iqama=st-done、办理中=st-doing、异常/暂停=st-alert）+ KPI done/doing/other 重分类 + SAMPLE 示例改用新选项 + 内联 .st-alert 红字。
+  - `行政部驾驶舱_UI_v1.10.0.html`：visaStatusClass 精确匹配新选项（done/doing/alert/wait）+ 签证台账标签直显真实文本（去掉 scLabel 旧映射）+ 新增签证表单默认 iqama 改「无工签」。
+  - `cockpit-style.css` 加 `.vtag.alert{background:var(--alert)}`（异常/暂停 红底）。
+  - `填报须知.html` ③ 签证情况 三列选项 pills 同步更新。
+- `lib_import.py` 签证选项动态取自 schema，无需改。重跑 build.js → CloudStudio 重新部署（链接不变，verified=true）。临时脚本 `update_visa_options.py` 已删除。
+
 ## v1.15.0 · 2026-08-17
 **车辆/签证看板新增「批量导入模板 + 文件导入」；新增签证管理看板**
 - 车辆管理.html / 新建 签证管理.html 各内联一套自包含批量导入模块（无后端、不直连资料库）：

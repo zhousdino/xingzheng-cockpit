@@ -188,6 +188,7 @@ footer{margin-top:30px;text-align:center;font-size:12px;color:var(--text-2)}
 .vtag.done{background:var(--good)}
 .vtag.wait{background:var(--text-2)}
 .vtag.cancel{background:var(--text-2);text-decoration:line-through;opacity:.7}
+.vtag.alert{background:var(--alert)}
 tr.vrow.warn td{background:rgba(224,169,0,.12)!important}
 tr.vrow.warn td:first-child{border-left:3px solid var(--warn)}
 tr.vrow.alert td{background:rgba(194,39,45,.10)!important}

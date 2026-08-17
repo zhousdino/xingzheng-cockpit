@@ -399,7 +399,7 @@ function parseVisas(text){
   const rows=[];
   for(let r=hi+1;r<lines.length;r++){
     const cells=lines[r].split('\t');
-    const rec={name:'',pptType:'',pptExp:'',vtype:'',issue:'',expiry:'',iqama:'未开始',flysign:''};
+    const rec={name:'',pptType:'',pptExp:'',vtype:'',issue:'',expiry:'',iqama:'无工签',flysign:''};
     for(const h of used){
       let v=(cells[h.i]||'').trim();
       if(h.key==='pptExp'||h.key==='issue'||h.key==='expiry'||h.key==='flysign') v=normDate(v);
@@ -526,9 +526,9 @@ function render(){
 /* ============ 签证情况渲染 ============ */
 function visaStatusClass(s){
   s=String(s||'');
-  if(/已注销|注销/.test(s)) return 'cancel';
-  if(/已完成|已办好|已出签|出签/.test(s)) return 'done';
-  if(/办理中|审批中|审核中/.test(s)) return 'doing';
+  if(s==='已获批'||s==='已领取Iqama') return 'done';
+  if(s==='办理中') return 'doing';
+  if(s==='异常/暂停') return 'alert';
   return 'wait';
 }
 function pptRemainText(pptExp){
@@ -563,7 +563,6 @@ function renderVisas(){
     <div class="item red"><span class="n">${alertCnt+warnCnt}</span><span class="l">护照/签证临期或过期</span></div>`;
   if(!wrap) return;
   if(!total){ wrap.innerHTML='<div class="empty">暂无签证办理信息。请在资料库「签证情况」表中填写（列：姓名 / 护照类型 / 护照有效期至 / 签证类型 / 签证签发日期 / 签证到期日 / Iqama办理状态 / 最近一次飞签时间），保存后经资料库每小时自动同步到此处。</div>'; return; }
-  const scLabel={'cancel':'已注销','done':'已完成','doing':'办理中','wait':'未开始'};
   const rows=list.map(r=>{
     let alert=false, warn=false;
     const dates=[r.pptExp, r.expiry].filter(Boolean);
@@ -580,7 +579,7 @@ function renderVisas(){
       <td>${r.vtype||'—'}</td>
       <td>${r.issue||'—'}</td>
       <td>${r.expiry? (r.expiry+expFlag):'—'}</td>
-      <td><span class="vtag ${sc}">${scLabel[sc]||r.iqama}</span></td>
+      <td><span class="vtag ${sc}">${r.iqama||'—'}</span></td>
       <td>${r.flysign||'—'}</td></tr>`;
   }).join('');
   wrap.innerHTML=`<table><thead><tr><th>姓名</th><th>护照类型</th><th>护照有效期至</th><th>签证类型</th><th>签证签发日期</th><th>签证到期日</th><th>Iqama办理状态</th><th>最近一次飞签时间</th></tr></thead><tbody>${rows}</tbody></table>`;

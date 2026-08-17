@@ -100,6 +100,7 @@
 .vtbl .warn{color:#ffc34d;font-weight:600}
 .vtbl .st-done{color:#34d0a0;font-weight:600}
 .vtbl .st-doing{color:#ffc34d;font-weight:600}
+.vtbl .st-alert{color:#ff5d5d;font-weight:600}
 </style>
 
 <script>
@@ -117,14 +118,14 @@ if(saved && ['dark','business','glass','gov','warm'].includes(saved)) applyTheme
 function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function toDate(s){ if(!s) return null; const m=String(s).match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/); if(!m) return null; return new Date(+m[1],+m[2]-1,+m[3]); }
 function expClass(date){ if(!date) return ''; const today=todayStr(); if(date<today) return 'exp'; const d=toDate(date),t=toDate(today); if(d&&t){ const days=(d-t)/86400000; if(days>=0&&days<=30) return 'warn'; } return ''; }
-function iqamaClass(s){ return s==='已完成'?'st-done':(s==='办理中'?'st-doing':''); }
+function iqamaClass(s){ return (s==='已获批'||s==='已领取Iqama')?'st-done':(s==='办理中'?'st-doing':(s==='异常/暂停'?'st-alert':'')); }
 function dateFlag(d){ if(!d) return ''; return (d<todayStr()?'（已过期）':(expClass(d)==='warn'?'（临期≤30天）':'')); }
 
 /* ============ 示例数据（无真实数据时演示） ============ */
 const SAMPLE_VISAS=[
-  {name:'张三', pptType:'普通护照', pptExp:'2028-01-15', vtype:'工作签证', issue:'2026-05-01', expiry:'2027-05-01', iqama:'已完成', flysign:'2026-06-01'},
-  {name:'李四', pptType:'公务护照', pptExp:'2026-09-10', vtype:'商务签证', issue:'2026-07-01', expiry:'2026-08-20', iqama:'办理中', flysign:'2026-07-15'},
-  {name:'王五', pptType:'普通护照', pptExp:'2029-03-01', vtype:'访问签证', issue:'2026-04-10', expiry:'2027-04-10', iqama:'未开始', flysign:''}
+  {name:'张三', pptType:'私人护照', pptExp:'2028-01-15', vtype:'工作签', issue:'2026-05-01', expiry:'2027-05-01', iqama:'已领取Iqama', flysign:'2026-06-01'},
+  {name:'李四', pptType:'公务护照', pptExp:'2026-09-10', vtype:'商务签', issue:'2026-07-01', expiry:'2026-08-20', iqama:'办理中', flysign:'2026-07-15'},
+  {name:'王五', pptType:'外交护照', pptExp:'2029-03-01', vtype:'访问签', issue:'2026-04-10', expiry:'2027-04-10', iqama:'待提交', flysign:''}
 ];
 
 /* ============ 数据加载（优先内嵌，回退示例） ============ */
@@ -146,9 +147,9 @@ function render(){
   const total=VISA_DATA.length;
   const pptAlert=VISA_DATA.filter(r=>{ const c=expClass(r.pptExp); return c==='exp'||c==='warn'; }).length;
   const visaAlert=VISA_DATA.filter(r=>{ const c=expClass(r.expiry); return c==='exp'||c==='warn'; }).length;
-  const done=VISA_DATA.filter(r=>r.iqama==='已完成').length;
+  const done=VISA_DATA.filter(r=>r.iqama==='已获批'||r.iqama==='已领取Iqama').length;
   const doing=VISA_DATA.filter(r=>r.iqama==='办理中').length;
-  const other=VISA_DATA.filter(r=>r.iqama!=='已完成'&&r.iqama!=='办理中').length;
+  const other=VISA_DATA.filter(r=>r.iqama!=='已获批'&&r.iqama!=='已领取Iqama'&&r.iqama!=='办理中').length;
   vk.innerHTML=`
     <div class="kpi"><div class="strip"></div><div class="label">总人数</div><div class="num">${total}</div></div>
     <div class="kpi red"><div class="strip"></div><div class="label">护照临期/过期</div><div class="num">${pptAlert}</div></div>
@@ -184,9 +185,9 @@ const IMP_SCHEMA = {
   dateCols: ['护照有效期至','签证签发日期','签证到期日','最近一次飞签时间'],
   numCols: [],
   selects: {
-    '护照类型': ['普通护照','公务护照','外交护照'],
-    '签证类型': ['工作签证','商务签证','访问签证','旅游签证','其他'],
-    'Iqama办理状态': ['未开始','办理中','已完成','已注销']
+    '护照类型': ['私人护照','公务护照','外交护照','其他'],
+    '签证类型': ['旅游签','商务签','工作签','访问签','多次往返签','其他'],
+    'Iqama办理状态': ['无工签','待提交','已体检','办理中','已获批','已领取Iqama','需补资料','异常/暂停']
   }
 };
 
