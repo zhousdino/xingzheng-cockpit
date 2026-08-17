@@ -1,3 +1,17 @@
+## v1.15.0 · 2026-08-17
+**车辆/签证看板新增「批量导入模板 + 文件导入」；新增签证管理看板**
+- 车辆管理.html / 新建 签证管理.html 各内联一套自包含批量导入模块（无后端、不直连资料库）：
+  - 「⬇ 下载导入模板」生成与资料库字段一字不差的 CSV（含 BOM，Excel 中文不乱码）+ 3 行空白。
+  - 「⬆ 导入数据文件」本地解析（逗号/制表符、引号、GBK/UTF-8 自动识别）→ 逐行校验（必填/日期/下拉项）→ 滚动预览（通过/注意/错误三色）+ 汇总。
+  - 「导出核对文件」存 CSV，交管理员后台真实写入资料库（静态页出于安全无法直连）。
+  - 下拉项取自 `get_database_schema` 真实表结构（车辆 4 单选 / 签证 3 单选），避免导入选项不匹配。
+- 新建 `签证管理.html` 只读看板（镜像车辆页：KPI 6 卡 + 签证台账表 + 去资料库录入按钮指向 `61g9FSYbQZreyiC1Praqai` + 风格切换 + 导入模块）。
+- 主页 `topnav` 加「签证管理看板」链接；`填报须知.html` 加「⑤ 批量导入」小节（模板下载→填→校验→导出核对文件→管理员后台写入）。
+- `static/build.js` 的 SECONDARY 列表加入 `签证管理.html`；重跑 build.js → CloudStudio 重新部署 dist/（链接不变，verified=true）。
+- 新增 `lib_import.py`（CSV→资料库，batch_add 追加，schema 下拉校验 + 日期/数字归一 + ≤100 分批 + dry-run），作为管理员后台真实写入工具。
+- 清理联调临时探针文件；保留 lib_import.py。
+- **已知 ⚠️ 资料库读取 bug**：API/manual 写入的记录暂不被列表读取（get_database_content/query 返回 0 行），仅 import_csv 创建的记录可读（但会破坏 select 选项）。当前环境 dashboard 对"新增数据"读不到、回退示例数据，待官方修复。
+
 ## v1.14.0 · 2026-08-17
 **车辆表完整版重建（21 字段，含租赁起止 + 年检 + 车架号等缺口）**
 - 资料库「车辆信息」整表重建为新表 `ckVeiMCyKQ9qzTrK159dKk`（旧表 `IlIuElUzWtxAKPBMcGXpBg` 弃用；因 library `add_database_field` 在当前环境不生效，沿用 create_database 整表重建）。

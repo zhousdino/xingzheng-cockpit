@@ -75,7 +75,7 @@ fs.writeFileSync(DIST, injected, 'utf8');
 
 // ---------- 二级页面（车辆管理 / 任务管理）一并打包 ----------
 // 注入内嵌数据 + 内联共享样式，保证在线部署（无桥接服务）也能显示真实数据、风格一致
-const SECONDARY = ['车辆管理.html', '任务管理.html'];
+const SECONDARY = ['车辆管理.html', '任务管理.html', '签证管理.html'];
 const dataScript = '\nwindow.__COCKPIT_DATA__ = ' + json + ';\n';
 const distDir = path.dirname(DIST);
 const outDir = path.dirname(OUT);

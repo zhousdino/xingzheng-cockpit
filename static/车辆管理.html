@@ -263,6 +263,15 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
     <a href="https://www.workbuddy.cn/space/d/ckVeiMCyKQ9qzTrK159dKk" target="_blank" rel="noopener" class="lib-btn">去资料库录入 / 修改车辆</a>
   </div>
 
+  <!-- 批量导入：模板下载 + 文件导入（本地校验/预览） -->
+  <div class="impbar">
+    <button id="btnTpl" class="imp-btn primary">⬇ 下载导入模板</button>
+    <button id="btnImp" class="imp-btn">⬆ 导入数据文件（CSV）</button>
+    <input type="file" id="fileInp" accept=".csv,text/csv" style="display:none">
+    <span class="imp-hint">先下载模板 → 按列填好 → 导入做校验预览。导入仅本地预览，真正写入资料库请把核对文件发管理员。</span>
+  </div>
+  <div id="impResult" class="imp-result" style="display:none"></div>
+
   <!-- KPI -->
   <div class="kpis" id="kpis" style="grid-template-columns:repeat(6,1fr)"></div>
 
@@ -282,10 +291,34 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
 .kpis{grid-template-columns:repeat(6,1fr)}
 @keyframes warnflash{0%,100%{opacity:1}50%{opacity:.55}}
 @media (max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)!important}}
+
+/* ============ 批量导入（模板下载 + 本地校验预览） ============ */
+.impbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 6px;padding:12px 14px;background:var(--panel,#16213a);border:1px solid var(--line,#2a3a5e);border-radius:12px}
+.imp-btn{cursor:pointer;border:1px solid var(--accent,#3a8dff);background:transparent;color:var(--accent,#3a8dff);padding:8px 16px;border-radius:8px;font-size:14px;font-weight:600;white-space:nowrap}
+.imp-btn:hover{background:rgba(58,141,255,.12)}
+.imp-btn.primary{background:var(--accent,#3a8dff);color:#fff}
+.imp-btn.primary:hover{opacity:.92}
+.imp-hint{font-size:12px;color:var(--text-2,#9fb0d0);line-height:1.5;flex:1;min-width:240px}
+.imp-result{margin:10px 0 4px;padding:14px;border:1px solid var(--line,#2a3a5e);border-radius:12px;background:var(--panel,#16213a)}
+.imp-result .imp-sum{font-size:14px;margin-bottom:10px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.imp-result .imp-badge{padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.imp-result .ok{background:rgba(52,208,160,.15);color:#34d0a0}
+.imp-result .warn{background:rgba(255,195,77,.15);color:#ffc34d}
+.imp-result .err{background:rgba(255,122,89,.15);color:#ff7a59}
+.imp-result .scroll{max-height:380px;overflow:auto;border:1px solid var(--line,#2a3a5e);border-radius:8px}
+.imp-result table{width:100%;border-collapse:collapse;font-size:13px}
+.imp-result th,.imp-result td{padding:7px 9px;border-bottom:1px solid var(--line,#2a3a5e);text-align:left;white-space:nowrap}
+.imp-result th{color:var(--text-2,#9fb0d0);font-weight:600;position:sticky;top:0;background:var(--panel,#16213a);z-index:1}
+.imp-result tr.err td{background:rgba(255,122,89,.08)}
+.imp-result tr.warn td{background:rgba(255,195,77,.07)}
+.imp-result td.iss{font-size:12px;color:#ff9b80;max-width:300px;white-space:normal;line-height:1.5}
+.imp-result td.iss.w{color:#ffc34d}
+.imp-tip{font-size:12px;color:var(--text-2,#9fb0d0);line-height:1.7;margin:10px 0 0;border-left:3px solid var(--accent,#3a8dff);padding-left:10px}
+.imp-tip b{color:var(--text,#e8eefc)}
 </style>
 
 <script>
-window.__COCKPIT_DATA__ = {"tasks":[],"rooms":[{"room":"","date":"2026-08-12","start":"16:00","end":"17:00","booker":"杨明","purpose":"安全部门例会","status":"","attendees":"18","phone":"598952971","span":"16:00-17:00"},{"room":"","date":"2026-08-13","start":"15:00","end":"15:30","booker":"Intakhabun Nasir","purpose":"Commercial Department Variation Proposal discussion with Consultant and Cost Consultant","status":"","attendees":"10","phone":"539549202","span":"15:00-15:30"},{"room":"","date":"2026-08-15","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"25","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-15","start":"12:00","end":"13:30","booker":"余成","purpose":"项目策划查漏补缺会","status":"","attendees":"15","phone":"564754303","span":"12：00-13：30"},{"room":"","date":"2026-08-15","start":"20:00","end":"21:00","booker":"杨凤利","purpose":"项目管道施工进度专题研讨会","status":"","attendees":"10","phone":"570611985","span":"20：00-21：00"},{"room":"","date":"2026-08-16","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"12","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-16","start":"11:00","end":"12:30","booker":"Arshad S (HSE Trainer)","purpose":"Bar bending Training","status":"","attendees":"20","phone":"594591587","span":"11:00-12:30"},{"room":"","date":"2026-08-16","start":"16:00","end":"17:00","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"20","phone":"570611985","span":"16:00-17:00"},{"room":"","date":"2026-08-17","start":"15:00","end":"16:00","booker":"靳程","purpose":"与业主的设计周例会","status":"","attendees":"10","phone":"569108260","span":"15:00-16:00"},{"room":"","date":"2026-08-17","start":"11:00","end":"12:30","booker":"杨凤利","purpose":"External Weekly Project Meeting项目外部内部周例会","status":"","attendees":"25","phone":"570611985","span":"11:00-12:30"},{"room":"","date":"2026-08-17","start":"16:00","end":"17:30","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"29","phone":"570611985","span":"16:00-17:30"}],"visas":[],"vehicles":[],"vehiclesched":[],"updatedAt":"2026-08-17T16:46:16.963Z","sources":{"tasks":{"mode":"wps-none","updatedAt":"2026-08-17T16:46:16.963Z","error":null},"rooms":{"mode":"drop-file","updatedAt":"2026-08-17T16:46:16.963Z","error":null},"visas":{"mode":"visa-none","updatedAt":"2026-08-17T16:46:16.963Z","error":null},"vehicles":{"mode":"vehicle-none","updatedAt":"2026-08-17T16:46:16.963Z","error":null},"vehiclesched":{"mode":"vehiclesched-none","updatedAt":"2026-08-17T16:46:16.963Z","error":null}}};
+window.__COCKPIT_DATA__ = {"tasks":[],"rooms":[{"room":"","date":"2026-08-12","start":"16:00","end":"17:00","booker":"杨明","purpose":"安全部门例会","status":"","attendees":"18","phone":"598952971","span":"16:00-17:00"},{"room":"","date":"2026-08-13","start":"15:00","end":"15:30","booker":"Intakhabun Nasir","purpose":"Commercial Department Variation Proposal discussion with Consultant and Cost Consultant","status":"","attendees":"10","phone":"539549202","span":"15:00-15:30"},{"room":"","date":"2026-08-15","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"25","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-15","start":"12:00","end":"13:30","booker":"余成","purpose":"项目策划查漏补缺会","status":"","attendees":"15","phone":"564754303","span":"12：00-13：30"},{"room":"","date":"2026-08-15","start":"20:00","end":"21:00","booker":"杨凤利","purpose":"项目管道施工进度专题研讨会","status":"","attendees":"10","phone":"570611985","span":"20：00-21：00"},{"room":"","date":"2026-08-16","start":"08:00","end":"10:30","booker":"Arshad S (HSE Trainer)","purpose":"HSE Induction","status":"","attendees":"12","phone":"594591587","span":"08:00-10:30"},{"room":"","date":"2026-08-16","start":"11:00","end":"12:30","booker":"Arshad S (HSE Trainer)","purpose":"Bar bending Training","status":"","attendees":"20","phone":"594591587","span":"11:00-12:30"},{"room":"","date":"2026-08-16","start":"16:00","end":"17:00","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"20","phone":"570611985","span":"16:00-17:00"},{"room":"","date":"2026-08-17","start":"15:00","end":"16:00","booker":"靳程","purpose":"与业主的设计周例会","status":"","attendees":"10","phone":"569108260","span":"15:00-16:00"},{"room":"","date":"2026-08-17","start":"11:00","end":"12:30","booker":"杨凤利","purpose":"External Weekly Project Meeting项目外部内部周例会","status":"","attendees":"25","phone":"570611985","span":"11:00-12:30"},{"room":"","date":"2026-08-17","start":"16:00","end":"17:30","booker":"杨凤利","purpose":"Internal Weekly Project Meeting项目内部周例会","status":"","attendees":"29","phone":"570611985","span":"16:00-17:30"},{"room":"会议室（1）","date":"2026-08-20","start":"09:00","end":"10:30","booker":"周舟","purpose":"沙分第六次履约推进会","status":"","attendees":"30","phone":"","span":"09：00-10:30"}],"visas":[],"vehicles":[],"vehiclesched":[],"updatedAt":"2026-08-17T17:16:55.171Z","sources":{"tasks":{"mode":"wps-none","updatedAt":"2026-08-17T17:16:55.171Z","error":null},"rooms":{"mode":"drop-file","updatedAt":"2026-08-17T17:16:55.171Z","error":null},"visas":{"mode":"visa-none","updatedAt":"2026-08-17T17:16:55.171Z","error":null},"vehicles":{"mode":"vehicle-none","updatedAt":"2026-08-17T17:16:55.171Z","error":null},"vehiclesched":{"mode":"vehiclesched-none","updatedAt":"2026-08-17T17:16:55.171Z","error":null}}};
 
 /* ============ 风格切换（与主页共用 localStorage 键） ============ */
 function applyTheme(t){
@@ -383,6 +416,122 @@ function render(){
   else if(!total){ wrap.innerHTML='<div class="empty">暂无车辆信息。</div>'; }
   else { wrap.innerHTML=vehCards(VEHICLE_DATA,[],today); }
 }
+
+/* ============ 批量导入模块（模板下载 + 本地校验预览） ============ */
+/* 字段与资料库「行政部-车辆信息」一致；下拉项取自表结构，避免导入时选项不匹配。 */
+const IMP_SCHEMA = {
+  label: '车辆',
+  required: ['车牌'],
+  headers: ['车牌','车型','车辆类别','燃料类型','车架号','所有情况','使用单位','租赁起始日','租赁到期日','保险','保险到期','年检到期','通行证','通行证到期','状态','驾驶员','当前位置','上报时间','当前里程','下次保养日期','备注'],
+  dateCols: ['租赁起始日','租赁到期日','保险到期','年检到期','通行证到期','上报时间','下次保养日期'],
+  numCols: ['当前里程'],
+  selects: {
+    '车辆类别': ['公务轿车','SUV越野','皮卡','中巴客车','货车'],
+    '燃料类型': ['汽油','柴油','新能源'],
+    '所有情况': ['自购','租赁'],
+    '状态': ['正常','保养','维修','停用']
+  }
+};
+
+function impNormDate(s){
+  s=String(s==null?'':s).trim(); if(!s) return {v:'',ok:true};
+  let t=s.replace(/[年月]/g,'-').replace(/[日]/g,'').replace(/[./／．]/g,'-').replace(/\s+/g,'');
+  const p=t.split('-').map(x=>x.replace(/\D/g,'')).filter(x=>x!=='');
+  if(p.length>=3 && p[0]){ let y=p[0]; if(y.length===2) y='20'+y; return {v:y+'-'+String(p[1]).padStart(2,'0')+'-'+String(p[2]).padStart(2,'0'), ok:true}; }
+  return {v:s, ok:false};
+}
+function impDecode(buf){
+  let txt=new TextDecoder('utf-8',{fatal:false}).decode(new Uint8Array(buf));
+  if(/�/.test(txt)){ try{ const g=new TextDecoder('gbk',{fatal:false}).decode(new Uint8Array(buf)); if(g && !/�/.test(g)) txt=g; }catch(e){} }
+  return txt;
+}
+function impParseCSV(text, delim){
+  if(!delim) delim=(text.indexOf('\t')>=0)?'\t':',';
+  const rows=[]; let row=[], f='', q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else if(c==='\n'){ f+=' '; } else if(c!=='\r'){ f+=c; } }
+    else { if(c==='"') q=true; else if(c===delim){ row.push(f); f=''; } else if(c==='\n'){ row.push(f); rows.push(row); row=[]; f=''; } else if(c!=='\r'){ f+=c; } }
+  }
+  if(f!==''||row.length){ row.push(f); rows.push(row); }
+  return rows;
+}
+function impCell(v){ v=String(v==null?'':v); return /[",\n\r]/.test(v)?('"'+v.replace(/"/g,'""')+'"'):v; }
+function impEsc(s){ s=String(s==null?'':s); return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function impDownload(name, content){
+  const blob=new Blob(['\ufeff'+content],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+function impStamp(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+p(d.getHours())+p(d.getMinutes()); }
+function impShowError(msg){ const box=document.getElementById('impResult'); box.style.display='block'; box.innerHTML='<div class="imp-tip" style="border-color:var(--warn,#ff7a59);color:#ff9b80">'+impEsc(msg)+'</div>'; }
+function impValidate(obj){
+  const errors=[], warns=[];
+  IMP_SCHEMA.required.forEach(h=>{ if(!String(obj[h]||'').trim()) errors.push('缺必填「'+h+'」'); });
+  IMP_SCHEMA.dateCols.forEach(h=>{ const v=String(obj[h]||'').trim(); if(v){ const r=impNormDate(v); if(!r.ok) errors.push('「'+h+'」日期无效('+v+')'); else obj[h]=r.v; } });
+  IMP_SCHEMA.numCols.forEach(h=>{ const v=String(obj[h]||'').trim(); if(v){ const n=parseFloat(v.replace(/[,，]/g,'')); if(isNaN(n)) errors.push('「'+h+'」数字无效('+v+')'); else obj[h]=String(n); } });
+  Object.keys(IMP_SCHEMA.selects).forEach(h=>{ const v=String(obj[h]||'').trim(); if(v){ const opts=IMP_SCHEMA.selects[h]; if(!opts.includes(v)) warns.push('「'+h+'」应为：'+opts.join('/')); } });
+  return {errors,warns};
+}
+function impProcess(buf){
+  const text=impDecode(buf);
+  const rawRows=impParseCSV(text);
+  let hi=-1; for(let i=0;i<rawRows.length;i++){ if(rawRows[i].some(c=>String(c).trim()!=='')){ hi=i; break; } }
+  if(hi<0){ impShowError('文件为空或无法识别，请检查后重试。'); return; }
+  const fileHeaders=rawRows[hi].map(h=>String(h).trim());
+  const idx={}; const missing=[];
+  IMP_SCHEMA.headers.forEach(h=>{ const k=fileHeaders.indexOf(h); if(k>=0) idx[h]=k; else missing.push(h); });
+  const missReq=IMP_SCHEMA.required.filter(h=>!(h in idx));
+  if(missReq.length){ impShowError('文件缺少必填列：'+missReq.join('、')+'。请先用上方「下载导入模板」按模板列填写后再导入。'); return; }
+  const data=[];
+  for(let r=hi+1;r<rawRows.length;r++){
+    const cells=rawRows[r];
+    if(cells.every(c=>String(c).trim()==='')) continue;
+    const obj={}; IMP_SCHEMA.headers.forEach(h=>{ obj[h]=(h in idx)?String(cells[idx[h]]||'').trim():''; });
+    data.push(obj);
+  }
+  if(!data.length){ impShowError('文件中没有可导入的数据行（除表头外均为空）。'); return; }
+  let okCount=0, warnCount=0, errCount=0;
+  const rowsHtml=data.map((obj,ri)=>{
+    const {errors,warns}=impValidate(obj);
+    const cls=errors.length?'err':(warns.length?'warn':'');
+    if(errors.length) errCount++; else if(warns.length) warnCount++; else okCount++;
+    const idv=obj[IMP_SCHEMA.required[0]]||('第'+(ri+1)+'行');
+    const issTxt=errors.concat(warns).join('；');
+    const badge=errors.length?'<span class="imp-badge err">✗ 错误</span>':(warns.length?'<span class="imp-badge warn">⚠ 注意</span>':'<span class="imp-badge ok">✓ 通过</span>');
+    const cells=IMP_SCHEMA.headers.map(h=>'<td>'+impEsc(obj[h])+'</td>').join('');
+    return '<tr class="'+cls+'"><td>'+impEsc(idv)+'</td>'+cells+'<td>'+badge+'</td><td class="iss'+(errors.length?'':' w')+'">'+impEsc(issTxt)+'</td></tr>';
+  }).join('');
+  const headHtml='<th>'+IMP_SCHEMA.label+'标识</th>'+IMP_SCHEMA.headers.map(h=>'<th>'+h+'</th>').join('')+'<th>校验</th><th>问题</th>';
+  const html='<div class="imp-sum">'+
+    '<span>共 <b>'+data.length+'</b> 行</span>'+
+    '<span class="imp-badge ok">✓ 通过 '+okCount+'</span>'+
+    '<span class="imp-badge warn">⚠ 注意 '+warnCount+'</span>'+
+    '<span class="imp-badge err">✗ 错误 '+errCount+'</span>'+
+    '<button id="btnExp" class="imp-btn primary" style="margin-left:auto">⬇ 导出核对文件（CSV）</button>'+
+    '</div>'+
+    '<div class="scroll"><table><thead><tr>'+headHtml+'</tr></thead><tbody>'+rowsHtml+'</tbody></table></div>'+
+    '<div class="imp-tip">导入仅做<b>本地预览与校验</b>，不会直接写入资料库。请点「导出核对文件」把校验后的数据保存下来，发给管理员，由其在后台执行真实写入（静态页面出于安全无法直连资料库）。<br>标红「错误」：请回到 CSV 修改对应单元格后重新导入；标黄「注意」：多为下拉项拼写，管理员会按现有选项归一。</div>';
+  const box=document.getElementById('impResult'); box.style.display='block'; box.innerHTML=html;
+  document.getElementById('btnExp').onclick=()=>{
+    let csv=IMP_SCHEMA.headers.map(impCell).join(',')+'\n';
+    data.forEach(o=>{ csv+=IMP_SCHEMA.headers.map(h=>impCell(o[h])).join(',')+'\n'; });
+    impDownload(IMP_SCHEMA.label+'核对文件_'+impStamp()+'.csv', csv);
+  };
+}
+
+/* 模板下载：生成与资料库字段完全一致的 CSV（含 BOM，Excel 中文不乱码），附 3 行空白供填写 */
+document.getElementById('btnTpl').onclick=()=>{
+  let csv=IMP_SCHEMA.headers.map(impCell).join(',')+'\n';
+  for(let i=0;i<3;i++) csv+='\n';
+  impDownload(IMP_SCHEMA.label+'导入模板.csv', csv);
+};
+/* 文件导入 */
+document.getElementById('btnImp').onclick=()=>document.getElementById('fileInp').click();
+document.getElementById('fileInp').onchange=(e)=>{
+  const file=e.target.files[0]; if(!file) return;
+  const r=new FileReader(); r.onload=()=>impProcess(r.result); r.readAsArrayBuffer(file); e.target.value='';
+};
 
 loadData();
 </script>

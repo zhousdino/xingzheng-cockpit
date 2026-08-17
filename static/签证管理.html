@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>任务填写与管理 · 行政部驾驶舱</title>
+<title>签证管理 · 行政部驾驶舱</title>
 <style>
 
 /* ============ 主题变量（5 套皮肤，随时切换） ============ */
@@ -235,12 +235,12 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
 <div class="wrap">
   <header class="top">
     <div>
-      <h1>任务填写与管理</h1>
-      <div class="sub">部门任务台账 · 数据来自 WorkBuddy「资料库」云表，录入请点右上角按钮</div>
+      <h1>签证管理</h1>
+      <div class="sub">部门人员签证 / 护照 / Iqama 台账 · 数据来自 WorkBuddy「资料库」云表，录入请点右上角按钮</div>
     </div>
     <div class="meta">
       数据更新时间：<b id="updTime">—</b><br>
-      <a href="./" style="color:inherit;text-decoration:underline">← 返回驾驶舱</a>
+      <a href="index.html" style="color:inherit;text-decoration:underline">← 返回驾驶舱</a>
     </div>
   </header>
 
@@ -260,60 +260,71 @@ tr.vrow.alert td:first-child{border-left:3px solid var(--alert)}
       <span class="t">数据来源</span>
       <span class="hint">本看板为只读视图，数据来自 WorkBuddy「资料库」云表，由每小时自动任务同步刷新（录入后约 1 小时同步到本看板）。</span>
     </div>
-    <a href="https://www.workbuddy.cn/space/d/E810IQGqpV9dHEwsnuIsb7" target="_blank" rel="noopener" class="lib-btn">去资料库录入 / 修改任务</a>
+    <a href="https://www.workbuddy.cn/space/d/61g9FSYbQZreyiC1Praqai" target="_blank" rel="noopener" class="lib-btn">去资料库录入 / 修改签证</a>
   </div>
+
+  <!-- 批量导入：模板下载 + 文件导入（本地校验/预览） -->
+  <div class="impbar">
+    <button id="btnTpl" class="imp-btn primary">⬇ 下载导入模板</button>
+    <button id="btnImp" class="imp-btn">⬆ 导入数据文件（CSV）</button>
+    <input type="file" id="fileInp" accept=".csv,text/csv" style="display:none">
+    <span class="imp-hint">先下载模板 → 按列填好 → 导入做校验预览。导入仅本地预览，真正写入资料库请把核对文件发管理员。</span>
+  </div>
+  <div id="impResult" class="imp-result" style="display:none"></div>
 
   <!-- KPI -->
   <div class="kpis" id="kpis" style="grid-template-columns:repeat(6,1fr)"></div>
 
-  <!-- 筛选 -->
-  <div class="sec-title">部门任务台账</div>
-  <div class="sec-sub">以下为当前任务（状态、进度、临期·逾期自动标识）。</div>
-  <div class="filters" id="filters">
-    <button class="fbtn active" data-f="all">全部</button>
-    <button class="fbtn" data-f="进行中">进行中</button>
-    <button class="fbtn" data-f="已完成">已完成</button>
-    <button class="fbtn" data-f="未开始">未开始</button>
-    <button class="fbtn" data-f="已暂停">已暂停</button>
-    <button class="fbtn" data-f="逾期">逾期</button>
-    <span style="flex:1"></span>
-    <select id="catFilter" style="border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:var(--bg);color:var(--text);font-size:13px">
-      <option value="">全部分类</option>
-    </select>
-  </div>
-
-  <!-- 任务列表 -->
+  <!-- 签证台账 -->
+  <div class="sec-title">签证 / 护照台账</div>
+  <div class="sec-sub">以下为部门人员签证办理情况（护照有效期、签证到期临期·过期自动标红；Iqama 状态分类统计）。</div>
   <div class="card">
-    <div id="taskBoard"></div>
+    <div id="visaBoard"></div>
   </div>
 
-  <footer>行政部驾驶舱 · 任务填写与管理（资料库只读看板）· 与主页共用同一套风格与皮肤</footer>
+  <footer>行政部驾驶舱 · 签证管理（资料库只读看板）· 与主页共用同一套风格与皮肤</footer>
 </div>
 
 <style>
 .lib-btn{display:inline-block;border:1px solid var(--primary);background:var(--primary);color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;text-decoration:none}
 .lib-btn:hover{opacity:.92}
 .kpis{grid-template-columns:repeat(6,1fr)}
-.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}
-.fbtn{border:1px solid var(--line);background:var(--card);color:var(--text-2);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600}
-.fbtn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-/* 任务卡片 */
-.tkcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
-.tkcard{border:1px solid var(--line);border-left:4px solid var(--primary);border-radius:var(--radius);padding:14px 16px;background:var(--bg)}
-.tkcard.over{opacity:.6}
-.tk-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.tk-name{font-size:15px;font-weight:700;color:var(--text);line-height:1.35}
-.tk-cat{display:inline-block;margin-top:6px;font-size:12px;font-weight:600;color:#fff;background:var(--primary);padding:2px 9px;border-radius:20px}
-.tk-meta{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--text-2)}
-.tk-meta b{color:var(--text);font-weight:600}
-.tk-bar{margin-top:10px;height:7px;background:var(--line);border-radius:6px;overflow:hidden}
-.tk-bar > i{display:block;height:100%;background:var(--primary)}
-.tk-prog{margin-top:5px;font-size:12px;color:var(--text-2)}
-.tk-block{margin-top:8px;font-size:12.5px;color:var(--alert);background:rgba(194,39,45,.08);padding:6px 9px;border-radius:6px}
-.tk-due{font-weight:600}
-.tk-due.soon{color:var(--warn)}
-.tk-due.late{color:var(--alert)}
-@media (max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)!important}.tkcards{grid-template-columns:1fr}}
+@keyframes warnflash{0%,100%{opacity:1}50%{opacity:.55}}
+@media (max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)!important}}
+
+/* ============ 批量导入（模板下载 + 本地校验预览） ============ */
+.impbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 6px;padding:12px 14px;background:var(--panel,#16213a);border:1px solid var(--line,#2a3a5e);border-radius:12px}
+.imp-btn{cursor:pointer;border:1px solid var(--accent,#3a8dff);background:transparent;color:var(--accent,#3a8dff);padding:8px 16px;border-radius:8px;font-size:14px;font-weight:600;white-space:nowrap}
+.imp-btn:hover{background:rgba(58,141,255,.12)}
+.imp-btn.primary{background:var(--accent,#3a8dff);color:#fff}
+.imp-btn.primary:hover{opacity:.92}
+.imp-hint{font-size:12px;color:var(--text-2,#9fb0d0);line-height:1.5;flex:1;min-width:240px}
+.imp-result{margin:10px 0 4px;padding:14px;border:1px solid var(--line,#2a3a5e);border-radius:12px;background:var(--panel,#16213a)}
+.imp-result .imp-sum{font-size:14px;margin-bottom:10px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.imp-result .imp-badge{padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.imp-result .ok{background:rgba(52,208,160,.15);color:#34d0a0}
+.imp-result .warn{background:rgba(255,195,77,.15);color:#ffc34d}
+.imp-result .err{background:rgba(255,122,89,.15);color:#ff7a59}
+.imp-result .scroll{max-height:380px;overflow:auto;border:1px solid var(--line,#2a3a5e);border-radius:8px}
+.imp-result table{width:100%;border-collapse:collapse;font-size:13px}
+.imp-result th,.imp-result td{padding:7px 9px;border-bottom:1px solid var(--line,#2a3a5e);text-align:left;white-space:nowrap}
+.imp-result th{color:var(--text-2,#9fb0d0);font-weight:600;position:sticky;top:0;background:var(--panel,#16213a);z-index:1}
+.imp-result tr.err td{background:rgba(255,122,89,.08)}
+.imp-result tr.warn td{background:rgba(255,195,77,.07)}
+.imp-result td.iss{font-size:12px;color:#ff9b80;max-width:300px;white-space:normal;line-height:1.5}
+.imp-result td.iss.w{color:#ffc34d}
+.imp-tip{font-size:12px;color:var(--text-2,#9fb0d0);line-height:1.7;margin:10px 0 0;border-left:3px solid var(--accent,#3a8dff);padding-left:10px}
+.imp-tip b{color:var(--text,#e8eefc)}
+
+/* 签证台账表格 */
+.vtbl{width:100%;border-collapse:collapse;font-size:13px}
+.vtbl th,.vtbl td{padding:9px 10px;border-bottom:1px solid var(--line,#2a3a5e);text-align:left;white-space:nowrap}
+.vtbl th{color:var(--text-2,#9fb0d0);font-weight:600}
+.vtbl tr:hover td{background:rgba(58,141,255,.06)}
+.vtbl .exp{color:#ff5d5d;font-weight:600}
+.vtbl .warn{color:#ffc34d;font-weight:600}
+.vtbl .st-done{color:#34d0a0;font-weight:600}
+.vtbl .st-doing{color:#ffc34d;font-weight:600}
 </style>
 
 <script>
@@ -329,116 +340,182 @@ document.querySelectorAll('.tbtn').forEach(b=>b.onclick=()=>applyTheme(b.dataset
 let saved=null; try{ saved=localStorage.getItem('xz-cockpit-theme'); }catch(e){}
 if(saved && ['dark','business','glass','gov','warm'].includes(saved)) applyTheme(saved); else applyTheme('dark');
 
-/* ============ 工具（与主页一致） ============ */
+/* ============ 工具 ============ */
 function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function toDate(s){ if(!s) return null; const m=String(s).match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/); if(!m) return null; return new Date(+m[1],+m[2]-1,+m[3]); }
-function isOverdue(r){ if(r.status==='已逾期') return true; if(r.status==='已完成') return false; const d=toDate(r.deadline); const t=toDate(todayStr()); return !!(d&&t&&d<t); }
-function weekEnd(){
-  const t=toDate(todayStr()); if(!t) return null;
-  const day=(t.getDay()+6)%7;
-  const we=new Date(t); we.setDate(t.getDate()+(6-day)); return we;
-}
+function expClass(date){ if(!date) return ''; const today=todayStr(); if(date<today) return 'exp'; const d=toDate(date),t=toDate(today); if(d&&t){ const days=(d-t)/86400000; if(days>=0&&days<=30) return 'warn'; } return ''; }
+function iqamaClass(s){ return s==='已完成'?'st-done':(s==='办理中'?'st-doing':''); }
+function dateFlag(d){ if(!d) return ''; return (d<todayStr()?'（已过期）':(expClass(d)==='warn'?'（临期≤30天）':'')); }
 
-/* ============ 示例数据（无真实数据时演示，与主页一致） ============ */
-const SAMPLE_TASKS=[
-  {name:'年度工作会议统筹',category:'会务接待',note:'主会场布置与议程',owner:'王伟',collab:'李娜,张敏',status:'已完成',progress:100,start:'2026-07-10',deadline:'2026-07-20',priority:'高',blocker:'',update:'2026-07-21'},
-  {name:'三季度车辆年检',category:'车辆管理',note:'12台公务车年审排期',owner:'李娜',collab:'',status:'进行中',progress:60,start:'2026-08-01',deadline:'2026-08-25',priority:'中',blocker:'部分车辆预约紧张',update:'2026-08-14'},
-  {name:'食堂供应商比选',category:'后勤管理',note:'三家比价与合同',owner:'张敏',collab:'周婷',status:'进行中',progress:45,start:'2026-08-05',deadline:'2026-08-30',priority:'高',blocker:'',update:'2026-08-14'},
-  {name:'办公耗材采购',category:'物资采购',note:'三季度耗材清单',owner:'刘洋',collab:'',status:'已完成',progress:100,start:'2026-07-15',deadline:'2026-08-01',priority:'中',blocker:'',update:'2026-08-02'},
-  {name:'印章使用台账梳理',category:'行政办公',note:'用印记录电子化',owner:'陈静',collab:'',status:'已暂停',progress:30,start:'2026-07-20',deadline:'2026-08-18',priority:'低',blocker:'等法务确认模板',update:'2026-08-10'},
-  {name:'新员工入职手续',category:'人力资源',note:'3名新员工报到',owner:'杨帆',collab:'胡斌',status:'进行中',progress:70,start:'2026-08-08',deadline:'2026-08-20',priority:'高',blocker:'',update:'2026-08-14'},
-  {name:'上级检查接待',category:'会务接待',note:'迎检路线与材料',owner:'赵磊',collab:'王伟',status:'进行中',progress:40,start:'2026-08-12',deadline:'2026-08-22',priority:'高',blocker:'',update:'2026-08-14'},
-  {name:'车辆维修台账',category:'车辆管理',note:'维修记录归集',owner:'李娜',collab:'',status:'未开始',progress:0,start:'2026-08-15',deadline:'2026-09-05',priority:'低',blocker:'',update:'2026-08-15'},
-  {name:'宿舍修缮',category:'后勤管理',note:'3号楼漏水处理',owner:'周婷',collab:'',status:'逾期',progress:55,start:'2026-07-25',deadline:'2026-08-10',priority:'中',blocker:'施工队排期冲突',update:'2026-08-13'},
-  {name:'节庆慰问品采购',category:'物资采购',note:'中秋慰问',owner:'刘洋',collab:'张敏',status:'进行中',progress:35,start:'2026-08-10',deadline:'2026-09-15',priority:'中',blocker:'',update:'2026-08-14'},
-  {name:'公文流转优化',category:'行政办公',note:'收发文流程简化',owner:'陈静',collab:'',status:'进行中',progress:50,start:'2026-08-03',deadline:'2026-08-28',priority:'中',blocker:'',update:'2026-08-14'},
-  {name:'季度培训计划',category:'人力资源',note:'Q3培训排期',owner:'杨帆',collab:'',status:'未开始',progress:0,start:'2026-08-18',deadline:'2026-09-10',priority:'低',blocker:'',update:'2026-08-15'},
-  {name:'外事接待预案',category:'会务接待',note:'涉外活动准备',owner:'赵磊',collab:'王伟',status:'已暂停',progress:20,start:'2026-07-30',deadline:'2026-08-12',priority:'高',blocker:'等外事口径',update:'2026-08-11'},
-  {name:'油料管理规范',category:'车辆管理',note:'用油台账与限额',owner:'李娜',collab:'',status:'已完成',progress:100,start:'2026-07-01',deadline:'2026-07-31',priority:'中',blocker:'',update:'2026-08-01'},
-  {name:'绿植养护外包',category:'后勤管理',note:'办公区绿化',owner:'周婷',collab:'',status:'进行中',progress:65,start:'2026-08-06',deadline:'2026-08-26',priority:'低',blocker:'',update:'2026-08-14'},
-  {name:'档案数字化',category:'行政办公',note:'历史档案扫描',owner:'陈静',collab:'胡斌',status:'进行中',progress:25,start:'2026-08-09',deadline:'2026-09-20',priority:'中',blocker:'',update:'2026-08-14'},
-  {name:'绩效考核填报',category:'人力资源',note:'半年考核',owner:'杨帆',collab:'',status:'未开始',progress:0,start:'2026-08-20',deadline:'2026-09-30',priority:'高',blocker:'',update:'2026-08-15'},
-  {name:'应急物资储备',category:'物资采购',note:'防汛物资',owner:'刘洋',collab:'',status:'进行中',progress:80,start:'2026-08-02',deadline:'2026-08-22',priority:'高',blocker:'',update:'2026-08-14'}
+/* ============ 示例数据（无真实数据时演示） ============ */
+const SAMPLE_VISAS=[
+  {name:'张三', pptType:'普通护照', pptExp:'2028-01-15', vtype:'工作签证', issue:'2026-05-01', expiry:'2027-05-01', iqama:'已完成', flysign:'2026-06-01'},
+  {name:'李四', pptType:'公务护照', pptExp:'2026-09-10', vtype:'商务签证', issue:'2026-07-01', expiry:'2026-08-20', iqama:'办理中', flysign:'2026-07-15'},
+  {name:'王五', pptType:'普通护照', pptExp:'2029-03-01', vtype:'访问签证', issue:'2026-04-10', expiry:'2027-04-10', iqama:'未开始', flysign:''}
 ];
 
 /* ============ 数据加载（优先内嵌，回退示例） ============ */
-let TASK_DATA=[], DEMO=false, curFilter='all', curCat='';
+let VISA_DATA=[], DEMO=false;
 async function loadData(){
-  if(window.__COCKPIT_DATA__ && window.__COCKPIT_DATA__.tasks && window.__COCKPIT_DATA__.tasks.length){
-    TASK_DATA=window.__COCKPIT_DATA__.tasks;
+  if(window.__COCKPIT_DATA__ && window.__COCKPIT_DATA__.visas && window.__COCKPIT_DATA__.visas.length){
+    VISA_DATA=window.__COCKPIT_DATA__.visas;
     document.getElementById('updTime').textContent='数据内嵌（每小时自动更新）';
-    prep(); render(); return;
+    render(); return;
   }
-  DEMO=true; TASK_DATA=SAMPLE_TASKS.map(t=>({...t}));
+  DEMO=true; VISA_DATA=SAMPLE_VISAS;
   document.getElementById('updTime').textContent='示例数据';
-  prep(); render();
-}
-function prep(){
-  TASK_DATA.forEach(r=>{ if(isOverdue(r) && r.status!=='已逾期') r.status='已逾期'; });
-  const sel=document.getElementById('catFilter');
-  const cats=[...new Set(TASK_DATA.map(r=>r.category))];
-  sel.innerHTML='<option value="">全部分类</option>'+cats.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+  render();
 }
 
 /* ============ 渲染 ============ */
 function render(){
-  const today=todayStr(), we=weekEnd();
-  const total=TASK_DATA.length;
-  const doing=TASK_DATA.filter(r=>r.status==='进行中').length;
-  const done=TASK_DATA.filter(r=>r.status==='已完成').length;
-  const overdue=TASK_DATA.filter(r=>r.status==='已逾期').length;
-  const high=TASK_DATA.filter(r=>r.priority==='高'&&r.status!=='已完成').length;
-  const dueWeek=TASK_DATA.filter(r=>{ const d=toDate(r.deadline); return d&&we&&d>=toDate(today)&&d<=we&&r.status!=='已完成'; }).length;
-  document.getElementById('kpis').innerHTML=`
-    <div class="kpi"><div class="strip"></div><div class="label">任务总数</div><div class="num">${total}</div></div>
-    <div class="kpi warn"><div class="strip"></div><div class="label">进行中</div><div class="num">${doing}</div></div>
-    <div class="kpi green"><div class="strip"></div><div class="label">已完成</div><div class="num">${done}</div></div>
-    <div class="kpi red"><div class="strip"></div><div class="label">逾期</div><div class="num">${overdue}</div></div>
-    <div class="kpi"><div class="strip"></div><div class="label">高优先级</div><div class="num">${high}</div></div>
-    <div class="kpi"><div class="strip"></div><div class="label">本周截止</div><div class="num">${dueWeek}</div></div>`;
-
-  let list=TASK_DATA.map((r,i)=>({r,i}));
-  if(curFilter==='逾期') list=list.filter(x=>x.r.status==='已逾期');
-  else if(curFilter!=='all') list=list.filter(x=>x.r.status===curFilter);
-  if(curCat) list=list.filter(x=>x.r.category===curCat);
-
-  const wrap=document.getElementById('taskBoard');
-  if(DEMO && !list.length){ wrap.innerHTML='<div class="empty">以下为<b>示例预览</b>。在资料库录入真实任务后，本看板每小时自动同步更新。</div>'; }
-  else if(!list.length){ wrap.innerHTML='<div class="empty">没有符合条件的任务。</div>'; }
-  else {
-    wrap.innerHTML='<div class="tkcards">'+list.map(({r,i})=>{
-      const d=toDate(r.deadline), t=toDate(today);
-      let dueCls='', dueTxt=r.deadline||'—';
-      if(d&&t){ const days=(d-t)/86400000; if(days<0){dueCls='late';dueTxt=r.deadline+'（已逾期）';} else if(days<=7){dueCls='soon';dueTxt=r.deadline+'（临期'+Math.ceil(days)+'天）';} }
-      const prog=Math.max(0,Math.min(100,parseInt(r.progress)||0));
-      const block=r.blocker?('<div class="tk-block">堵点：'+esc(r.blocker)+'</div>'):'';
-      return `<div class="tkcard ${r.status==='已完成'?'over':''}">
-        <div class="tk-top">
-          <div><div class="tk-name">${esc(r.name)}</div><span class="tk-cat">${esc(r.category)}</span></div>
-          <span class="tag s-${r.status}">${r.status}</span>
-        </div>
-        <div class="tk-meta">
-          <span>负责人：<b>${esc(r.owner||'—')}</b></span>
-          <span>协同：<b>${esc(r.collab||'—')}</b></span>
-          <span>优先级：<b>${esc(r.priority||'—')}</b></span>
-          <span class="tk-due ${dueCls}">截止：<b>${dueTxt}</b></span>
-        </div>
-        <div class="tk-bar"><i style="width:${prog}%"></i></div>
-        <div class="tk-prog">进度 ${prog}%</div>
-        ${r.note?('<div class="tk-meta" style="margin-top:6px">备注：'+esc(r.note)+'</div>'):''}
-        ${block}
-      </div>`;
-    }).join('')+'</div>';
-  }
+  const vk=document.getElementById('kpis');
+  const total=VISA_DATA.length;
+  const pptAlert=VISA_DATA.filter(r=>{ const c=expClass(r.pptExp); return c==='exp'||c==='warn'; }).length;
+  const visaAlert=VISA_DATA.filter(r=>{ const c=expClass(r.expiry); return c==='exp'||c==='warn'; }).length;
+  const done=VISA_DATA.filter(r=>r.iqama==='已完成').length;
+  const doing=VISA_DATA.filter(r=>r.iqama==='办理中').length;
+  const other=VISA_DATA.filter(r=>r.iqama!=='已完成'&&r.iqama!=='办理中').length;
+  vk.innerHTML=`
+    <div class="kpi"><div class="strip"></div><div class="label">总人数</div><div class="num">${total}</div></div>
+    <div class="kpi red"><div class="strip"></div><div class="label">护照临期/过期</div><div class="num">${pptAlert}</div></div>
+    <div class="kpi red"><div class="strip"></div><div class="label">签证临期/过期</div><div class="num">${visaAlert}</div></div>
+    <div class="kpi green"><div class="strip"></div><div class="label">Iqama完成</div><div class="num">${done}</div></div>
+    <div class="kpi warn"><div class="strip"></div><div class="label">Iqama办理中</div><div class="num">${doing}</div></div>
+    <div class="kpi"><div class="strip"></div><div class="label">其他状态</div><div class="num">${other}</div></div>`;
+  const wrap=document.getElementById('visaBoard');
+  if(!total){ wrap.innerHTML='<div class="empty">暂无签证办理信息。</div>'; return; }
+  const rows=VISA_DATA.map(v=>{
+    const pptC=expClass(v.pptExp), expC=expClass(v.expiry), iqC=iqamaClass(v.iqama);
+    return `<tr>
+      <td>${v.name||'—'}</td>
+      <td>${v.pptType||'—'}</td>
+      <td class="${pptC}">${v.pptExp||'—'}${dateFlag(v.pptExp)}</td>
+      <td>${v.vtype||'—'}</td>
+      <td>${v.issue||'—'}</td>
+      <td class="${expC}">${v.expiry||'—'}${dateFlag(v.expiry)}</td>
+      <td class="${iqC}">${v.iqama||'—'}</td>
+      <td>${v.flysign||'—'}</td>
+    </tr>`;
+  }).join('');
+  const head='<th>姓名</th><th>护照类型</th><th>护照有效期至</th><th>签证类型</th><th>签证签发</th><th>签证到期日</th><th>Iqama状态</th><th>最近飞签</th>';
+  wrap.innerHTML='<table class="vtbl"><thead><tr>'+head+'</tr></thead><tbody>'+rows+'</tbody></table>'+(DEMO?'<div class="empty">以上为<b>示例预览</b>。在资料库录入真实签证后，本看板每小时自动同步更新。</div>':'');
 }
-function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
 
-/* ============ 筛选交互 ============ */
-document.querySelectorAll('.fbtn').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active'); curFilter=b.dataset.f; render();
-});
-document.getElementById('catFilter').onchange=(e)=>{ curCat=e.target.value; render(); };
+/* ============ 批量导入模块（模板下载 + 本地校验预览） ============ */
+/* 字段与资料库「行政部-签证情况」一致；下拉项取自表结构，避免导入时选项不匹配。 */
+const IMP_SCHEMA = {
+  label: '签证',
+  required: ['姓名'],
+  headers: ['姓名','护照类型','护照有效期至','签证类型','签证签发日期','签证到期日','Iqama办理状态','最近一次飞签时间'],
+  dateCols: ['护照有效期至','签证签发日期','签证到期日','最近一次飞签时间'],
+  numCols: [],
+  selects: {
+    '护照类型': ['普通护照','公务护照','外交护照'],
+    '签证类型': ['工作签证','商务签证','访问签证','旅游签证','其他'],
+    'Iqama办理状态': ['未开始','办理中','已完成','已注销']
+  }
+};
+
+function impNormDate(s){
+  s=String(s==null?'':s).trim(); if(!s) return {v:'',ok:true};
+  let t=s.replace(/[年月]/g,'-').replace(/[日]/g,'').replace(/[./／．]/g,'-').replace(/\s+/g,'');
+  const p=t.split('-').map(x=>x.replace(/\D/g,'')).filter(x=>x!=='');
+  if(p.length>=3 && p[0]){ let y=p[0]; if(y.length===2) y='20'+y; return {v:y+'-'+String(p[1]).padStart(2,'0')+'-'+String(p[2]).padStart(2,'0'), ok:true}; }
+  return {v:s, ok:false};
+}
+function impDecode(buf){
+  let txt=new TextDecoder('utf-8',{fatal:false}).decode(new Uint8Array(buf));
+  if(/�/.test(txt)){ try{ const g=new TextDecoder('gbk',{fatal:false}).decode(new Uint8Array(buf)); if(g && !/�/.test(g)) txt=g; }catch(e){} }
+  return txt;
+}
+function impParseCSV(text, delim){
+  if(!delim) delim=(text.indexOf('\t')>=0)?'\t':',';
+  const rows=[]; let row=[], f='', q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else if(c==='\n'){ f+=' '; } else if(c!=='\r'){ f+=c; } }
+    else { if(c==='"') q=true; else if(c===delim){ row.push(f); f=''; } else if(c==='\n'){ row.push(f); rows.push(row); row=[]; f=''; } else if(c!=='\r'){ f+=c; } }
+  }
+  if(f!==''||row.length){ row.push(f); rows.push(row); }
+  return rows;
+}
+function impCell(v){ v=String(v==null?'':v); return /[",\n\r]/.test(v)?('"'+v.replace(/"/g,'""')+'"'):v; }
+function impEsc(s){ s=String(s==null?'':s); return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function impDownload(name, content){
+  const blob=new Blob(['\ufeff'+content],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+function impStamp(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+p(d.getHours())+p(d.getMinutes()); }
+function impShowError(msg){ const box=document.getElementById('impResult'); box.style.display='block'; box.innerHTML='<div class="imp-tip" style="border-color:var(--warn,#ff7a59);color:#ff9b80">'+impEsc(msg)+'</div>'; }
+function impValidate(obj){
+  const errors=[], warns=[];
+  IMP_SCHEMA.required.forEach(h=>{ if(!String(obj[h]||'').trim()) errors.push('缺必填「'+h+'」'); });
+  IMP_SCHEMA.dateCols.forEach(h=>{ const v=String(obj[h]||'').trim(); if(v){ const r=impNormDate(v); if(!r.ok) errors.push('「'+h+'」日期无效('+v+')'); else obj[h]=r.v; } });
+  IMP_SCHEMA.numCols.forEach(h=>{ const v=String(obj[h]||'').trim(); if(v){ const n=parseFloat(v.replace(/[,，]/g,'')); if(isNaN(n)) errors.push('「'+h+'」数字无效('+v+')'); else obj[h]=String(n); } });
+  Object.keys(IMP_SCHEMA.selects).forEach(h=>{ const v=String(obj[h]||'').trim(); if(v){ const opts=IMP_SCHEMA.selects[h]; if(!opts.includes(v)) warns.push('「'+h+'」应为：'+opts.join('/')); } });
+  return {errors,warns};
+}
+function impProcess(buf){
+  const text=impDecode(buf);
+  const rawRows=impParseCSV(text);
+  let hi=-1; for(let i=0;i<rawRows.length;i++){ if(rawRows[i].some(c=>String(c).trim()!=='')){ hi=i; break; } }
+  if(hi<0){ impShowError('文件为空或无法识别，请检查后重试。'); return; }
+  const fileHeaders=rawRows[hi].map(h=>String(h).trim());
+  const idx={}; const missing=[];
+  IMP_SCHEMA.headers.forEach(h=>{ const k=fileHeaders.indexOf(h); if(k>=0) idx[h]=k; else missing.push(h); });
+  const missReq=IMP_SCHEMA.required.filter(h=>!(h in idx));
+  if(missReq.length){ impShowError('文件缺少必填列：'+missReq.join('、')+'。请先用上方「下载导入模板」按模板列填写后再导入。'); return; }
+  const data=[];
+  for(let r=hi+1;r<rawRows.length;r++){
+    const cells=rawRows[r];
+    if(cells.every(c=>String(c).trim()==='')) continue;
+    const obj={}; IMP_SCHEMA.headers.forEach(h=>{ obj[h]=(h in idx)?String(cells[idx[h]]||'').trim():''; });
+    data.push(obj);
+  }
+  if(!data.length){ impShowError('文件中没有可导入的数据行（除表头外均为空）。'); return; }
+  let okCount=0, warnCount=0, errCount=0;
+  const rowsHtml=data.map((obj,ri)=>{
+    const {errors,warns}=impValidate(obj);
+    const cls=errors.length?'err':(warns.length?'warn':'');
+    if(errors.length) errCount++; else if(warns.length) warnCount++; else okCount++;
+    const idv=obj[IMP_SCHEMA.required[0]]||('第'+(ri+1)+'行');
+    const issTxt=errors.concat(warns).join('；');
+    const badge=errors.length?'<span class="imp-badge err">✗ 错误</span>':(warns.length?'<span class="imp-badge warn">⚠ 注意</span>':'<span class="imp-badge ok">✓ 通过</span>');
+    const cells=IMP_SCHEMA.headers.map(h=>'<td>'+impEsc(obj[h])+'</td>').join('');
+    return '<tr class="'+cls+'"><td>'+impEsc(idv)+'</td>'+cells+'<td>'+badge+'</td><td class="iss'+(errors.length?'':' w')+'">'+impEsc(issTxt)+'</td></tr>';
+  }).join('');
+  const headHtml='<th>'+IMP_SCHEMA.label+'标识</th>'+IMP_SCHEMA.headers.map(h=>'<th>'+h+'</th>').join('')+'<th>校验</th><th>问题</th>';
+  const html='<div class="imp-sum">'+
+    '<span>共 <b>'+data.length+'</b> 行</span>'+
+    '<span class="imp-badge ok">✓ 通过 '+okCount+'</span>'+
+    '<span class="imp-badge warn">⚠ 注意 '+warnCount+'</span>'+
+    '<span class="imp-badge err">✗ 错误 '+errCount+'</span>'+
+    '<button id="btnExp" class="imp-btn primary" style="margin-left:auto">⬇ 导出核对文件（CSV）</button>'+
+    '</div>'+
+    '<div class="scroll"><table><thead><tr>'+headHtml+'</tr></thead><tbody>'+rowsHtml+'</tbody></table></div>'+
+    '<div class="imp-tip">导入仅做<b>本地预览与校验</b>，不会直接写入资料库。请点「导出核对文件」把校验后的数据保存下来，发给管理员，由其在后台执行真实写入（静态页面出于安全无法直连资料库）。<br>标红「错误」：请回到 CSV 修改对应单元格后重新导入；标黄「注意」：多为下拉项拼写，管理员会按现有选项归一。</div>';
+  const box=document.getElementById('impResult'); box.style.display='block'; box.innerHTML=html;
+  document.getElementById('btnExp').onclick=()=>{
+    let csv=IMP_SCHEMA.headers.map(impCell).join(',')+'\n';
+    data.forEach(o=>{ csv+=IMP_SCHEMA.headers.map(h=>impCell(o[h])).join(',')+'\n'; });
+    impDownload(IMP_SCHEMA.label+'核对文件_'+impStamp()+'.csv', csv);
+  };
+}
+
+/* 模板下载：生成与资料库字段完全一致的 CSV（含 BOM，Excel 中文不乱码），附 3 行空白供填写 */
+document.getElementById('btnTpl').onclick=()=>{
+  let csv=IMP_SCHEMA.headers.map(impCell).join(',')+'\n';
+  for(let i=0;i<3;i++) csv+='\n';
+  impDownload(IMP_SCHEMA.label+'导入模板.csv', csv);
+};
+/* 文件导入 */
+document.getElementById('btnImp').onclick=()=>document.getElementById('fileInp').click();
+document.getElementById('fileInp').onchange=(e)=>{
+  const file=e.target.files[0]; if(!file) return;
+  const r=new FileReader(); r.onload=()=>impProcess(r.result); r.readAsArrayBuffer(file); e.target.value='';
+};
 
 loadData();
 </script>

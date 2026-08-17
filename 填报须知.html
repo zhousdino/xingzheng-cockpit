@@ -68,6 +68,20 @@
     <div><span class="num">4</span><b>保存</b>：填完自动保存（或点保存），关掉页面即可，无需其他操作。</div>
   </div>
 
+  <!-- 批量导入 -->
+  <div class="card" style="border-color:var(--accent)">
+    <h2>⑤ 车辆 / 签证 · 批量导入（一次性录多行）<span class="tag">看板功能</span></h2>
+    <div style="padding:14px 18px;font-size:14px;line-height:1.9">
+      <p style="margin:0 0 10px">需要一次录入很多行（如全员签证、整批车辆）时，不用一行行手填，可在<b style="color:var(--accent2)">车辆管理看板</b>或<b style="color:var(--accent2)">签证管理看板</b>用「导入」功能：</p>
+      <div><span class="num">1</span><b>下载模板</b>：在看板点「⬇ 下载导入模板」，得到一份列名与资料库完全一致的 CSV（含 BOM，Excel 打开中文不乱码）。</div>
+      <div><span class="num">2</span><b>按列填</b>：用 Excel / WPS 打开，按模板列填写；日期写 YYYY-MM-DD，下拉项严格照下方各表选项填。</div>
+      <div><span class="num">3</span><b>校验预览</b>：回到看板点「⬆ 导入数据文件」，选填好的 CSV，页面会逐行校验（必填 / 日期 / 下拉项），并标出「通过 / 注意 / 错误」。</div>
+      <div><span class="num">4</span><b>导出核对文件</b>：点「⬇ 导出核对文件（CSV）」把校验后的数据存下来，发给<b>管理员</b>。</div>
+      <div><span class="num">5</span><b>后台写入</b>：管理员在后台执行真实写入资料库；之后该数据会随每小时自动同步进入驾驶舱大屏。</div>
+      <div class="foot" style="border-color:var(--accent)">⚠️ 出于安全，公开静态页面<b>无法直连资料库</b>自动写入，所以真实落库由管理员在后台完成（保留下拉结构、不破坏表结构）。模板列名务必与下方各表<b>一字不差</b>，否则校验会提示缺列。</div>
+    </div>
+  </div>
+
   <!-- 任务总表 -->
   <div class="card">
     <h2>① 任务总表 <span class="tag">行政部-任务总表</span></h2>
